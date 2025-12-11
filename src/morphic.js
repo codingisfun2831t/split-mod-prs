@@ -7852,7 +7852,7 @@ MenuMorph.prototype.addMenu = function (label, aMenu, indicator, verbatim) {
   this.addPair(
     label,
     aMenu,
-    isNil(indicator) ? "\u25ba" : indicator,
+    new ArrowMorph("right", 12, null, this.bgColor ? WHITE : BLACK), //isNil(indicator) ? "\u25ba" : indicator,
     null,
     verbatim // don't translate
   );
@@ -9857,6 +9857,8 @@ function MenuItemMorph(
     doubleClickAction,
     bakColor
   );
+
+  this.hoverCursor = "auto";
 }
 
 MenuItemMorph.prototype.createLabel = function () {

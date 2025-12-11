@@ -321,6 +321,7 @@ IDE_Morph.prototype.init = function (config) {
 
   this.logo = null;
   this.controlBar = null;
+  this.controlBarBackground = null;
   this.projectControlBar = null;
   this.categories = null;
   this.palette = null;
@@ -1101,7 +1102,7 @@ IDE_Morph.prototype.createLogo = function () {
   };
 
   this.logo.color = BLACK;
-  this.logo.setExtent(new Point(200, 28)); // dimensions are fixed
+  this.logo.setExtent(new Point(150, 48)); // dimensions are fixed
   this.add(this.logo);
 };
 IDE_Morph.prototype.createProjectControlBar = function () {
@@ -1137,7 +1138,7 @@ IDE_Morph.prototype.createProjectControlBar = function () {
   }
   this.projectControlBar = new Morph();
   this.projectControlBar.color = this.frameColor;
-  this.projectControlBar.setHeight(this.logo.height()); // height is fixed
+  this.projectControlBar.setHeight(28); // height is fixed
 
   this.add(this.projectControlBar);
 
@@ -1374,7 +1375,7 @@ IDE_Morph.prototype.createProjectControlBar = function () {
 };
 IDE_Morph.prototype.createControlBar = function () {
   // assumes the logo has already been created
-  var padding = 5,
+  var padding = 10,
     button,
     slider,
     stopButton,
@@ -1398,7 +1399,18 @@ IDE_Morph.prototype.createControlBar = function () {
       activeColor.lighter(40),
       activeColor.lighter(40),
     ],
+    buttonIcon, buttonLabel, buttonArrow,
     myself = this;
+
+  if (this.controlBarBackground) {
+    this.controlBarBackground.destroy();
+  }
+
+  this.controlBarBackground = new Morph();
+  this.controlBarBackground.color = this.accentColor;
+  this.controlBarBackground.setHeight(48);
+
+  this.addChildFirst(this.controlBarBackground);
 
   if (this.controlBar) {
     this.controlBar.destroy();
@@ -1406,7 +1418,7 @@ IDE_Morph.prototype.createControlBar = function () {
 
   this.controlBar = new Morph();
   this.controlBar.color = this.accentColor;
-  this.controlBar.setHeight(this.logo.height()); // height is fixed
+  this.controlBar.setHeight(this.controlBarBackground.height());
 
   // let users manually enforce re-layout when changing orientation
   // on mobile devices
@@ -1418,8 +1430,6 @@ IDE_Morph.prototype.createControlBar = function () {
     */
 
   this.add(this.controlBar);
-
-  
 
   //steppingButton
   button = new ToggleButtonMorph(
@@ -1470,49 +1480,71 @@ IDE_Morph.prototype.createControlBar = function () {
   this.controlBar.steppingSlider = slider;
 
   // projectButton
-  button = new PushButtonMorph(
+  button = new TriggerMorph(
     this,
-    "projectMenu",
-    new SymbolMorph("file", 14)
-    //'\u270E'
+    "projectMenu"
   );
-  button.corner = 4;
-  button.color = colors[0];
-  button.highlightColor = colors[1];
-  button.pressColor = colors[2];
-  button.labelMinExtent = new Point(36, 18);
-  button.padding = 0;
-  button.labelShadowOffset = new Point(-1, -1);
-  button.labelShadowColor = colors[1];
-  button.labelColor = WHITE;
-  button.contrast = this.buttonContrast;
-  button.outline = 0;
-  // button.hint = 'open, save, & annotate project';
-  button.makeSquare();
+  
+  buttonIcon = new SymbolMorph("file", 20);
+  buttonLabel = new TextMorph("File");
+  buttonArrow = new ArrowMorph("vertical", 16, null, colors[0]);
+  button.setHeight(48);
+  button.setWidth(buttonIcon.width() + buttonLabel.width() + buttonArrow.width() + 30);
+  button.color = this.accentColor;
+  button.highlightColor = this.accentColor.darker(25);
+  button.pressColor = button.highlightColor;
+
+  buttonIcon.setColor(WHITE);
+  buttonIcon.fixLayout();
+  buttonIcon.setCenter(button.center());
+  buttonIcon.setLeft(button.left() + 10);
+  buttonLabel.setColor(WHITE);
+  buttonLabel.setCenter(button.center());
+  buttonLabel.setLeft(buttonIcon.right() + 5);
+  buttonLabel.isBold = true;
+  buttonArrow.setCenter(button.center());
+  buttonArrow.setLeft(buttonLabel.right() + 5);
+  
+  button.label.destroy();
+  button.add(buttonIcon);
+  button.add(buttonLabel);
+  button.add(buttonArrow);
+
   projectButton = button;
   this.controlBar.add(projectButton);
   this.controlBar.projectButton = projectButton; // for menu positioning
 
   // settingsButton
-  button = new PushButtonMorph(
+  button = new TriggerMorph(
     this,
-    "settingsMenu",
-    new SymbolMorph("gears", 14)
-    //'\u2699'
+    "settingsMenu"
   );
-  button.corner = 4;
-  button.outline = 0;
-  button.color = colors[0];
-  button.highlightColor = colors[1];
-  button.pressColor = colors[2];
-  button.labelMinExtent = new Point(36, 18);
-  button.padding = 0;
-  button.labelShadowOffset = new Point(-1, -1);
-  button.labelShadowColor = colors[1];
-  button.labelColor = WHITE;
-  button.contrast = this.buttonContrast;
-  // button.hint = 'edit settings';
-  button.makeSquare();
+  
+  buttonIcon = new SymbolMorph("gears", 20);
+  buttonLabel = new TextMorph("Settings");
+  buttonArrow = new ArrowMorph("vertical", 16, null, colors[0]);
+  button.setHeight(48);
+  button.setWidth(buttonIcon.width() + buttonLabel.width() + buttonArrow.width() + 30);
+  button.color = this.accentColor;
+  button.highlightColor = this.accentColor.darker(25);
+  button.pressColor = button.highlightColor;
+
+  buttonIcon.setColor(WHITE);
+  buttonIcon.fixLayout();
+  buttonIcon.setCenter(button.center());
+  buttonIcon.setLeft(button.left() + 10);
+  buttonLabel.setColor(WHITE);
+  buttonLabel.setCenter(button.center());
+  buttonLabel.setLeft(buttonIcon.right() + 5);
+  buttonLabel.isBold = true;
+  buttonArrow.setCenter(button.center());
+  buttonArrow.setLeft(buttonLabel.right() + 5);
+  
+  button.label.destroy();
+  button.add(buttonIcon);
+  button.add(buttonLabel);
+  button.add(buttonArrow);
+
   settingsButton = button;
   this.controlBar.add(settingsButton);
   this.controlBar.settingsButton = settingsButton; // for menu positioning
@@ -1576,33 +1608,33 @@ IDE_Morph.prototype.createControlBar = function () {
     });*/
 
     
-    settingsButton.setCenter(myself.controlBar.center());
-    settingsButton.setLeft(this.left());
+    projectButton.setCenter(myself.controlBar.center());
+    projectButton.setLeft(this.left());
 
     slider.setCenter(myself.controlBar.center());
-    slider.setLeft(settingsButton.right() + 200 + padding);
+    slider.setLeft(projectButton.right() + 200 + padding);
     
 
     steppingButton.setCenter(myself.controlBar.center());
     steppingButton.setRight(slider.left() - padding);
 
     if (myself.config.hideSettings) {
-      settingsButton.hide();
+      projectButton.hide();
     }
 
-    projectButton.setCenter(myself.controlBar.center());
+    settingsButton.setCenter(myself.controlBar.center());
 
     if (myself.config.noImports || myself.config.hideProjects) {
-      projectButton.hide();
+      settingsButton.hide();
     }
 
     if (myself.cloud.disabled) {
       cloudButton.hide();
-      projectButton.setRight(settingsButton.left() - padding);
+      settingsButton.setRight(projectButton.left() - padding);
     } else {
       cloudButton.setCenter(myself.controlBar.center());
-      cloudButton.setRight(settingsButton.left() - padding);
-      projectButton.setRight(cloudButton.left() - padding);
+      cloudButton.setRight(projectButton.left() - padding);
+      settingsButton.setRight(cloudButton.left() - padding);
     }
 
     this.refreshSlider();
@@ -1644,7 +1676,8 @@ IDE_Morph.prototype.createControlBar = function () {
     name = myself.getProjectName() || localize("untitled");
     if (!myself.config.preserveTitle) {
       document.title =
-        "Split! " + (myself.getProjectName() ? name : SplitVersion);
+        myself.getProjectName() ? (name + " on Split!") : ("Split! " + SplitVersion);
+        // "Split! " + (myself.getProjectName() ? name : SplitVersion);
     }
     txt = new StringMorph(
       prefix + name + scene + suffix,
@@ -1665,12 +1698,12 @@ IDE_Morph.prototype.createControlBar = function () {
     this.label.add(txt);
     this.label.setExtent(
       new Point(
-        steppingButton.left() - settingsButton.right() - padding * 2,
+        steppingButton.left() - projectButton.right() - padding * 2,
         txt.height()
       )
     );
     this.label.setCenter(this.center());
-    this.label.setLeft(this.settingsButton.right() + padding);
+    this.label.setLeft(this.projectButton.right() + padding);
     this.add(this.label);
   };
 };
@@ -1694,6 +1727,7 @@ IDE_Morph.prototype.createCategories = function () {
   this.categories.color = this.groupColor;
   this.extensionButton = new Morph();
   this.extensionButton.color = this.accentColor;
+  this.extensionButton.hoverCursor = "pointer";
   const symb = new SymbolMorph("extension", 34, WHITE);
   symb.setLeft(13);
   symb.setTop(7);
@@ -2481,7 +2515,7 @@ IDE_Morph.prototype.createCorralBar = function () {
   this.corralBar = new Morph();
   this.corralBar.color = this.frameColor;
   this.corralBar.isVisible = flag;
-  this.corralBar.setHeight(this.logo.height()); // height is fixed
+  this.corralBar.setHeight(28); // height is fixed
   this.corralBar.setWidth(this.stage.width());
   this.add(this.corralBar);
 
@@ -2760,15 +2794,17 @@ IDE_Morph.prototype.fixLayout = function (situation) {
 
   if (situation !== "refreshPalette") {
     // controlBar
-    this.controlBar.setPosition(this.logo.topRight());
+    this.controlBar.setPosition(this.logo.topRight().add(new Point(100, 0)));
     this.controlBar.setWidth(this.right() - this.controlBar.left() - border);
     this.controlBar.fixLayout();
+    this.controlBarBackground.setWidth(this.width());
+    this.controlBarBackground.setPosition(new Point(0, 0));
     
     
     // categories
     this.categories.setLeft(this.logo.left());
     this.categories.setTop(
-      57 //this.oldSpriteBar.bottom()//cnf.hideControls ? this.top() + border : this.oldSpriteBar.bottom()//this.logo.bottom() - this.oldSpriteBar.
+      77 //this.oldSpriteBar.bottom()//cnf.hideControls ? this.top() + border : this.oldSpriteBar.bottom()//this.logo.bottom() - this.oldSpriteBar.
     );
     this.extensionButton.setTop(world.bottom() - 52);
     this.extensionButton.setHeight(52);
@@ -2869,7 +2905,7 @@ IDE_Morph.prototype.fixLayout = function (situation) {
         this.stage.setScale(this.isSmallStage ? this.stageRatio : 1);
         this.stage.setTop(
             
-            cnf.hideControls ? this.top() + border : this.logo.bottom() + padding
+            cnf.hideControls ? this.top() + border : this.controlBar.bottom() + padding
       );
       this.stage.setRight(this.right() - border);
       if (cnf.noSprites) {
@@ -2906,12 +2942,12 @@ IDE_Morph.prototype.fixLayout = function (situation) {
             : this.paletteWidth + padding + border*/
     );
     this.oldSpriteBar.setTop(
-      cnf.hideControls ? this.top() + border : this.logo.bottom() + padding
+      cnf.hideControls ? this.top() + border : this.controlBar.bottom() + padding
     );
     this.oldSpriteBar.setWidth(
       Math.max(0, this.stage.left() - padding - this.oldSpriteBar.left())
     );
-    this.oldSpriteBar.setHeight(Math.round(this.logo.height() * 1));
+    this.oldSpriteBar.setHeight(28);
     this.oldSpriteBar.fixLayout();
 
     // spriteEditor
@@ -4551,14 +4587,14 @@ IDE_Morph.prototype.settingsMenu = function () {
 
   menu = new MenuMorph(this);
   menu.bgColor = this.accentColor;
-  menu.addPair(
+  menu.addMenu(
     [
       new SymbolMorph("globe", MorphicPreferences.menuFontSize, WHITE),
       localize("Language..."),
     ],
-    "languageMenu"
+    this.getLanguageMenu()
   );
-  menu.addItem(localize("Looks") + "...", "looksMenu");
+  menu.addMenu(localize("Looks") + "...", this.looksMenuData());
   menu.addItem("Zoom blocks...", "userSetBlocksScale");
   menu.addItem("Fade blocks...", "userFadeBlocks");
   menu.addItem("Afterglow blocks...", "userSetBlocksAfterglow");
@@ -5766,6 +5802,7 @@ IDE_Morph.prototype.aboutSnap = function () {
     "\ntethrarxitet: Personal Libraries mod" +
     "\nowlssss/TheOwlCoder: Vertical Categories and Cat blocks" +
     "\njoecooldoo/joenulldoo: Auto-default Single Palette" +
+    "\ncodingisfun2831t: Several UI updates"
     "\n\n" +
     "Jahrd, Derec, Jamet, Sarron, Aleassa, and Lirin costumes" +
     "\nare watercolor paintings by Meghan Taylor and represent" +
@@ -7825,10 +7862,8 @@ IDE_Morph.prototype.microphoneMenu = function () {
 
 // IDE_Morph localization
 
-IDE_Morph.prototype.languageMenu = function () {
+IDE_Morph.prototype.getLanguageMenu = function () {
   var menu = new MenuMorph(this),
-    world = this.world(),
-    pos = this.controlBar.settingsButton.bottomLeft(),
     tick = new SymbolMorph("tick", MorphicPreferences.menuFontSize * 0.75),
     empty = tick.fullCopy();
 
@@ -7853,7 +7888,8 @@ IDE_Morph.prototype.languageMenu = function () {
       }
     )
   );
-  menu.popup(world, pos);
+
+  return menu;
 };
 
 IDE_Morph.prototype.setLanguage = function (lang, callback, noSave) {
@@ -7924,13 +7960,6 @@ IDE_Morph.prototype.reflectLanguage = function (lang, callback, noSave) {
 };
 
 // IDE_Morph design settings
-
-IDE_Morph.prototype.looksMenu = function () {
-  this.looksMenuData().popup(
-    this.world(),
-    this.controlBar.settingsButton.bottomLeft()
-  );
-};
 
 IDE_Morph.prototype.looksMenuData = function () {
   var menu = new MenuMorph(this),

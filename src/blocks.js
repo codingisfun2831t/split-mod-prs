@@ -3261,6 +3261,7 @@ BlockMorph.prototype.init = function () {
   BlockMorph.uber.init.call(this);
   this.color = new Color(102, 102, 102);
   this.cachedInputs = null;
+  this.hoverCursor = "grab";
 };
 
 BlockMorph.prototype.scriptTarget = function (noError) {
@@ -11365,8 +11366,11 @@ InputSlotMorph.prototype.init = function (
   this.constant = null;
   this.onSetContents = null;
 
+  arrow.hoverCursor = "pointer";
+
   InputSlotMorph.uber.init.call(this, null, true);
   this.color = WHITE;
+  this.hoverCursor = "text";
   this.add(contents);
   this.add(arrow);
   contents.isEditable = true;
@@ -14717,6 +14721,7 @@ MultiArgMorph.prototype.init = function (
     arrowColor,
     true // isLbl
   );
+  leftArrow.hoverCursor = "pointer";
 
   // right arrow:
   rightArrow = new ArrowMorph(
@@ -14726,6 +14731,7 @@ MultiArgMorph.prototype.init = function (
     arrowColor,
     true // isLbl
   );
+  leftArrow.hoverCursor = "pointer";
 
   // list symbol:
   // listSymbol = this.labelPart('$verticalEllipsis-0.98');

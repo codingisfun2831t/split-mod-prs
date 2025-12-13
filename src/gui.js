@@ -315,6 +315,7 @@ IDE_Morph.prototype.init = function (config) {
   // editor
   this.globalVariables = this.scene.globalVariables;
   this.currentSprite = this.scene.addDefaultSprite();
+  this.setAlonzo(this.currentSprite);
   this.sprites = this.scene.sprites;
   this.currentCategory = this.scene.unifiedPalette ? "unified" : "motion";
   this.currentTab = "scripts";
@@ -333,7 +334,6 @@ IDE_Morph.prototype.init = function (config) {
   this.spriteEditor = null;
   this.stage = null;
   this.stageHandle = null;
-  this.corralBar = null;
   this.corral = null;
 
   this.embedPlayButton = null;
@@ -973,7 +973,6 @@ IDE_Morph.prototype.applyPaneHidingConfigurations = function () {
     this.oldSpriteBar.hide();
     this.spriteBar.hide();
     this.stageHandle.hide();
-    this.corralBar.hide();
     this.corral.hide();
   }
 
@@ -997,7 +996,6 @@ IDE_Morph.prototype.buildPanes = function () {
   this.createStage();
   this.createOldSpriteBar();
   this.createSpriteEditor();
-  this.createCorralBar();
   this.createCorral();
 };
 
@@ -1745,7 +1743,6 @@ IDE_Morph.prototype.createCategories = function () {
   this.categories.bounds.setHeight(
     world.height() - this.extensionButton.height()
   );
-  // console.log(this.paletteWidth)
   this.categories.buttons = [];
   this.categories.isVisible = flag;
 
@@ -1803,7 +1800,6 @@ IDE_Morph.prototype.createCategories = function () {
   }
 
   function addCategoryButton(category, color) {
-    console.log(color);
     var labelWidth = 10,
       colors = [
         // myself.frameColor.darker(IDE_Morph.prototype.isBright ? 5 : 50),
@@ -1876,12 +1872,10 @@ IDE_Morph.prototype.createCategories = function () {
         return menu;
       };
     }
-    // console.log(button.label.right())
     return button;
   }
 
   function addCustomCategoryButton(category, color) {
-    // console.log(category, "custom")
     addCategoryButton(category, color);
     return 0;
   }
@@ -2114,6 +2108,7 @@ IDE_Morph.prototype.createOldSpriteBar = function () {
     nameField,
     padlock,
     thumbnail,
+    trashbutton,
     tabCorner = 10, //15,
     tabPadding = 10, //3,
     tabColors = this.tabColors,
@@ -2125,7 +2120,15 @@ IDE_Morph.prototype.createOldSpriteBar = function () {
       new SymbolMorph("arrowLeftRightThin", 10),
     ],
     labels = ["don't rotate", "can rotate", "only face left/right"],
-    myself = this;
+    myself = this,
+    colors = IDE_Morph.prototype.isBright
+      ? this.tabColors
+      : [
+          this.groupColor,
+          this.frameColor.darker(50),
+          this.frameColor.darker(50),
+        ],
+    padding = 10;
 
   if (this.oldSpriteBar) {
     this.oldSpriteBar.destroy();
@@ -2135,11 +2138,53 @@ IDE_Morph.prototype.createOldSpriteBar = function () {
   }
 
   this.spriteBar = new Morph();
-  this.spriteBar.color = this.frameColor;
+  this.spriteBar.color = this.groupColor;
+  this.spriteBar.render = function (ctx) {
+    ctx.beginPath();
+    ctx.roundRect(0, 0, this.width(), this.height(), [8, 8, 0, 0]);
+    
+    ctx.fillStyle = this.color.toString();
+    ctx.strokeStyle = myself.borderColor;
+    ctx.fill();
+    ctx.stroke();
+  };
   this.add(this.spriteBar);
   this.oldSpriteBar = new Morph();
   this.oldSpriteBar.color = this.frameColor;
   this.add(this.oldSpriteBar);
+  
+  // trashbutton
+  trashbutton = new PushButtonMorph(
+    this,
+    "undeleteSprites",
+    new SymbolMorph("trash", 18)
+  );
+
+  trashbutton.corner = 4;
+  trashbutton.color = colors[0];
+  trashbutton.highlightColor = colors[1];
+  trashbutton.pressColor = colors[2];
+  trashbutton.labelMinExtent = new Point(36, 18);
+  trashbutton.padding = 0;
+  trashbutton.labelShadowOffset = new Point(-1, -1);
+  trashbutton.labelShadowColor = colors[1];
+  trashbutton.labelColor = this.buttonLabelColor;
+  trashbutton.contrast = this.buttonContrast;
+  // trashbutton.hint = "bring back deleted sprites";
+  trashbutton.fixLayout();
+  this.spriteBar.add(trashbutton);
+
+  trashbutton.wantsDropOf = (morph) =>
+    morph instanceof SpriteMorph || morph instanceof SpriteIconMorph;
+
+  trashbutton.reactToDropOf = (droppedMorph) => {
+    if (droppedMorph instanceof SpriteMorph) {
+      this.removeSprite(droppedMorph);
+    } else if (droppedMorph instanceof SpriteIconMorph) {
+      droppedMorph.destroy();
+      this.removeSprite(droppedMorph.object);
+    }
+  };
 
   function addRotationStyleButton(rotationStyle) {
     var colors = myself.rotationStyleColors,
@@ -2219,14 +2264,16 @@ IDE_Morph.prototype.createOldSpriteBar = function () {
 
   nameField = new InputFieldMorph(this.currentSprite.name);
   nameField.setWidth(100); // fixed dimensions
-  nameField.corner = 10;
   nameField.contrast = 90;
+  nameField.fontSize = 10;
   nameField.setPosition(
     rotationStyleButtons[2].topRight().add(new Point(10, 3))
   );
+  nameField.typeInPadding = 6;
   this.spriteBar.add(nameField);
   this.spriteBar.nameField = nameField;
   nameField.fixLayout();
+  nameField.corner = nameField.height() / 2;
   nameField.accept = function () {
     var newName = nameField.getValue();
     myself.currentSprite.setName(
@@ -2416,8 +2463,8 @@ IDE_Morph.prototype.createOldSpriteBar = function () {
     this.tabBar.setBottom(this.bottom() + myself.padding);
   };
   this.spriteBar.fixLayout = function () {
-    this.setTop(myself.corralBar.bottom());
-    this.setLeft(myself.corralBar.left());
+    this.setTop(myself.stage.bottom() + padding);
+    this.setLeft(myself.stage.left());
     nameField.bounds.corner.x = Math.min(
       nameField.left() + 100,
       world.right() - 5
@@ -2428,6 +2475,9 @@ IDE_Morph.prototype.createOldSpriteBar = function () {
       nameField.left() + 100,
       world.right() - 5
     );
+
+  trashbutton.setTop(this.top() + padding)
+  trashbutton.setRight(this.right() - padding);
   };
 };
 
@@ -2514,164 +2564,6 @@ IDE_Morph.prototype.createSpriteEditor = function () {
     this.spriteEditor.mouseEnterDragging;
 };
 
-IDE_Morph.prototype.createCorralBar = function () {
-  // assumes the stage has already been created
-  var padding = 5,
-    newbutton,
-    paintbutton,
-    cambutton,
-    trashbutton,
-    flag = true,
-    myself = this,
-    colors = IDE_Morph.prototype.isBright
-      ? this.tabColors
-      : [
-          this.groupColor,
-          this.frameColor.darker(50),
-          this.frameColor.darker(50),
-        ];
-
-  if (this.corralBar) {
-    flag = this.corralBar.isVisible;
-    this.corralBar.destroy();
-  }
-
-  this.corralBar = new Morph();
-  this.corralBar.color = this.frameColor;
-  this.corralBar.isVisible = flag;
-  this.corralBar.setHeight(28); // height is fixed
-  this.corralBar.setWidth(this.stage.width());
-  this.add(this.corralBar);
-
-  // new sprite button
-  newbutton = new PushButtonMorph(
-    this,
-    "addNewSprite",
-    new SymbolMorph("turtle", 14)
-  );
-  newbutton.corner = 4;
-  newbutton.color = colors[0];
-  newbutton.highlightColor = colors[1];
-  newbutton.pressColor = colors[2];
-  newbutton.labelMinExtent = new Point(36, 18);
-  newbutton.padding = 0;
-  newbutton.labelShadowOffset = new Point(-1, -1);
-  newbutton.labelShadowColor = colors[1];
-  newbutton.labelColor = this.buttonLabelColor;
-  newbutton.contrast = this.buttonContrast;
-  newbutton.hint = "add a new Turtle sprite";
-  newbutton.fixLayout();
-  newbutton.setCenter(this.corralBar.center());
-  newbutton.setLeft(this.corralBar.left() + padding);
-  this.corralBar.add(newbutton);
-
-  paintbutton = new PushButtonMorph(
-    this,
-    "paintNewSprite",
-    new SymbolMorph("brush", 15)
-  );
-  paintbutton.corner = 4;
-  paintbutton.color = colors[0];
-  paintbutton.highlightColor = colors[1];
-  paintbutton.pressColor = colors[2];
-  paintbutton.labelMinExtent = new Point(36, 18);
-  paintbutton.padding = 0;
-  paintbutton.labelShadowOffset = new Point(-1, -1);
-  paintbutton.labelShadowColor = colors[1];
-  paintbutton.labelColor = this.buttonLabelColor;
-  paintbutton.contrast = this.buttonContrast;
-  paintbutton.hint = "paint a new sprite";
-  paintbutton.fixLayout();
-  paintbutton.setCenter(this.corralBar.center());
-  paintbutton.setLeft(
-    this.corralBar.left() + padding + newbutton.width() + padding
-  );
-  this.corralBar.add(paintbutton);
-
-  if (CamSnapshotDialogMorph.prototype.enableCamera) {
-    cambutton = new PushButtonMorph(
-      this,
-      "newCamSprite",
-      new SymbolMorph("camera", 15)
-    );
-    cambutton.corner = 4;
-    cambutton.color = colors[0];
-    cambutton.highlightColor = colors[1];
-    cambutton.pressColor = colors[2];
-    cambutton.labelMinExtent = new Point(36, 18);
-    cambutton.padding = 0;
-    cambutton.labelShadowOffset = new Point(-1, -1);
-    cambutton.labelShadowColor = colors[1];
-    cambutton.labelColor = this.buttonLabelColor;
-    cambutton.contrast = this.buttonContrast;
-    cambutton.hint =
-      "take a camera snapshot and\n" + "import it as a new sprite";
-    cambutton.fixLayout();
-    cambutton.setCenter(this.corralBar.center());
-    cambutton.setLeft(
-      this.corralBar.left() +
-        padding +
-        newbutton.width() +
-        padding +
-        paintbutton.width() +
-        padding
-    );
-    this.corralBar.add(cambutton);
-    document.addEventListener("cameraDisabled", (event) => {
-      cambutton.disable();
-      cambutton.hint = CamSnapshotDialogMorph.prototype.notSupportedMessage;
-    });
-  }
-
-  // trash button
-  trashbutton = new PushButtonMorph(
-    this,
-    "undeleteSprites",
-    new SymbolMorph("trash", 18)
-  );
-  trashbutton.corner = 4;
-  trashbutton.color = colors[0];
-  trashbutton.highlightColor = colors[1];
-  trashbutton.pressColor = colors[2];
-  trashbutton.labelMinExtent = new Point(36, 18);
-  trashbutton.padding = 0;
-  trashbutton.labelShadowOffset = new Point(-1, -1);
-  trashbutton.labelShadowColor = colors[1];
-  trashbutton.labelColor = this.buttonLabelColor;
-  trashbutton.contrast = this.buttonContrast;
-  // trashbutton.hint = "bring back deleted sprites";
-  trashbutton.fixLayout();
-  trashbutton.setCenter(this.corralBar.center());
-  trashbutton.setRight(this.corralBar.right() - padding);
-  this.corralBar.add(trashbutton);
-
-  trashbutton.wantsDropOf = (morph) =>
-    morph instanceof SpriteMorph || morph instanceof SpriteIconMorph;
-
-  trashbutton.reactToDropOf = (droppedMorph) => {
-    if (droppedMorph instanceof SpriteMorph) {
-      this.removeSprite(droppedMorph);
-    } else if (droppedMorph instanceof SpriteIconMorph) {
-      droppedMorph.destroy();
-      this.removeSprite(droppedMorph.object);
-    }
-  };
-
-  this.corralBar.fixLayout = function () {
-    function updateDisplayOf(button) {
-      if (button && button.right() > trashbutton.left() - padding) {
-        button.hide();
-      } else {
-        button.show();
-      }
-    }
-    this.setWidth(myself.stage.width());
-    trashbutton.setRight(this.right() - padding);
-    updateDisplayOf(cambutton);
-    updateDisplayOf(paintbutton);
-  };
-};
-
 IDE_Morph.prototype.createCorral = function (keepSceneAlbum) {
   // assumes the corral bar has already been created
   var frame,
@@ -2687,9 +2579,20 @@ IDE_Morph.prototype.createCorral = function (keepSceneAlbum) {
   }
 
   this.corral = new Morph();
-  this.corral.color = this.groupColor;
+  this.corral.color = this.frameColor;
   this.corral.getRenderColor = ScriptsMorph.prototype.getRenderColor;
-
+  this.corral.render = function(ctx) {
+    ctx.fillStyle = this.color.toString();
+    ctx.fillRect(0, 0, this.width(), this.height());
+    
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, this.height());
+    ctx.moveTo(this.width(), 0);
+    ctx.lineTo(this.width(), this.height());
+    ctx.strokeStyle = myself.borderColor;
+    ctx.stroke();
+  }
   this.add(this.corral);
 
   this.corral.stageIcon = new SpriteIconMorph(this.stage);
@@ -2731,7 +2634,7 @@ IDE_Morph.prototype.createCorral = function (keepSceneAlbum) {
 
   this.corral.fixLayout = function () {
     this.stageIcon.setCenter(this.center());
-    this.stageIcon.setLeft(this.left());
+    this.stageIcon.setLeft(this.left() + padding);
     this.stageIcon.children[0].setRight(this.right() - padding);
 
     // scenes
@@ -2751,12 +2654,22 @@ IDE_Morph.prototype.createCorral = function (keepSceneAlbum) {
       new Point(this.right() - this.frame.left(), this.height())
     );
     this.arrangeIcons();
+
+    this.newSpriteButton.bounds.setExtent(new Point(52, 52));
+    this.newSpriteButton.label.setCenter(this.newSpriteButton.center());
+    this.newSpriteButton.setBottom(this.bottom() - padding);
+    this.newSpriteButton.setRight(this.right() - padding);
+
+    this.newSpriteFlyout.setCenter(this.newSpriteButton.center());
+    this.newSpriteFlyout.setBottom(this.newSpriteButton.center().y);
+    this.newSpriteFlyout.fixLayout();
+
     this.refresh();
   };
 
   this.corral.arrangeIcons = function () {
     var x = this.frame.left(),
-      y = this.frame.top(),
+      y = this.frame.top() + padding,
       max = this.frame.right(),
       start = this.frame.left();
 
@@ -2799,6 +2712,125 @@ IDE_Morph.prototype.createCorral = function (keepSceneAlbum) {
     myself.createCorral(true); // keep scenes
     myself.fixLayout();
   };
+
+  // newSpriteFlyout
+  this.corral.newSpriteFlyout = new Morph();
+  this.corral.newSpriteFlyout.setExtent(new Point(36, 134));
+  this.corral.newSpriteFlyout.color = this.accentColor;
+  this.corral.newSpriteFlyout.hide();
+
+  this.corral.newSpriteFlyout.render = function (ctx) {
+    ctx.beginPath();
+    ctx.roundRect(0, 0, this.width(), this.height(), [18, 18, 0, 0]);
+    ctx.fillStyle = this.color.toString();
+    ctx.fill();
+  }
+  
+  this.corral.newSpriteFlyout.mouseLeave = function () {
+    if (this.world().hand.morphAtPointer() == myself.corral.newSpriteButton) return;
+
+    this.hide();
+  }
+
+  this.corral.newSpriteFlyout.fixLayout = function () {
+    this.turtle.setBottom(this.bottom() - 26);
+    this.turtle.setLeft(this.left());
+    this.turtle.label.setCenter(this.turtle.center());
+
+    this.camButton.setBottom(this.turtle.top());
+    this.camButton.setLeft(this.left());
+    this.camButton.label.setCenter(this.camButton.center());
+
+    this.paintbutton.setBottom(this.camButton.top());
+    this.paintbutton.setLeft(this.left());
+    this.paintbutton.label.setCenter(this.paintbutton.center());
+  }
+  this.corral.add(this.corral.newSpriteFlyout);
+
+  // newSpriteFlyout - turtle
+  this.corral.newSpriteFlyout.turtle = new TriggerMorph(
+    this, () => {
+      this.addNewSprite(true);
+      this.corral.newSpriteFlyout.hide();
+    }
+  );
+  this.corral.newSpriteFlyout.turtle.label.destroy();
+  this.corral.newSpriteFlyout.turtle.label = new SymbolMorph("turtle", 20, WHITE);
+  this.corral.newSpriteFlyout.turtle.add(this.corral.newSpriteFlyout.turtle.label);
+  this.corral.newSpriteFlyout.turtle.color = this.accentColor;
+  this.corral.newSpriteFlyout.turtle.highlightColor = new Color(15, 189, 140);
+  this.corral.newSpriteFlyout.turtle.setExtent(new Point(36, 36));
+  this.corral.newSpriteFlyout.turtle._render = this.corral.newSpriteFlyout.turtle.render;
+  this.corral.newSpriteFlyout.add(this.corral.newSpriteFlyout.turtle);
+
+  // newSpriteFlyout - camButton
+  this.corral.newSpriteFlyout.camButton = new TriggerMorph(
+    this, () => {
+      this.newCamSprite();
+      this.corral.newSpriteFlyout.hide();
+    }
+  );
+  this.corral.newSpriteFlyout.camButton.label.destroy();
+  this.corral.newSpriteFlyout.camButton.label = new SymbolMorph("camera", 20, WHITE);
+  this.corral.newSpriteFlyout.camButton.add(this.corral.newSpriteFlyout.camButton.label);
+  this.corral.newSpriteFlyout.camButton.color = this.accentColor;
+  this.corral.newSpriteFlyout.camButton.highlightColor = new Color(15, 189, 140);
+  this.corral.newSpriteFlyout.camButton.setExtent(new Point(36, 36));
+  this.corral.newSpriteFlyout.camButton._render = this.corral.newSpriteFlyout.camButton.render;
+  this.corral.newSpriteFlyout.add(this.corral.newSpriteFlyout.camButton);
+
+  // newSpriteFlyout - paintbutton
+  this.corral.newSpriteFlyout.paintbutton = new TriggerMorph(
+    this, () => {
+      this.paintNewSprite();
+      this.corral.newSpriteFlyout.hide();
+    }
+  );
+  this.corral.newSpriteFlyout.paintbutton.label.destroy();
+  this.corral.newSpriteFlyout.paintbutton.label = new SymbolMorph("brush", 20, WHITE);
+  this.corral.newSpriteFlyout.paintbutton.add(this.corral.newSpriteFlyout.paintbutton.label);
+  this.corral.newSpriteFlyout.paintbutton.color = this.accentColor;
+  this.corral.newSpriteFlyout.paintbutton.highlightColor = new Color(15, 189, 140);
+  this.corral.newSpriteFlyout.paintbutton.setExtent(new Point(36, 36));
+  this.corral.newSpriteFlyout.paintbutton._render = this.corral.newSpriteFlyout.paintbutton.render;
+  this.corral.newSpriteFlyout.paintbutton.render = function(ctx) {
+    ctx.beginPath();
+    ctx.roundRect(0, 0, this.width(), this.height(), [18, 18, 0, 0]);
+    ctx.closePath();
+    ctx.clip();
+
+    this._render(ctx);
+    ctx.restore();
+  }
+  this.corral.newSpriteFlyout.add(this.corral.newSpriteFlyout.paintbutton);
+
+  // newSpriteButton
+  this.corral.newSpriteButton = new PushButtonMorph(
+    this, "addNewSprite",
+    new SymbolMorph("newSprite", 28)
+  );
+  this.corral.newSpriteButton.color = this.accentColor;
+  this.corral.newSpriteButton.corner = 26;
+  this.corral.newSpriteButton.highlightColor = new Color(15, 189, 140);
+  this.corral.newSpriteButton.outlineColor = new Color(198, 189, 239);
+  this.corral.newSpriteButton.outline = 4;
+
+  this.corral.newSpriteButton._mouseEnter = this.corral.newSpriteButton.mouseEnter;
+  this.corral.newSpriteButton.mouseEnter = function () {
+    this._mouseEnter();
+
+    myself.corral.newSpriteFlyout.show();
+  }
+  this.corral.newSpriteButton._mouseLeave = this.corral.newSpriteButton.mouseLeave;
+  this.corral.newSpriteButton.mouseLeave = function () {
+    this._mouseLeave();
+
+    if (this.world().hand.morphAtPointer() == myself.corral.newSpriteFlyout) return;
+    if (this.world().hand.morphAtPointer().parent == myself.corral.newSpriteFlyout) return;
+    myself.corral.newSpriteFlyout.hide();
+  }
+
+  this.corral.add(this.corral.newSpriteButton);
 };
 
 // IDE_Morph layout
@@ -2876,7 +2908,6 @@ IDE_Morph.prototype.fixLayout = function (situation) {
       this.stage.dimensions = new Point(
         (this.width() - this.palette.width()) / this.performerScale,
         (this.palette.height() -
-          this.corralBar.height() -
           this.corral.childThatIsA(SpriteIconMorph).height()) /
           this.performerScale
       );
@@ -2931,7 +2962,7 @@ IDE_Morph.prototype.fixLayout = function (situation) {
             
             cnf.hideControls ? this.top() + border : this.controlBar.bottom() + padding
       );
-      this.stage.setRight(this.right() - border);
+      this.stage.setRight(this.right() - border - 10);
       if (cnf.noSprites) {
         maxPaletteWidth = Math.max(200, this.width() - border * 2);
       } else {
@@ -3004,15 +3035,10 @@ IDE_Morph.prototype.fixLayout = function (situation) {
       }
     }
 
-    // corralBar
-    this.corralBar.setLeft(this.stage.left());
-    this.corralBar.setTop(this.stage.bottom() + padding);
-    this.corralBar.setWidth(this.stage.width());
-
     // spriteBar
-    this.spriteBar.setLeft(this.corralBar.left());
-    this.spriteBar.setTop(this.corralBar.bottom());
-    this.spriteBar.setWidth(this.corralBar.width());
+    this.spriteBar.setLeft(this.stage.left());
+    this.spriteBar.setTop(this.stage.bottom() + padding);
+    this.spriteBar.setWidth(this.stage.width());
     this.spriteBar.setHeight(Math.round(this.logo.height() * 1.2));
     this.spriteBar.fixLayout();
 
@@ -3546,7 +3572,6 @@ IDE_Morph.prototype.toggleCameraSupport = function () {
   CamSnapshotDialogMorph.prototype.enableCamera =
     !CamSnapshotDialogMorph.prototype.enableCamera;
   this.oldSpriteBar.tabBar.tabTo(this.currentTab);
-  this.createCorralBar();
   this.fixLayout();
 };
 
@@ -4007,7 +4032,7 @@ IDE_Morph.prototype.restore = function () {
 
 // IDE_Morph sprite list access
 
-IDE_Morph.prototype.addNewSprite = function () {
+IDE_Morph.prototype.addNewSprite = function (useTurtle) {
   var sprite = new SpriteMorph(this.globalVariables),
     rnd = Process.prototype.reportBasicRandom;
 
@@ -4029,6 +4054,8 @@ IDE_Morph.prototype.addNewSprite = function () {
     // shift-click
     sprite.turn(rnd.call(this, 1, 360));
   }
+
+  if (!useTurtle) this.setAlonzo(sprite);
 
   this.sprites.add(sprite);
   this.corral.addSprite(sprite);
@@ -4160,7 +4187,6 @@ IDE_Morph.prototype.makeSureRecordingIsMono = function (sound) {
       sound.audioBuffer = null;
       sound.cachedSamples = null;
       sound.isDecoding = false;
-      // console.log('made mono', sound);
     };
     reader.readAsDataURL(blob);
   }
@@ -5693,7 +5719,7 @@ IDE_Morph.prototype.undeleteSprites = function (pos) {
   // by clicking on them
 
   var menu = new MenuMorph((sprite) => this.undelete(sprite, pos), null, this);
-  pos = pos || this.corralBar.bottomRight();
+  pos = pos || this.spriteBar.bottomRight();
 
   if (!this.scene.trash.length) {
     this.showMessage("trash is empty");
@@ -7628,7 +7654,6 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
       this.paletteHandle,
       this.stageHandle,
       this.corral,
-      this.corralBar,
       this.spriteEditor,
       this.oldSpriteBar,
       this.palette,
@@ -7689,7 +7714,6 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
     if (this.config.noSpriteEdits) {
       this.oldSpriteBar.hide();
       this.stageHandle.hide();
-      this.corralBar.hide();
       this.corral.hide();
     }
   }
@@ -7968,7 +7992,6 @@ IDE_Morph.prototype.reflectLanguage = function (lang, callback, noSave) {
   this.oldSpriteBar.tabBar.tabTo("scripts");
   this.createCategories();
   this.categories.refreshEmpty();
-  this.createCorralBar();
   this.refreshCustomizedPalette();
   this.fixLayout();
   if (this.loadNewProject) {
@@ -8187,7 +8210,6 @@ IDE_Morph.prototype.setBlocksScale = function (num) {
   this.oldSpriteBar.tabBar.tabTo("scripts");
   this.createCategories();
   this.categories.refreshEmpty();
-  this.createCorralBar();
   this.refreshCustomizedPalette();
   this.fixLayout();
   this.openProjectString(projectData);
@@ -8441,8 +8463,7 @@ IDE_Morph.prototype.userCustomizePalette = function (callback = nop) {
   callback();
   this.oldSpriteBar.tabBar.tabTo("scripts");
   this.createCategories();
-  this.categories.refreshEmpty();
-  this.createCorralBar();
+  this.categories.refreshEmpty(); 
   this.fixLayout();
   this.openProjectString(projectData, null, true); // no prims
 };
@@ -8695,7 +8716,6 @@ IDE_Morph.prototype.verifyProject = function (body) {
     return false;
   }
 
-  // console.log(encodedBody.length);
   // check if serialized data can be parsed back again
   try {
     this.serializer.parse(body.xml);
@@ -9124,6 +9144,99 @@ IDE_Morph.prototype.warnAboutDev = function () {
       "for the official Snap! installation."
   ).nag = true;
 };
+
+// IDE_Morph's settings sprite's costume to Alonzo
+IDE_Morph.prototype.setAlonzo = function(spr) {
+  var img = new Image();
+
+  img.onload = function() {
+    var canvas = document.createElement("canvas"),
+      ctx = canvas.getContext('2d'),
+      cst;
+
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    ctx.drawImage(img, 0, 0);
+
+    cst = new Costume(canvas);
+    cst.name = "costume1";
+    spr.addCostume(cst);
+    spr.wearCostume(cst);
+  }
+
+  // we have to embed it as a data URI as you cant really load a image from a file:// url
+  // without it tweaking out
+  img.src = 
+    "data:image/png;base64,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" + 
+    "8LMAD+AQZ4wr1PDQAAAABJRU5ErkJggg=="
+}
 
 // ProjectDialogMorph ////////////////////////////////////////////////////
 

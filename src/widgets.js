@@ -3436,6 +3436,7 @@ InputFieldMorph.prototype.init = function (
 
   InputFieldMorph.uber.init.call(this);
   this.color = WHITE;
+  this.doConstrastingColor = true;
   this.add(contents);
   this.add(arrow);
   contents.isDraggable = false;
@@ -3626,7 +3627,7 @@ InputFieldMorph.prototype.normalizeSpaces =
 InputFieldMorph.prototype.render = function (ctx) {
   var borderColor;
 
-  if (this.parent) {
+  if (this.parent && this.doConstrastingColor) {
     if (this.parent.color.eq(WHITE)) {
       this.color = this.parent.color.darker(this.contrast * 0.1);
     } else {

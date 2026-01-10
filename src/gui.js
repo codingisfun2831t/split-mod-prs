@@ -96,7 +96,7 @@ modules.gui = "2025-November-23";
 // Declarations
 
 var SnapVersion = "11.0.8";
-var SplitVersion = "2.2.2";
+var SplitVersion = "2.2.3";
 
 var IDE_Morph;
 var ProjectDialogMorph;
@@ -296,7 +296,7 @@ IDE_Morph.prototype.init = function () {
   this.currentCategory = this.scene.unifiedPalette ? "unified" : "motion";
   this.currentTab = "scripts";
 
-  this.logoURL = this.resourceURL("src", "split_logo.svg");
+  this.logoURL = this.resourceURL("src", "split-logo.png");
 
   this.logo = null;
   this.controlBar = null;
@@ -896,8 +896,10 @@ IDE_Morph.prototype.createLogo = function () {
   this.logo.renderCachedTexture = function (ctx) {
     ctx.drawImage(
       this.cachedTexture,
-      5,
-      Math.round((this.height() - this.cachedTexture.height) / 2) + 5
+      7,
+      Math.round((this.height() - this.cachedTexture.height* 0.7) / 2) + 2,
+      this.cachedTexture.width  * 0.7,
+      this.cachedTexture.height * 0.7
     );
     this.changed();
   };
@@ -907,7 +909,7 @@ IDE_Morph.prototype.createLogo = function () {
   };
 
   this.logo.color = BLACK;
-  this.logo.setExtent(new Point(90, 48)); // dimensions are fixed
+  this.logo.setExtent(new Point(83, 45)); // dimensions are fixed
   this.add(this.logo);
 };
 IDE_Morph.prototype.createProjectControlBar = function () {
@@ -1531,6 +1533,8 @@ IDE_Morph.prototype.createControlBar = function () {
     this.label.reactToEdit = (name) => myself.setProjectName(name.text);
     this.label.acceptsDrops = false;
     this.label.typeInPadding = 10;
+    this.label.contents().rerender();
+    this.label.fixLayout();
     //this.label.add(txt);
     if (myself.cloud.disabled) {
       this.label.setLeft(this.editButton.right() + padding);

@@ -1691,7 +1691,7 @@ IDE_Morph.prototype.createCategories = function () {
       button.labelPressColor = BLACK;
     }*/
     button.outlineColor = button.color.darker();
-    button.hint = category[0].toUpperCase().concat(category.slice(1));
+    
     button.fixLayout();
     button.refresh();
     button.bounds.setHeight(21);
@@ -1712,13 +1712,21 @@ IDE_Morph.prototype.createCategories = function () {
     );
 
     button.mouseEnter = function () {
+      var contents = this.hint instanceof Function ? this.hint() : this.hint;
       this.label.setColor(new Color(76, 151, 255));
-      this.refresh();
+  if (contents) {
+    this.bubbleHelp(contents);
+  }
     };
 
     button.mouseLeave = function () {
       this.label.setColor(this.labelColor);
-      this.refresh();
+      if (this.schedule) {
+    this.schedule.isActive = false;
+  }
+  if (this.hint) {
+    this.world().hand.destroyTemporaries();
+  }
     };
 
     if (color) {
@@ -1731,6 +1739,7 @@ IDE_Morph.prototype.createCategories = function () {
         return menu;
       };
     }
+    button.hint = category[0].toUpperCase().concat(category.slice(1));
     return button;
   }
 

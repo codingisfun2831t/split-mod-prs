@@ -6185,7 +6185,7 @@ SpeechBubbleMorph.prototype.init = function (
   this.hasShadow = noShadow !== true;
   this.noDropShadow = true;
   this.fullShadowSource = false;
-  this.color = color || new Color(230, 230, 230);
+  this.color = color || WHITE;
   this.fixLayout();
 };
 
@@ -8311,7 +8311,6 @@ MenuMorph.prototype.destroy = function () {
   if (!this.isListContents && this.world.activeMenu === this) {
     this.world.activeMenu = null;
   }
-  console.trace()
   MenuMorph.uber.destroy.call(this);
 };
 

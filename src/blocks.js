@@ -4111,7 +4111,7 @@ BlockMorph.prototype.userMenu = function () {
       menu.addLine();
     }
     rcvr = rcvr || this.scriptTarget(true);
-    if (rcvr && !rcvr.parentThatIsA(IDE_Morph).config.noRingify) {
+    if (rcvr) {
       menu.addItem("ringify", "ringify", undefined, WHITE);
     }
   }
@@ -9315,8 +9315,7 @@ ScriptsMorph.prototype.userMenu = function () {
         localize("check to inherit\nfrom") + " " + obj.exemplar.name
       );
     }
-    if (!ide.config.noOwnBlocks) {
-      menu.addItem("make a block...", () =>
+    menu.addItem("make a block...", () =>
         new BlockDialogMorph(
           null,
           (definition) => {
@@ -9334,7 +9333,6 @@ ScriptsMorph.prototype.userMenu = function () {
           this
         ).prompt("Make a block", null, this.world())
       );
-    }
   }
   return menu;
 };
@@ -14378,6 +14376,7 @@ ColorSlotMorph.prototype.setColor = function (clr) {
 ColorSlotMorph.prototype.getUserColor = function (model) {
   model = model || "hsv"; // hsv, hsl, or rgb
   var nextModel,
+  block = this.parentThatIsA(BlockMorph)
   myself = this;
 
   var menu = new MenuMorph(),
@@ -14405,7 +14404,8 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     hInp.children[0].children[0].text = String(h),
     hInp.rerender(),
     hSlider.fixLayout(),
-    this.rerender()
+    this.rerender(),
+    block.isCustomBlock && block.fireSlotEditedEvent(this)
   );
   sSlider.action = (s) => (
     newColor["set_" + model](
@@ -14418,7 +14418,8 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     sInp.children[0].text = String(s),
     sInp.children[0].children[0].text = String(s),
     sInp.rerender(),
-    this.rerender()
+    this.rerender(),
+    block.isCustomBlock && block.fireSlotEditedEvent(this)
   );
   vSlider.action = (v) => (
     newColor["set_" + model](
@@ -14431,7 +14432,8 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     vInp.children[0].text = String(v),
     vInp.children[0].children[0].text = String(v),
     vInp.rerender(),
-    this.rerender()
+    this.rerender(),
+    block.isCustomBlock && block.fireSlotEditedEvent(this)
   );
   hSlider.toggleOrientation();
   sSlider.toggleOrientation();

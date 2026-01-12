@@ -13736,7 +13736,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
     ctx.strokeStyle = "white";
     ctx.lineWidth = this.edge + shift;
     ctx.lineCap = "round";
-    ctx.lineJoin = "miter";
+    ctx.lineJoin = "round";
     ctx.beginPath();
     ctx.moveTo(x - r2, y);
     ctx.lineTo(x, y + r2);
@@ -13761,8 +13761,9 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
       ctx.shadowColor = "rgb(100, 0, 0)";
     }
     ctx.strokeStyle = "white";
-    ctx.lineWidth = this.edge;
-    ctx.lineCap = "butt";
+    ctx.lineWidth = this.edge + shift;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.beginPath();
     ctx.moveTo(x - r2, y - r2);
     ctx.lineTo(x + r2, y + r2);

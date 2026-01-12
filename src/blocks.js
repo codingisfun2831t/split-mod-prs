@@ -2525,7 +2525,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     (this instanceof MultiArgMorph && this.slotSpec !== "%cs") ||
     this instanceof ArgLabelMorph
   ) {
-    blockWidth = Math.max(blockWidth, maxX - this.left() - space * (this.arrows().children[1].isVisible ? 1.5 : 0));
+    blockWidth = Math.max(blockWidth, maxX - this.left() - space * (this.arrows && (this.arrows().children[1].isVisible) ? 1.5 : 0));
   } else {
     blockWidth = Math.max(
       blockWidth,

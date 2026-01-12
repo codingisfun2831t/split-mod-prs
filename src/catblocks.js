@@ -1,3 +1,21 @@
+/*
+
+    catblocks.js
+
+    a cat block skin for Split!
+
+    written by d016
+    inspired by Scratch's cat block theme
+
+    Copyright (C) 2025 by d016
+
+    This file is part of Split!.
+
+*/
+
+// Global Stuff /////////////////////////////////////////////////////////////
+
+modules.catblocks = "2025-January-12";
 var EarsMorph;
 
 // EarsMorph ////////////////////////////////////////////////////////////////
@@ -17,9 +35,9 @@ EarsMorph.prototype.init = function () {
 
 // HatBlockMorph Cat Skin (2025)
 BlockMorph.prototype.addEars = function () {
-    if(!this.constructor.name.includes("HatBlockMorph")) {
-        return
-    }
+  if (!this.constructor.name.includes("HatBlockMorph")) {
+    return;
+  }
   var ears = new EarsMorph();
   ears.setExtent(new Point(this.hatWidth, 25 * this.scale));
   ears.setPosition(
@@ -32,7 +50,7 @@ BlockMorph.prototype.addEars = function () {
 
 BlockMorph.prototype.init = function (...params) {
   SyntaxElementMorph.uber.init.call(this, ...params);
-  this.addEars()
+  this.addEars();
 };
 
 SyntaxElementMorph.prototype.parts = function () {
@@ -51,9 +69,10 @@ SyntaxElementMorph.prototype.parts = function () {
   );
 };
 
-HatBlockMorph.prototype.isCatBlocks = IDE_Morph.prototype.getSetting('skin') === 'cat';
+HatBlockMorph.prototype.isCatBlocks =
+  IDE_Morph.prototype.getSetting("skin") === "cat";
 EarsMorph.prototype.render = function (ctx) {
-  if(!HatBlockMorph.prototype.isCatBlocks) {
+  if (!HatBlockMorph.prototype.isCatBlocks) {
     return;
   }
   // console.log(this) // nope! you can always inspect things in dev mode!
@@ -61,7 +80,9 @@ EarsMorph.prototype.render = function (ctx) {
     h = this.parent.hatHeight,
     c = this.parent.corner,
     prototypeHat = this.parent instanceof PrototypeHatBlockMorph;
-  ctx.fillStyle = SpriteMorph.prototype.isHighContrast ? this.parent.cachedClrDark : this.parent.cachedClr;
+  ctx.fillStyle = SpriteMorph.prototype.isHighContrast
+    ? this.parent.cachedClrDark
+    : this.parent.cachedClr;
   if (HatBlockMorph.prototype.isCatBlocks) {
     let xOffset = 2,
       yOffset = -5 + this.parent.flatEdge;
@@ -166,7 +187,7 @@ EarsMorph.prototype.render = function (ctx) {
     function drawCatEyes() {
       xOffset = 23;
       yOffset = 21;
-      if(prototypeHat) {
+      if (prototypeHat) {
         yOffset += 5;
       }
       ctx.beginPath();
@@ -328,7 +349,9 @@ EarsMorph.prototype.render = function (ctx) {
       );
     }
     // They are in different functions because the offset breaks them if they aren't
-    ctx.fillStyle = !SpriteMorph.prototype.isHighContrast ? this.parent.cachedClrDark : this.parent.cachedClr;
+    ctx.fillStyle = !SpriteMorph.prototype.isHighContrast
+      ? this.parent.cachedClrDark
+      : this.parent.cachedClr;
     ctx.beginPath();
     drawLeftEarShape(this.parent.flatEdge);
     ctx.closePath();
@@ -338,7 +361,9 @@ EarsMorph.prototype.render = function (ctx) {
     ctx.closePath();
     ctx.fill();
 
-    ctx.fillStyle = SpriteMorph.prototype.isHighContrast ? this.parent.cachedClrDark : this.parent.cachedClr;
+    ctx.fillStyle = SpriteMorph.prototype.isHighContrast
+      ? this.parent.cachedClrDark
+      : this.parent.cachedClr;
 
     ctx.beginPath();
     drawLeftEarShape(0);
@@ -352,8 +377,10 @@ EarsMorph.prototype.render = function (ctx) {
     // Left ear pink part
     xOffset = 2;
     yOffset -= 1;
-    if (this.parent.constructor.name == "PrototypeHatBlockMorph" || this.parent instanceof PrototypeHatBlockMorph) {
-      
+    if (
+      this.parent.constructor.name == "PrototypeHatBlockMorph" ||
+      this.parent instanceof PrototypeHatBlockMorph
+    ) {
       xOffset = 4;
     }
     ctx.beginPath();
@@ -451,7 +478,9 @@ EarsMorph.prototype.render = function (ctx) {
     ctx.fillStyle = "#FFD5E6";
     ctx.fill();
 
-    ctx.fillStyle = SpriteMorph.prototype.isHighContrast ? this.parent.color.withAlpha(0.8).toString() : "rgba(0,0,0,0.6)";
+    ctx.fillStyle = SpriteMorph.prototype.isHighContrast
+      ? this.parent.color.withAlpha(0.8).toString()
+      : "rgba(0,0,0,0.6)";
     drawCatEyes();
     ctx.closePath();
     ctx.fill();
@@ -463,28 +492,27 @@ EarsMorph.prototype.render = function (ctx) {
     ctx.fill();
   }
 };
-IDE_Morph.prototype.oldLooksMenuData = IDE_Morph.prototype.looksMenuData
+IDE_Morph.prototype.oldLooksMenuData = IDE_Morph.prototype.looksMenuData;
 IDE_Morph.prototype.looksMenuData = function () {
-    var menu = this.oldLooksMenuData()
-    menu.addPreference(
-        'Cat Blocks',
-        () => {
-             HatBlockMorph.prototype.xmasSkin =
-                !HatBlockMorph.prototype.xmasSkin;
-            this.world().changed();
-            if(!HatBlockMorph.prototype.isCatBlocks) {
-              this.saveSetting('skin', 'cat');
-              HatBlockMorph.prototype.isCatBlocks = true;
-            } else {
-              this.removeSetting('skin');
-              HatBlockMorph.prototype.isCatBlocks = false;
-            }
-            this.refreshIDE()
-        },
-        HatBlockMorph.prototype.isCatBlocks,
-        'uncheck for default\nhat block skin',
-        'check for cute\n cat hat block skin',
-        false
-    );
-    return menu
+  var menu = this.oldLooksMenuData();
+  menu.addPreference(
+    "Cat Blocks",
+    () => {
+      HatBlockMorph.prototype.xmasSkin = !HatBlockMorph.prototype.xmasSkin;
+      this.world().changed();
+      if (!HatBlockMorph.prototype.isCatBlocks) {
+        this.saveSetting("skin", "cat");
+        HatBlockMorph.prototype.isCatBlocks = true;
+      } else {
+        this.removeSetting("skin");
+        HatBlockMorph.prototype.isCatBlocks = false;
+      }
+      this.refreshIDE();
+    },
+    HatBlockMorph.prototype.isCatBlocks,
+    "uncheck for default\nhat block skin",
+    "check for cute\n cat hat block skin",
+    false
+  );
+  return menu;
 };

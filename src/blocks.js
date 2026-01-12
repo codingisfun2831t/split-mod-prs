@@ -12599,7 +12599,7 @@ InputSlotMorph.prototype.fixLayout = function () {
     //contents.color = new Color(87, 94, 117);
   }
   arrow.color =
-    this.isReadOnly || this.isStatic ? WHITE : highContrast ? WHITE : BLACK;
+    this.isReadOnly || this.isStatic ? WHITE : highContrast ? WHITE : (highContrast ? BLACK : new Color(87, 94, 117));
 
   if (this.choices) {
     arrow.setSize(fontHeight(this.fontSize));
@@ -14138,6 +14138,8 @@ ArrowMorph.prototype.setSize = function (size) {
 // ArrowMorph displaying:
 ArrowMorph.prototype.whiteArrow = new Image();
 ArrowMorph.prototype.whiteArrow.src = "src/down-arrow.svg";
+ArrowMorph.prototype.greyArrow = new Image();
+ArrowMorph.prototype.greyArrow.src = "src/down-arrow-grey.svg";
 ArrowMorph.prototype.blackArrow = new Image();
 ArrowMorph.prototype.blackArrow.src = "src/down-arrow-black.svg";
 ArrowMorph.prototype.drawImage = function (ctx, image, horiz) {
@@ -14196,8 +14198,8 @@ ArrowMorph.prototype.render = function (ctx) {
     ctx.translate(nw / -2, nh / -2);
     this.drawImage(
       ctx,
-      this.color.b < 118
-        ? ArrowMorph.prototype.blackArrow
+      this.color.eq(new Color(87, 94, 117))
+        ? ArrowMorph.prototype.greyArrow : this.color.b < 118 ? ArrowMorph.prototype.blackArrow
         : ArrowMorph.prototype.whiteArrow,
       horiz
     );

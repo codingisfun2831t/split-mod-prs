@@ -11559,12 +11559,20 @@ HandMorph.prototype.processMouseScroll = function (event) {
     morph = morph.parent;
   }
   if (morph) {
-    morph.mouseScroll(
-      event.detail / -3 ||
-        ("wheelDeltaY" in event
-          ? event.wheelDeltaY / 120
-          : event.wheelDelta / 120),
-      event.wheelDeltaX / 120 || 0
+    var x = event.deltaX;
+        var y = event.deltaY;
+        if (event.shiftKey && event.deltaX === 0) {
+            // Scroll horizontally (based on vertical scroll delta). This is
+            // needed for some browser/system combinations which do not set
+            // deltaX.
+            x = y;
+            y = 0; // Don't scroll vertically.
+        }
+
+        // Multiplier variable, to account for both pixel and line deltaModes.
+        var multiplier = event.deltaMode === 0x1 ? -1/3 : -1/53;
+    morph.mouseScroll(y * multiplier,
+            x * multiplier
     );
   }
 };

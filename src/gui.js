@@ -96,7 +96,7 @@ modules.gui = "2025-November-23";
 // Declarations
 
 var SnapVersion = "11.0.8";
-var SplitVersion = "2.2.5";
+var SplitVersion = "2.2.6";
 
 var IDE_Morph;
 var ProjectDialogMorph;
@@ -231,7 +231,7 @@ IDE_Morph.prototype.setBrightTheme = function () {
   TurtleIconMorph.prototype.labelColor = IDE_Morph.prototype.buttonLabelColor;
   SceneIconMorph.prototype.labelColor = IDE_Morph.prototype.buttonLabelColor;
 
-  ScriptsMorph.prototype.feedbackColor = new Color(153, 255, 213);
+  ScriptsMorph.prototype.feedbackColor = BLACK;//new Color(153, 255, 213);
 };
 
 IDE_Morph.prototype.scriptsTexture = function () {

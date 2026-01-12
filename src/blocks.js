@@ -2359,7 +2359,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         ico +
         this.rounding *
           (line[0] instanceof BlockLabelMorph ||
-          line[0] instanceof BooleanSlotMorph
+          line[0] instanceof BooleanSlotMorph ||
+          (line[0] instanceof MultiArgMorph && line[0].slotSpec.includes("%b"))
             ? 1.3
             : 1.9);
     } else if (this instanceof MultiArgMorph || this instanceof ArgLabelMorph) {
@@ -2524,7 +2525,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     (this instanceof MultiArgMorph && this.slotSpec !== "%cs") ||
     this instanceof ArgLabelMorph
   ) {
-    blockWidth = Math.max(blockWidth, maxX - this.left() - space);
+    blockWidth = Math.max(blockWidth, maxX - this.left() - space * (this.arrows().children[1].isVisible ? 1.5 : 0));
   } else {
     blockWidth = Math.max(
       blockWidth,
@@ -9316,23 +9317,23 @@ ScriptsMorph.prototype.userMenu = function () {
       );
     }
     menu.addItem("make a block...", () =>
-        new BlockDialogMorph(
-          null,
-          (definition) => {
-            if (definition.spec !== "") {
-              if (definition.isGlobal) {
-                stage.globalBlocks.push(definition);
-              } else {
-                obj.customBlocks.push(definition);
-              }
-              ide.flushPaletteCache();
-              ide.refreshPalette();
-              new BlockEditorMorph(definition, obj).popUp();
+      new BlockDialogMorph(
+        null,
+        (definition) => {
+          if (definition.spec !== "") {
+            if (definition.isGlobal) {
+              stage.globalBlocks.push(definition);
+            } else {
+              obj.customBlocks.push(definition);
             }
-          },
-          this
-        ).prompt("Make a block", null, this.world())
-      );
+            ide.flushPaletteCache();
+            ide.refreshPalette();
+            new BlockEditorMorph(definition, obj).popUp();
+          }
+        },
+        this
+      ).prompt("Make a block", null, this.world())
+    );
   }
   return menu;
 };
@@ -12599,7 +12600,13 @@ InputSlotMorph.prototype.fixLayout = function () {
     //contents.color = new Color(87, 94, 117);
   }
   arrow.color =
-    this.isReadOnly || this.isStatic ? WHITE : highContrast ? WHITE : (highContrast ? BLACK : new Color(87, 94, 117));
+    this.isReadOnly || this.isStatic
+      ? WHITE
+      : highContrast
+      ? WHITE
+      : highContrast
+      ? BLACK
+      : new Color(87, 94, 117);
 
   if (this.choices) {
     arrow.setSize(fontHeight(this.fontSize));
@@ -13480,6 +13487,7 @@ BooleanSlotMorph.prototype.init = function (initialValue) {
   this.progress = 0; // for animation state, not persisted
   BooleanSlotMorph.uber.init.call(this);
   this.alpha = 1;
+  this.hoverCursor = "pointer";
   this.fixLayout();
 };
 
@@ -14199,7 +14207,9 @@ ArrowMorph.prototype.render = function (ctx) {
     this.drawImage(
       ctx,
       this.color.eq(new Color(87, 94, 117))
-        ? ArrowMorph.prototype.greyArrow : this.color.b < 118 ? ArrowMorph.prototype.blackArrow
+        ? ArrowMorph.prototype.greyArrow
+        : this.color.b < 118
+        ? ArrowMorph.prototype.blackArrow
         : ArrowMorph.prototype.whiteArrow,
       horiz
     );
@@ -14378,7 +14388,7 @@ ColorSlotMorph.prototype.setColor = function (clr) {
 ColorSlotMorph.prototype.getUserColor = function (model) {
   model = model || "hsv"; // hsv, hsl, or rgb
   var nextModel,
-  block = this.parentThatIsA(BlockMorph)
+    block = this.parentThatIsA(BlockMorph);
   myself = this;
 
   var menu = new MenuMorph(),
@@ -14392,7 +14402,7 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
       this.color.a
     );
 
-    menu.doNotClick = true;
+  menu.doNotClick = true;
 
   hSlider.action = (h) => (
     newColor["set_" + model](
@@ -14401,9 +14411,9 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
       this.color[model]()[2]
     ),
     (this.color = newColor),
-    hInp.text = String(h),
-    hInp.children[0].text = String(h),
-    hInp.children[0].children[0].text = String(h),
+    (hInp.text = String(h)),
+    (hInp.children[0].text = String(h)),
+    (hInp.children[0].children[0].text = String(h)),
     hInp.rerender(),
     hSlider.fixLayout(),
     this.rerender(),
@@ -14416,9 +14426,9 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
       this.color[model]()[2]
     ),
     (this.color = newColor),
-    sInp.text = String(s),
-    sInp.children[0].text = String(s),
-    sInp.children[0].children[0].text = String(s),
+    (sInp.text = String(s)),
+    (sInp.children[0].text = String(s)),
+    (sInp.children[0].children[0].text = String(s)),
     sInp.rerender(),
     this.rerender(),
     block.isCustomBlock && block.fireSlotEditedEvent(this)
@@ -14430,9 +14440,9 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
       v / 100
     ),
     (this.color = newColor),
-    vInp.text = String(v),
-    vInp.children[0].text = String(v),
-    vInp.children[0].children[0].text = String(v),
+    (vInp.text = String(v)),
+    (vInp.children[0].text = String(v)),
+    (vInp.children[0].children[0].text = String(v)),
     vInp.rerender(),
     this.rerender(),
     block.isCustomBlock && block.fireSlotEditedEvent(this)
@@ -14444,15 +14454,15 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
 
   function createSliderGroup(container, text, slider, input) {
     input.children[0].reactToKeyStroke = function (evt) {
-    setTimeout(() => {
-      slider.value = String(input.children[0].children[0].text);
-      slider.fixLayout();
-      this.rerender();
-      slider.action();
-      input.children[0].children[0].text = String(slider.value);
-      input.text = String(input.children[0].children[0].text);
-    }, 10); // ugh
-  };
+      setTimeout(() => {
+        slider.value = String(input.children[0].children[0].text);
+        slider.fixLayout();
+        this.rerender();
+        slider.action();
+        input.children[0].children[0].text = String(slider.value);
+        input.text = String(input.children[0].children[0].text);
+      }, 10); // ugh
+    };
     container.mouseMove = nop;
     container.color = CLEAR;
     container.add(text);
@@ -14497,68 +14507,63 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
 
   nextModel = model == "hsv" ? "hsl" : model == "hsl" ? "rgb" : "hsv";
 
-
   function getScreenColor() {
     var myself = this,
-    world = this.world(),
-    hand = world.hand,
-    posInDocument = getDocumentPositionOf(world.worldCanvas),
-    mouseMoveBak = hand.processMouseMove,
-    mouseDownBak = hand.processMouseDown,
-    mouseUpBak = hand.processMouseUp,
-    ctx;
+      world = this.world(),
+      hand = world.hand,
+      posInDocument = getDocumentPositionOf(world.worldCanvas),
+      mouseMoveBak = hand.processMouseMove,
+      mouseDownBak = hand.processMouseDown,
+      mouseUpBak = hand.processMouseUp,
+      ctx;
     // cache the world surface property (its full image)
-  // to prevent memory issues from constantly generating
-  // huge canvasses and and reading back pixel data only once
-  // note: this optimization makes it hard / impossible for the
-  // user to "catch" and sample the color of moving sprites
-  // but without it Chrome crashes as of Fall 2023
-  ctx = Morph.prototype.fullImage
-    .call(world)
-    .getContext("2d", { willReadFrequently: true });
+    // to prevent memory issues from constantly generating
+    // huge canvasses and and reading back pixel data only once
+    // note: this optimization makes it hard / impossible for the
+    // user to "catch" and sample the color of moving sprites
+    // but without it Chrome crashes as of Fall 2023
+    ctx = Morph.prototype.fullImage
+      .call(world)
+      .getContext("2d", { willReadFrequently: true });
 
-  hand.processMouseMove = function (event) {
-    var pos = hand.position(),
-      dta = ctx.getImageData(pos.x, pos.y, 1, 1).data;
-    hand.setPosition(
-      new Point(event.pageX - posInDocument.x, event.pageY - posInDocument.y)
-    );
-    myself.setColor(new Color(dta[0], dta[1], dta[2]));
-  };
+    hand.processMouseMove = function (event) {
+      var pos = hand.position(),
+        dta = ctx.getImageData(pos.x, pos.y, 1, 1).data;
+      hand.setPosition(
+        new Point(event.pageX - posInDocument.x, event.pageY - posInDocument.y)
+      );
+      myself.setColor(new Color(dta[0], dta[1], dta[2]));
+    };
 
-  hand.processMouseDown = nop;
-  hand.processMouseUp = function () {
-    hand.processMouseMove = mouseMoveBak;
-    hand.processMouseDown = mouseDownBak;
-    hand.processMouseUp = mouseUpBak;
-  };
+    hand.processMouseDown = nop;
+    hand.processMouseUp = function () {
+      hand.processMouseMove = mouseMoveBak;
+      hand.processMouseDown = mouseDownBak;
+      hand.processMouseUp = mouseUpBak;
+    };
   }
 
   var switchModelButton = new PushButtonMorph(
       this,
-      () => (
-        (model = nextModel),
-        menu.destroy(),
-        this.getUserColor(model)
-      ),
+      () => ((model = nextModel), menu.destroy(), this.getUserColor(model)),
       new SymbolMorph("arrowRight", 10)
     ),
-    pickColorButton = new PushButtonMorph(this, getScreenColor, new SymbolMorph("pipette", 10));
-    buttonContainer.mouseMove = nop;
-    buttonContainer.color = CLEAR;
+    pickColorButton = new PushButtonMorph(
+      this,
+      getScreenColor,
+      new SymbolMorph("pipette", 10)
+    );
+  buttonContainer.mouseMove = nop;
+  buttonContainer.color = CLEAR;
   buttonContainer.add(switchModelButton);
   buttonContainer.add(pickColorButton);
   buttonContainer.setWidth(hContainer.width());
-  buttonContainer.setHeight(switchModelButton.height())
+  buttonContainer.setHeight(switchModelButton.height());
   switchModelButton.setPosition(buttonContainer.position());
-  pickColorButton.setTop(buttonContainer.top())
-  pickColorButton.setRight(buttonContainer.right())
+  pickColorButton.setTop(buttonContainer.top());
+  pickColorButton.setRight(buttonContainer.right());
 
-
-  menu.addItem(
-    buttonContainer,
-    nop
-  );
+  menu.addItem(buttonContainer, nop);
   menu.popup(this.world(), this.bottomCenter());
 };
 
@@ -14932,7 +14937,7 @@ MultiArgMorph.prototype.init = function (
     arrowColor,
     true // isLbl
   );
-  leftArrow.hoverCursor = "pointer";
+  rightArrow.hoverCursor = "pointer";
 
   // list symbol:
   // listSymbol = this.labelPart('$verticalEllipsis-0.98');

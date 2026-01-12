@@ -4498,7 +4498,7 @@ IDE_Morph.prototype.settingsMenu = function () {
       new Color(255, 100, 100)
     );
   }
-  menu.addItem("Microphone resolution...", "microphoneMenu");
+  menu.addMenu("Microphone resolution...", this.microphoneMenu());
   menu.addLine();
 
   addPreference(
@@ -7776,7 +7776,6 @@ IDE_Morph.prototype.microphoneMenu = function () {
     ),
     empty = tick.fullCopy();
 
-  this.ideRender(menu);
   menu.bgColor = this.accentColor;
 
   empty.render = nop;
@@ -7790,7 +7789,7 @@ IDE_Morph.prototype.microphoneMenu = function () {
       () => microphone.setResolution(i + 1)
     );
   });
-  menu.popup(world, pos);
+  return menu
 };
 
 // IDE_Morph localization

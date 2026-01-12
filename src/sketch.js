@@ -1004,8 +1004,8 @@ VectorPaintEditorMorph.prototype.convertToBitmap = function () {
     this.shapes.forEach(function (each) {
       canvas.getContext("2d").drawImage(each.image, 0, 0);
     });
-
-  this.object = new Costume(canvas, this.object?.name, this.paper.rotationCenter.copy());
+  this.object = new Costume(canvas, this.object?.name);
+  this.object.contents.src = null;
   this.parent.createEditor(true);
 };
 
@@ -1028,7 +1028,8 @@ VectorPaintEditorMorph.prototype.openIn = function (
   oldrc,
   callback,
   anIDE,
-  shapes
+  shapes,
+  object
 ) {
   var myself = this,
     isEmpty = isNil(shapes) || shapes.length === 0;
@@ -1041,6 +1042,8 @@ VectorPaintEditorMorph.prototype.openIn = function (
     callback,
     anIDE
   );
+  this.object = object;
+  
   this.ide = anIDE;
   this.paper.drawNew();
   this.paper.changed();

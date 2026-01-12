@@ -12462,6 +12462,7 @@ WardrobeMorph.prototype.paintNew = function () {
       null, // don't shrink-to-fit
       ide.stage.dimensions // max extent
     );
+    cos.contents.src = null;
     cos.rotationCenter = new Point(240, 180);
 
   this.sprite.shadowAttribute("costumes");

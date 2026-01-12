@@ -14389,7 +14389,7 @@ ColorSlotMorph.prototype.setColor = function (clr) {
 ColorSlotMorph.prototype.getUserColor = function (model) {
   model = model || "hsv"; // hsv, hsl, or rgb
   var nextModel,
-    block = this.parentThatIsA(BlockMorph);
+    block = this.parentThatIsA(BlockMorph),
   myself = this;
 
   var menu = new MenuMorph(),

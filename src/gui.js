@@ -96,7 +96,7 @@ modules.gui = "2025-November-23";
 // Declarations
 
 var SnapVersion = "11.0.8";
-var SplitVersion = "2.3.1";
+var SplitVersion = "2.3.3";
 
 var IDE_Morph;
 var ProjectDialogMorph;
@@ -12164,7 +12164,7 @@ TurtleIconMorph.prototype.userMenu = function () {
     return null;
   }
   menu.addItem(
-    (this.object.penPoint === "tip" ? on : off) + " " + localize("tip"),
+    (this.object.penPoint === "tip" ? on : off) + " " + (Math.random() > 0.5 ? localize("tip") : "jens"),
     () => {
       this.object.penPoint = "tip";
       this.object.changed();
@@ -12173,7 +12173,7 @@ TurtleIconMorph.prototype.userMenu = function () {
     }
   );
   menu.addItem(
-    (this.object.penPoint === "middle" ? on : off) + " " + localize("middle"),
+    (this.object.penPoint === "middle" ? on : off) + " " + (Math.random() > 0.5 ? localize("middle") : "brian"),
     () => {
       this.object.penPoint = "middle";
       this.object.changed();

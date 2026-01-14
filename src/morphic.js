@@ -6960,9 +6960,9 @@ SliderMorph.prototype.init = function (
   this.offset = null;
   this.button = new SliderButtonMorph();
   this.button.isDraggable = false;
-  this.button.alpha = MorphicPreferences.isFlat ? 0.7 : 1;
+  this.button.alpha = MorphicPreferences.isFlat ? 0.3 : 1;
   this.button.color = MorphicPreferences.isFlat
-    ? new Color(100, 100, 100)
+    ? WHITE
     : new Color(200, 200, 200);
   this.button.highlightColor = new Color(210, 210, 255);
   this.button.pressColor = new Color(180, 180, 255);
@@ -8123,6 +8123,7 @@ MenuMorph.prototype.scroll = function () {
     first = this.children[start];
 
   scroller.setPosition(first.position());
+  scroller.color = this.bgColor;
   this.children.slice(start).forEach((morph) => scroller.addContents(morph));
   this.add(scroller);
   scroller.setWidth(first.width());

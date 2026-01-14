@@ -2525,7 +2525,12 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     (this instanceof MultiArgMorph && this.slotSpec !== "%cs") ||
     this instanceof ArgLabelMorph
   ) {
-    blockWidth = Math.max(blockWidth, maxX - this.left() - space * (this.arrows && (this.arrows().children[1].isVisible) ? 1.5 : 0));
+    blockWidth = Math.max(
+      blockWidth,
+      maxX -
+        this.left() -
+        space * (this.arrows && this.arrows().children[1].isVisible ? 1.5 : 0)
+    );
   } else {
     blockWidth = Math.max(
       blockWidth,
@@ -8866,6 +8871,7 @@ function ScriptsMorph() {
 
 ScriptsMorph.prototype.init = function () {
   this.feedbackMorph = new BoxMorph();
+  
   this.rejectsHats = false;
 
   // "undrop" attributes:
@@ -8990,7 +8996,7 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
     return null;
   }
   this.feedbackMorph.edge = SyntaxElementMorph.prototype.rounding;
-  this.feedbackMorph.border = Math.max(SyntaxElementMorph.prototype.edge, 3);
+  this.feedbackMorph.border = 2 * SyntaxElementMorph.prototype.scale;
   if (target instanceof MultiArgMorph) {
     this.feedbackMorph.color = SpriteMorph.prototype.blockColor.lists.copy();
     this.feedbackMorph.borderColor = SpriteMorph.prototype.blockColor.lists;
@@ -9058,7 +9064,7 @@ ScriptsMorph.prototype.showCommentDropFeedback = function (comment, hand) {
     )
   );
   this.feedbackMorph.edge = SyntaxElementMorph.prototype.rounding;
-  this.feedbackMorph.border = Math.max(SyntaxElementMorph.prototype.edge, 3);
+  this.feedbackMorph.border = 2 * SyntaxElementMorph.prototype.scale;
   this.add(this.feedbackMorph);
   this.feedbackMorph.color = comment.color.copy();
   this.feedbackMorph.color.a = 0.25;
@@ -9072,7 +9078,7 @@ ScriptsMorph.prototype.showCSlotWrapFeedback = function (srcBlock, trgBlock) {
     .fullBounds()
     .expandBy(BlockMorph.prototype.corner);
   this.feedbackMorph.edge = SyntaxElementMorph.prototype.corner;
-  this.feedbackMorph.border = Math.max(SyntaxElementMorph.prototype.edge, 3);
+  this.feedbackMorph.border = 2 * SyntaxElementMorph.prototype.scale;
   this.add(this.feedbackMorph);
   clr = srcBlock.color.lighter(40);
   this.feedbackMorph.color = clr.copy();
@@ -14390,7 +14396,7 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
   model = model || "hsv"; // hsv, hsl, or rgb
   var nextModel,
     block = this.parentThatIsA(BlockMorph),
-  myself = this;
+    myself = this;
 
   var menu = new MenuMorph(),
     hSlider = new SliderMorph(0, 100, this.color[model]()[0] * 100, 8),
@@ -17300,7 +17306,7 @@ ScriptFocusMorph.prototype.manifestStatement = function () {
 
 ScriptFocusMorph.prototype.manifestExpression = function () {
   this.edge = SyntaxElementMorph.prototype.rounding;
-  this.border = Math.max(SyntaxElementMorph.prototype.edge, 3);
+  this.border = 2 * SyntaxElementMorph.prototype.scale;
   this.color = this.editor.feedbackColor.copy();
   this.color.a = 0.5;
   this.borderColor = this.editor.feedbackColor;

@@ -6962,14 +6962,14 @@ SliderMorph.prototype.init = function (
   this.button.isDraggable = false;
   this.button.alpha = MorphicPreferences.isFlat ? 0.3 : 1;
   this.button.color = MorphicPreferences.isFlat
-    ? WHITE
+    ? new Color(180, 180, 180)
     : new Color(200, 200, 200);
   this.button.highlightColor = new Color(210, 210, 255);
   this.button.pressColor = new Color(180, 180, 255);
   SliderMorph.uber.init.call(this, orientation);
   this.add(this.button);
   this.alpha = MorphicPreferences.isFlat ? 0.08 : 0.3;
-  this.color = color || new Color(0, 0, 0);
+  this.color = color || new Color(128, 128, 128);
   this.setExtent(new Point(20, 100));
   this.fixLayout();
 };

@@ -96,7 +96,7 @@ modules.gui = "2025-November-23";
 // Declarations
 
 var SnapVersion = "11.0.8";
-var SplitVersion = "2.2.7";
+var SplitVersion = "2.3.0";
 
 var IDE_Morph;
 var ProjectDialogMorph;
@@ -991,7 +991,9 @@ IDE_Morph.prototype.createProjectControlBar = function () {
   button.highlightColor = this.groupColor;
   button.pressColor = colors[1];
   button.labelMinExtent = new Point(36, 18);
-  button.padding = 0;
+  button.padding = 1;
+  button.outlineColor = this.groupColor.darker()
+  button.outline = 1;
 
   button.labelShadowOffset = new Point(-1, -1);
   button.labelShadowColor = colors[1];

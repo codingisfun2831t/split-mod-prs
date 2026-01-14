@@ -4655,7 +4655,7 @@ SpriteMorph.prototype.palette = function (category) {
 
 SpriteMorph.prototype.freshPalette = function (category) {
   var myself = this,
-    palette = new ScrollFrameMorph(null, null, this.sliderColor),
+    palette = new ScrollFrameMorph(null, null),
     unit = SyntaxElementMorph.prototype.fontSize * 1.5,
     ide = this.parentThatIsA(IDE_Morph),
     showCategories,

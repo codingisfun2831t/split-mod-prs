@@ -1733,8 +1733,6 @@ DialogBoxMorph.prototype.prompt = function (
         ((sliderMax - sliderMin) / 10) * precision, // knob size
         "horizontal"
       );
-      sld.alpha = 1;
-      sld.color = this.color.lighter(50);
       sld.setHeight(txt.height() * 0.7);
       sld.setWidth(txt.width());
       sld.action = (num) => {

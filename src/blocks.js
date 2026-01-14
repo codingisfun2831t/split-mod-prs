@@ -9028,15 +9028,13 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   this.feedbackMorph.border = 0;
   this.feedbackMorph.edge = 0;
   this.feedbackMorph.alpha = 1;
-  this.feedbackMorph.bounds.setWidth(target.element.width());
+  this.feedbackMorph.bounds.setWidth(block.width());
   this.feedbackMorph.bounds.setHeight(
-    Math.max(
-      SyntaxElementMorph.prototype.corner,
-      SyntaxElementMorph.prototype.feedbackMinHeight
-    )
+    block.height()
   );
-  this.feedbackMorph.color = this.feedbackColor;
-  y = target.point.y;
+  this.feedbackMorph.color = this.feedbackColor.withAlpha(0.5);
+  // TODO: will add rendering
+  y = target.point.y - target.element.corner - target.element.dentPlus;
   if (target.loc === "bottom") {
     if (target.type === "block") {
       if (target.element.nextBlock()) {

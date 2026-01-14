@@ -4400,6 +4400,7 @@ BlockLabelFragmentMorph.prototype.init = function (spec, shape) {
     this.fragment.type = null;
     this.sO = null; // temporary backup for shadowOffset
     this.shape =  shape; // the actual label part, a StringMorph or SymbolMorph
+    this.hoverCursor = "pointer"
     this.add(shape);
 //    this.fixLayout();
 };

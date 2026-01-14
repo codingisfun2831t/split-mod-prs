@@ -4692,6 +4692,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
     "searchBlocks",
     new SymbolMorph("magnifierOutline", 16)
   );
+  searchButton.color = WHITE;
   searchButton.alpha = 0.2;
   searchButton.padding = 1;
   searchButton.hint = localize("find blocks") + "...";
@@ -4706,6 +4707,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
       "makeBlock",
       new SymbolMorph("cross", 16)
     );
+    makeButton.color = WHITE;
     makeButton.alpha = 0.2;
     makeButton.padding = 1;
     makeButton.hint = localize("Make a block") + "...";

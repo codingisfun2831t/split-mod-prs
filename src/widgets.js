@@ -1253,6 +1253,7 @@ ToggleMorph.prototype.createLabel = function () {
         this.fontStyle,
         true
       );
+      this.label.color = this.labelColor || BLACK
       this.add(this.label);
     }
   }

@@ -9033,16 +9033,17 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
     block.height()
   );
   this.feedbackMorph.color = this.feedbackColor.withAlpha(0.5);
-  // TODO: will add rendering
+  // TODO: will add rendering;
+
   y = target.point.y - target.element.corner - target.element.dentPlus;
   if (target.loc === "bottom") {
     if (target.type === "block") {
       if (target.element.nextBlock()) {
-        y -= SyntaxElementMorph.prototype.corner;
+        y -= target.element.height();
       }
     } else if (target.type === "slot") {
       if (target.element.nestedBlock()) {
-        y -= SyntaxElementMorph.prototype.corner;
+        y -= target.element.height();
       }
     }
   }

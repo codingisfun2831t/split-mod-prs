@@ -8110,6 +8110,7 @@ MenuMorph.prototype.popup = function (world, pos) {
     scroller.setWidth(this.width());
     scroller.setHeight(this.height() - 8);
     scroller.adjustScrollBars(); // ?
+    scroller.vBar.button.color = BLACK;
     this.setWidth(scroller.width() + scroller.vBar.width());
     this.fixLayout();
     this.addShadow(new Point(2, 2), 80);
@@ -8135,7 +8136,7 @@ MenuMorph.prototype.scroll = function () {
     first = this.children[start];
 
   scroller.setPosition(first.position());
-  scroller.color = this.bgColor;
+  scroller.color = CLEAR;
   this.children.slice(start).forEach((morph) => scroller.addContents(morph));
   this.add(scroller);
   scroller.setWidth(first.width());

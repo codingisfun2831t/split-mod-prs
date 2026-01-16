@@ -86,6 +86,7 @@ HatBlockMorph*/
 /* very hidden owl edit hehe */
 /* Not so hidden, is it? - d016 */
 /* wow these sure are.. edits - codingisfun2831t, your local UI guy */
+/* Yeah, these are quite the edits ;P - d016 */
 
 /*jshint esversion: 8*/
 
@@ -96,7 +97,7 @@ modules.gui = "2025-November-23";
 // Declarations
 
 var SnapVersion = "11.0.8";
-var SplitVersion = "2.3.3";
+var SplitVersion = "2.3.4";
 
 var IDE_Morph;
 var ProjectDialogMorph;
@@ -12160,27 +12161,30 @@ TurtleIconMorph.prototype.render = SpriteIconMorph.prototype.render;
 TurtleIconMorph.prototype.userMenu = function () {
   var menu = new MenuMorph(this, "pen"),
     on = "\u25CF",
-    off = "\u25CB";
+    off = "\u25CB",
+    isNamesMode = Math.random() > 0.5;
   if (this.object instanceof StageMorph) {
     return null;
   }
   menu.addItem(
-    (this.object.penPoint === "tip" ? on : off) + " " + (Math.random() > 0.5 ? localize("tip") : "jens"),
+    (this.object.penPoint === "tip" ? on : off) + " " + (isNamesMode ? "jens" : localize("tip")),
     () => {
       this.object.penPoint = "tip";
       this.object.changed();
       this.object.fixLayout();
       this.object.rerender();
-    }
+    },
+    isNamesMode && localize("tip")
   );
   menu.addItem(
-    (this.object.penPoint === "middle" ? on : off) + " " + (Math.random() > 0.5 ? localize("middle") : "brian"),
+    (this.object.penPoint === "middle" ? on : off) + " " + (isNamesMode ? "brian" : localize("middle")),
     () => {
       this.object.penPoint = "middle";
       this.object.changed();
       this.object.fixLayout();
       this.object.rerender();
-    }
+    },
+    isNamesMode && localize("middle")
   );
   return menu;
 };

@@ -6960,15 +6960,15 @@ SliderMorph.prototype.init = function (
   this.offset = null;
   this.button = new SliderButtonMorph();
   this.button.isDraggable = false;
-  this.button.alpha = MorphicPreferences.isFlat ? 0.3 : 1;
+  this.button.alpha = 1;
   this.button.color = MorphicPreferences.isFlat
-    ? new Color(180, 180, 180)
+    ? new Color(206, 205, 206)
     : new Color(200, 200, 200);
   this.button.highlightColor = new Color(210, 210, 255);
   this.button.pressColor = new Color(180, 180, 255);
   SliderMorph.uber.init.call(this, orientation);
   this.add(this.button);
-  this.alpha = MorphicPreferences.isFlat ? 0.08 : 0.3;
+  this.alpha = MorphicPreferences.isFlat ? 0.04 : 0.3;
   this.color = color || new Color(128, 128, 128);
   this.setExtent(new Point(20, 100));
   this.fixLayout();
@@ -10332,6 +10332,9 @@ ScrollFrameMorph.prototype.init = function (scroller, size, sliderColor) {
     "horizontal",
     sliderColor
   );
+  this.hBar.alpha = 0;
+  this.hBar.button.highlightColor = this.hBar.button.color;
+  this.hBar.button.pressColor = this.hBar.button.color;
   this.hBar.setHeight(this.scrollBarSize);
   this.hBar.action = (num) => {
     this.contents.setPosition(
@@ -10348,6 +10351,9 @@ ScrollFrameMorph.prototype.init = function (scroller, size, sliderColor) {
     "vertical",
     sliderColor
   );
+  this.vBar.alpha = 0;
+  this.vBar.button.highlightColor = this.vBar.button.color;
+  this.vBar.button.pressColor = this.vBar.button.color;
   this.vBar.setWidth(this.scrollBarSize);
   this.vBar.action = (num) => {
     this.contents.setPosition(

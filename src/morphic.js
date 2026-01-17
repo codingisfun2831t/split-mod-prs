@@ -8101,7 +8101,7 @@ MenuMorph.prototype.popup = function (world, pos) {
     this.addShadow(new Point(2, 2), 80);
     scroller.setHeight(world.bottom() - scroller.top() - 6);
     scroller.adjustScrollBars(); // ?
-  } else if (!this?.noShadow && (this.height() > world.height() / 2)) {
+  } else if ((this.bgColor ? this.bgColor.eq(WHITE) : false) && !this?.noShadow && (this.height() > world.height() / 2)) {
     // scroll menu items if the menu is taller than half the height of the world
     this.setHeight(world.height() / 2);
     this.setPosition(pos);

@@ -2809,7 +2809,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
       return menu;
     };
   } else if (value instanceof Sound) {
-    morphToShow = new SymbolMorph("notes", 30);
+    morphToShow = new SoundIconMorph(value);
 
     // support sounds to be dragged out of result bubbles:
     morphToShow.isDraggable = !SpriteMorph.prototype.disableDraggingData;

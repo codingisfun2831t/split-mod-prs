@@ -2759,15 +2759,14 @@ IDE_Morph.prototype.fixLayout = function (situation) {
       flag.setLeft(flag.left() + flag.size * 0.1); // account for slight asymmetry
     } else if (this.isAppMode) {
       this.stage.setScale(
-        Math.floor(
-          Math.min(
+        Math.min(
             (this.width() - padding * 2) / this.stage.dimensions.x,
             (this.height() -
               this.projectControlBar.height() * 1 -
               padding * 2) /
               this.stage.dimensions.y
-          ) * 10
-        ) / 10
+          )
+        
       );
       this.stage.setCenter(this.center());
       this.controlBar.fixLayout();
@@ -12670,7 +12669,7 @@ SoundIconMorph.prototype.fixLayout = SpriteIconMorph.prototype.fixLayout;
 
 SoundIconMorph.prototype.userMenu = function () {
   var menu = new MenuMorph(this);
-  if (!(this.object instanceof Sound)) {
+  if (!(this.object instanceof Sound) || !this.parentThatIsA(JukeboxMorph)) {
     return null;
   }
   menu.addItem("rename", "renameSound");

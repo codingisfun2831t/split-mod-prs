@@ -2706,7 +2706,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
     isClickable = true,
     ide = this.parentThatIsA(IDE_Morph) || target.parentThatIsA(IDE_Morph),
     anchor = this,
-    pos = this.center().add(new Point(0, 0)),
+    pos = this.center().add(new Point(0, this.height() / -2)),
     sf = this.parentThatIsA(ScrollFrameMorph),
     wrrld = this.world() || target.world(),
     maxHeight,

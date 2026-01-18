@@ -279,10 +279,10 @@ TableCellMorph.prototype.cachedListSymbol = null;
 
 TableCellMorph.prototype.listSymbol = function () {
     if (!this.cachedListSymbol || this.cachedListSymbol.height() !==
-            SyntaxElementMorph.prototype.fontSize) {
+            this.fontSize) {
         this.cachedListSymbol = new SymbolMorph(
             'list',
-            SyntaxElementMorph.prototype.fontSize,
+            this.fontSize,
             SpriteMorph.prototype.blockColor.lists.darker(50)
         );
     }
@@ -291,12 +291,13 @@ TableCellMorph.prototype.listSymbol = function () {
 
 // TableCellMorph instance creation:
 
-function TableCellMorph(data, extent, isLabel) {
+function TableCellMorph(data, extent, isLabel, noScale) {
     this.init(data, extent, isLabel);
 }
 
-TableCellMorph.prototype.init = function (data, extent, isLabel) {
+TableCellMorph.prototype.init = function (data, extent, isLabel, noScale) {
     // additional properties:
+    this.fontSize = noScale ? 9.5 : SyntaxElementMorph.prototype.fontSize
     this.data = data;
     this.isLabel = isLabel || false;
     this.labelString = null;
@@ -324,7 +325,7 @@ TableCellMorph.prototype.getData = function () {
 TableCellMorph.prototype.render = function (ctx) {
     var dta = this.labelString || this.dataRepresentation(this.data),
         raw = this.getData(),
-        fontSize = SyntaxElementMorph.prototype.fontSize,
+        fontSize = this.fontSize,
         empty = TableMorph.prototype.highContrast ? 'rgb(220, 220, 220)'
                 : 'transparent',
         orphaned = 'rgb(217, 77, 17)',
@@ -425,14 +426,14 @@ TableCellMorph.prototype.dataRepresentation = function (dta) {
         return dta.thumbnail(new Point(40, 40));
     } else if (dta instanceof Sound) {
         return new SymbolMorph(
-            'notes', SyntaxElementMorph.prototype.fontSize
+            'notes', this.fontSize
         );
     } else if (dta instanceof List) {
         return this.listSymbol();
     } else if (dta instanceof Color) {
         return SpriteMorph.prototype.colorSwatch(
             dta,
-            SyntaxElementMorph.prototype.fontSize * 1.4
+            this.fontSize * 1.4
         );
     } else {
         return dta ? dta.toString() : (dta === 0 ? '0' : null);

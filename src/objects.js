@@ -3937,6 +3937,7 @@ SpriteMorph.prototype.blockTemplates = function (
     );
     t.bounds.setWidth(t.width() * SyntaxElementMorph.prototype.scale);
     t.bounds.setHeight(t.height() * SyntaxElementMorph.prototype.scale);
+    t.refresh()
     
     //t.fixLayout()
     return t;
@@ -3957,6 +3958,7 @@ SpriteMorph.prototype.blockTemplates = function (
     );
     t.bounds.setWidth(t.width() * SyntaxElementMorph.prototype.scale);
     t.bounds.setHeight(t.height() * SyntaxElementMorph.prototype.scale);
+    t.refresh()
     
     return t;
   }
@@ -11567,6 +11569,7 @@ StageMorph.prototype.blockTemplates = function (
     );
     t.bounds.setWidth(t.width() * SyntaxElementMorph.prototype.scale);
     t.bounds.setHeight(t.height() * SyntaxElementMorph.prototype.scale);
+    t.refresh()
     
     return t
   }
@@ -11586,6 +11589,7 @@ StageMorph.prototype.blockTemplates = function (
     );
         t.bounds.setWidth(t.width() * SyntaxElementMorph.prototype.scale);
     t.bounds.setHeight(t.height() * SyntaxElementMorph.prototype.scale);
+    t.refresh();
     
     return t
   }
@@ -14825,17 +14829,18 @@ CellMorph.uber = BoxMorph.prototype;
 
 // CellMorph instance creation:
 
-function CellMorph(contents, color, idx, parentCell) {
-  this.init(contents, color, idx, parentCell);
+function CellMorph(contents, color, idx, parentCell, noScale) {
+  this.init(contents, color, idx, parentCell, noScale);
 }
 
-CellMorph.prototype.init = function (contents, color, idx, parentCell) {
+CellMorph.prototype.init = function (contents, color, idx, parentCell, noScale) {
   this.contents =
     contents === 0 ? 0 : contents === false ? false : contents || "";
   this.isEditable = isNil(idx) ? false : true;
   this.idx = idx || null; // for list watchers
   this.parentCell = parentCell || null; // for list circularity detection
-  CellMorph.uber.init.call(this, SyntaxElementMorph.prototype.corner, 1, WHITE);
+  this.fontSize = noScale ? 9.5 : SyntaxElementMorph.prototype.fontSize;
+  CellMorph.uber.init.call(this, noScale ? 3 : SyntaxElementMorph.prototype.corner, 1, WHITE);
   this.color = color || new Color(255, 140, 0);
   this.isBig = false;
   this.version = null; // only for observing sprites
@@ -14848,7 +14853,7 @@ CellMorph.prototype.big = function () {
   this.isBig = true;
   this.changed();
   if (this.contentsMorph instanceof TextMorph) {
-    this.contentsMorph.setFontSize(SyntaxElementMorph.prototype.fontSize * 1.5);
+    this.contentsMorph.setFontSize(this.fontSize * 1.5);
   }
   this.fixLayout(true);
   this.rerender();
@@ -14858,7 +14863,7 @@ CellMorph.prototype.normal = function () {
   this.isBig = false;
   this.changed();
   if (this.contentsMorph instanceof TextMorph) {
-    this.contentsMorph.setFontSize(SyntaxElementMorph.prototype.fontSize);
+    this.contentsMorph.setFontSize(this.fontSize);
   }
   this.fixLayout(true);
   this.rerender();
@@ -14902,7 +14907,7 @@ CellMorph.prototype.fixLayout = function (justMe) {
       this.contentsMorph.width() + this.edge * 2,
       this.contents instanceof Context || this.contents instanceof List
         ? 0
-        : SyntaxElementMorph.prototype.fontSize * 3.5
+        : this.fontSize * 3.5
     )
   );
 
@@ -14929,7 +14934,7 @@ CellMorph.prototype.createContents = function () {
   var txt,
     img,
     myself = this,
-    fontSize = SyntaxElementMorph.prototype.fontSize,
+    fontSize = this.fontSize,
     isSameList =
       this.contentsMorph instanceof ListWatcherMorph &&
       this.contentsMorph.list === this.contents,
@@ -15310,7 +15315,7 @@ WatcherMorph.prototype.init = function (
   // initialize inherited properties
   WatcherMorph.uber.init.call(
     this,
-    SyntaxElementMorph.prototype.rounding / 2,
+    9 / 2,
     1.000001, // shadow bug in Chrome,
     new Color(0, 0, 0, 0.15)
   );
@@ -15527,7 +15532,7 @@ WatcherMorph.prototype.fixLayout = function () {
     this.add(this.labelMorph);
   }
   if (this.cellMorph === null) {
-    this.cellMorph = new CellMorph("", this.readoutColor);
+    this.cellMorph = new CellMorph("", this.readoutColor, null, null, true);
     this.add(this.cellMorph);
   }
   if (this.sliderMorph === null) {

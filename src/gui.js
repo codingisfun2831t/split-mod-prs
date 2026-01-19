@@ -12578,6 +12578,7 @@ SoundIconMorph.prototype.init = function (aSound) {
 
   // override defaults and build additional components
   this.isDraggable = true;
+  this.fixLayout();
   this.createThumbnail();
   this.padding = 2;
   this.corner = 8;
@@ -12605,7 +12606,7 @@ SoundIconMorph.prototype.createThumbnail = function () {
     new Color(200, 200, 200)
   );
   this.thumbnail.add(label);
-  label.setCenter(new Point(40, 15));
+  label.setCenter(new Point(this.thumbSize.x / 2, 15));
 
   this.button = new PushButtonMorph(
     this,
@@ -12615,7 +12616,7 @@ SoundIconMorph.prototype.createThumbnail = function () {
   this.button.hint = "Play sound";
   this.button.fixLayout();
   this.thumbnail.add(this.button);
-  this.button.setCenter(new Point(40, 40));
+  this.button.setCenter(new Point(this.thumbSize.x / 2, this.thumbSize.y / 1.5));
 };
 
 SoundIconMorph.prototype.createInfo = function () {

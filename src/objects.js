@@ -13334,6 +13334,13 @@ SpriteBubbleMorph.prototype.dataAsMorph = function (data) {
     contents.isCachingImage = true;
     contents.bounds.setWidth(img.width);
     contents.bounds.setHeight(img.height);
+    if (data instanceof SVG_Costume) {
+        contents.label = new StringMorph('svg', 8);
+        contents.color = WHITE;
+        contents.label.setLeft(contents.left())
+        contents.label.setBottom(contents.bottom())
+        contents.add(contents.label)
+      }
     contents.cachedImage = img;
 
     // support costumes to be dragged out of speech balloons:
@@ -13386,7 +13393,7 @@ SpriteBubbleMorph.prototype.dataAsMorph = function (data) {
       return menu;
     };
   } else if (data instanceof Sound) {
-    contents = new SymbolMorph("notes", 30);
+    contents = new SoundIconMorph(data);
 
     // support sounds to be dragged out of speech balloons:
     contents.isDraggable = !sprite.disableDraggingData;
@@ -14962,6 +14969,13 @@ CellMorph.prototype.createContents = function () {
       this.contentsMorph.isCachingImage = true;
       this.contentsMorph.bounds.setWidth(img.width);
       this.contentsMorph.bounds.setHeight(img.height);
+      if (this.contents instanceof SVG_Costume) {
+      this.contentsMorph.label = new StringMorph('svg', 8);
+      this.contentsMorph.color = WHITE;
+      this.contentsMorph.label.setLeft(this.contentsMorph.left())
+      this.contentsMorph.label.setBottom(this.contentsMorph.bottom())
+      this.contentsMorph.add(this.contentsMorph.label)
+    }
       this.contentsMorph.cachedImage = img;
       this.version = this.contents.version;
     } else if (isString(this.contents)) {
@@ -15039,6 +15053,14 @@ CellMorph.prototype.createContents = function () {
       this.contentsMorph.isCachingImage = true;
       this.contentsMorph.bounds.setWidth(img.width);
       this.contentsMorph.bounds.setHeight(img.height);
+      if (this.contents instanceof SVG_Costume) {
+        this.contentsMorph.label = new StringMorph('svg', 8);
+        this.contentsMorph.color = WHITE;
+        this.contentsMorph.label.setLeft(this.contentsMorph.left())
+        this.contentsMorph.label.setBottom(this.contentsMorph.bottom())
+        this.contentsMorph.add(this.contentsMorph.label)
+      }
+
       this.contentsMorph.cachedImage = img;
 
       // support costumes to be dragged out of watchers:
@@ -15072,7 +15094,7 @@ CellMorph.prototype.createContents = function () {
         return icon;
       };
     } else if (this.contents instanceof Sound) {
-      this.contentsMorph = new SymbolMorph("notes", 30);
+      this.contentsMorph = new SoundIconMorph(this.contents);
 
       // support sounds to be dragged out of watchers:
       this.contentsMorph.isDraggable =
@@ -16321,7 +16343,7 @@ StagePickerMorph.prototype.dataRepresentation = function (data) {
       sym.fixLayout();
       return sym.fullImage();
     case "sound":
-      return new SymbolMorph("notes", 30 * this.scale).fullImage();
+      return new SoundIconMorph(data).fullImage();
     case "color":
       return SpriteMorph.prototype.colorSwatch(data, 20 * this.scale);
     default:

@@ -263,7 +263,7 @@ SyntaxElementMorph.uber = Morph.prototype;
 SyntaxElementMorph.prototype.contrast = 65;
 
 SyntaxElementMorph.prototype.setScale = function (num) {
-  var scale = Math.max(num, 1);
+  var scale = Math.max(num, 1) * 1.2;
   var highContrast;
   try {
     highContrast = SpriteMorph?.prototype?.isHighContrast || false;

@@ -4476,7 +4476,7 @@ SpriteMorph.prototype.deleteVariableButton = function () {
 SpriteMorph.prototype.categoryText = function (category) {
   var txt = new StringMorph(
     localize(category[0].toUpperCase().concat(category.slice(1))),
-    11,
+    12,
     null,
     true
   );
@@ -4653,12 +4653,12 @@ SpriteMorph.prototype.palette = function (category) {
 SpriteMorph.prototype.freshPalette = function (category) {
   var myself = this,
     palette = new ScrollFrameMorph(null, null),
-    unit = SyntaxElementMorph.prototype.fontSize * 1.5,
+    unit = SyntaxElementMorph.prototype.fontSize * 2,
     ide = this.parentThatIsA(IDE_Morph),
     showCategories,
     showButtons,
     x = 0,
-    y = 5,
+    y = 10,
     ry = 0,
     blocks,
     hideNextSpace = false,
@@ -4667,7 +4667,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
     makeButton;
 
   palette.owner = this;
-  palette.padding = unit / 2;
+  palette.padding = 6;
   palette.color = this.paletteColor;
   palette.alpha = 1;
   palette.growth = new Point(0, MorphicPreferences.scrollBarSize);
@@ -4754,7 +4754,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
     blocks = SpriteMorph.prototype
       .allCategories()
       .reduce((blocks, category) => {
-        let header = [this.categoryText(category), "-"],
+        let header = [this.categoryText(category)],
           primitives = this.getPrimitiveTemplates(category),
           customs = this.customBlockTemplatesForCategory(category),
           showHeader =
@@ -4847,6 +4847,9 @@ SpriteMorph.prototype.freshPalette = function (category) {
       } else {
         x = 0;
         y += block.height();
+      }
+      if (block instanceof StringMorph) {
+        y += 5;
       }
     }
   });

@@ -113,7 +113,7 @@ https://tethrxt.neocities.org/snap/mods`,
     let menu = world.activeMenu;
 
     let pl = new MenuMorph(this);
-    pl.bgColor = this.accentColor;
+    pl.bgColor = this.getControlBarColor();
 
     pl.addItem(
       "Personal libraries...",

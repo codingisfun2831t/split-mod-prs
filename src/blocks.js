@@ -14584,6 +14584,9 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
 ColorSlotMorph.prototype.mouseClickLeft = function () {
   this.selectForEdit().getUserColor();
 };
+ColorSlotMorph.prototype.mouseClickRight = function () {
+  new DialogBoxMorph().promptRGB(this.parentThatIsA(IDE_Morph), this);
+};
 ColorSlotMorph.prototype.userMenu = function () {
   return new MenuMorph();
 };

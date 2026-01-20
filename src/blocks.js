@@ -2261,7 +2261,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     hasLoopArrow = false;
 
   if (this instanceof MultiArgMorph && this.slotSpec !== "%cs") {
-    blockWidth += this.arrows().width();
+    blockWidth += this.arrows().width() / 2;
   } else if (isReporter) {
     blockWidth += this.rounding * 2 + this.edge * 2;
   } else {
@@ -15344,9 +15344,9 @@ MultiArgMorph.prototype.fixArrowsLayout = function () {
     }
   }
   leftArrow.setCenter(arrows.center());
-  leftArrow.setLeft(arrows.left());
+  leftArrow.setLeft(arrows.left() - this.scale);
   rightArrow.setCenter(arrows.center());
-  rightArrow.setRight(arrows.right());
+  rightArrow.setRight(arrows.right() + this.scale);
   if (centerList) {
     listSymbol.setCenter(arrows.center());
   }

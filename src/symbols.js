@@ -596,7 +596,7 @@ SymbolMorph.prototype.symbolWidth = function () {
     case "loop":
       return size * 1.1;
     case "penSeperator":
-      return 1;
+      return (size / 28.1) * 2;
     default:
       return size;
   }
@@ -2861,8 +2861,9 @@ SymbolMorph.prototype.renderSymbolPenIcon = function (ctx) {
 };
 
 SymbolMorph.prototype.renderSymbolPenSeperator = function (ctx) {
-  ctx.fillStyle = "#0DA57A";
-  ctx.fillRect(0, 0, this.width(), this.height());
+  var shift = this.width() / 4;
+  ctx.fillStyle = "rgba(0, 0, 0, 0.09)";
+  ctx.fillRect(shift, 0, this.width() - shift * 2, this.height());
 };
 
 

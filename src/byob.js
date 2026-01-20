@@ -4496,6 +4496,7 @@ BlockLabelPlaceHolderMorph.prototype.init = function () {
     this.fragment.type = '%s';
     this.fragment.isDeleted = true;
     this.isHighlighted = false;
+    this.hoverCursor = "pointer";
     BlockLabelFragmentMorph.uber.init.call(this);
 };
 

@@ -264,7 +264,7 @@ SyntaxElementMorph.prototype.contrast = 65;
 
 SyntaxElementMorph.prototype.setScale = function (num) {
   var scale = Math.max(num, (1 / 1.2)) * 1.2;
-  
+
   var highContrast;
   try {
     highContrast = SpriteMorph?.prototype?.isHighContrast || false;
@@ -9035,8 +9035,12 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   );
   this.feedbackMorph.color = this.feedbackColor.withAlpha(0.5);
   // TODO: will add rendering;
-
+  console.warn(target)
+  
   y = target.point.y - target.element.corner - target.element.dentPlus;
+  if (target.loc !== "bottom") {
+    y = target.point.y - block.height() + block.corner + block.dentPlus;
+  }
   if (target.loc === "bottom") {
     if (target.type === "block") {
       if (target.element.nextBlock()) {

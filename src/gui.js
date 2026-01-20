@@ -2291,7 +2291,7 @@ IDE_Morph.prototype.createSpriteEditor = function () {
     } else {
       scripts.alpha = 1;
       scripts.color = this.groupColor;
-      this.scriptsTexture();
+      scripts.cachedTexture = this.scriptsTexture();
     }
 
     this.spriteEditor = new ScrollFrameMorph(scripts, null, this.sliderColor);

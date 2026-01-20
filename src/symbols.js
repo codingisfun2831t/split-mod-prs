@@ -2862,7 +2862,7 @@ SymbolMorph.prototype.renderSymbolPenIcon = function (ctx) {
 
 SymbolMorph.prototype.renderSymbolPenSeperator = function (ctx) {
   var shift = this.width() / 4;
-  ctx.fillStyle = "rgba(0, 0, 0, 0.09)";
+  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   ctx.fillRect(shift, 0, this.width() - shift * 2, this.height());
 };
 

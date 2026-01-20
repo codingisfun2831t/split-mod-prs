@@ -11229,7 +11229,7 @@ SpriteIconMorph.prototype.init = function (aSprite) {
   this.padding = 2;
   this.corner = 8;
   this.fixLayout();
-  this.fps = 1;
+  this.fps = 2;
 };
 
 SpriteIconMorph.prototype.createThumbnail = function () {
@@ -11809,7 +11809,7 @@ CostumeIconMorph.prototype.init = function (aCostume) {
   this.padding = 2;
   this.corner = 8;
   this.fixLayout();
-  this.fps = 1;
+  this.fps = 2;
 };
 
 CostumeIconMorph.prototype.createThumbnail = function () {
@@ -12594,7 +12594,7 @@ SoundIconMorph.prototype.init = function (aSound) {
   this.padding = 2;
   this.corner = 8;
   this.fixLayout();
-  this.fps = 1;
+  this.fps = 2;
 };
 
 SoundIconMorph.prototype.createThumbnail = function () {
@@ -13000,7 +13000,7 @@ SceneIconMorph.prototype.init = function (aScene) {
   this.padding = 2;
   this.corner = 8;
   this.fixLayout();
-  this.fps = 1;
+  this.fps = 2;
 };
 
 SceneIconMorph.prototype.createThumbnail = function () {

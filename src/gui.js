@@ -888,8 +888,8 @@ IDE_Morph.prototype.createLogo = function () {
   this.logo.render = function (ctx) {
     var gradient = ctx.createLinearGradient(0, 0, this.width(), 0);
     gradient.addColorStop(0, "black");
-    gradient.addColorStop(0.5, myself.accentColor.toString());
-    ctx.fillStyle = myself.accentColor.toString();
+    gradient.addColorStop(0.5, myself.getControlBarColor().toString());
+    ctx.fillStyle = myself.getControlBarColor().toString();
     ctx.fillRect(0, 0, this.width(), this.height());
     if (this.cachedTexture) {
       this.renderCachedTexture(ctx);
@@ -1175,6 +1175,15 @@ IDE_Morph.prototype.createProjectControlBar = function () {
     pauseButton.refresh();
   };
 };
+
+IDE_Morph.prototype.getControlBarColor = function () {
+  if (this.isBright) {
+    return this.accentColor;
+  } else {
+    return new Color(51, 51, 51);
+  }
+}
+
 IDE_Morph.prototype.createControlBar = function () {
   // assumes the logo has already been created
   var padding = 10,
@@ -1192,11 +1201,11 @@ IDE_Morph.prototype.createControlBar = function () {
     cloudButton,
     x,
     colors = [
-      this.accentColor,
-      this.accentColor.withAlpha(0.1), //this.frameColor.darker(50),
+      this.getControlBarColor(),
+      this.getControlBarColor().withAlpha(0.1), //this.frameColor.darker(50),
       this.frameColor.darker(50),
     ],
-    activeColor = this.accentColor.withAlpha(0.5),
+    activeColor = this.getControlBarColor().withAlpha(0.5),
     activeColors = [
       activeColor,
       activeColor.lighter(40),
@@ -1248,7 +1257,7 @@ IDE_Morph.prototype.createControlBar = function () {
   button.corner = 4;
   button.color = colors[0];
   button.highlightColor = colors[1];
-  button.pressColor = this.accentColor.darker();
+  button.pressColor = this.getControlBarColor().darker();
   button.labelMinExtent = new Point(36, 18);
   button.padding = 0;
   button.labelShadowOffset = new Point(-1, -1);
@@ -1276,7 +1285,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.projectControlBar.refreshResumeSymbol();
   };
   // slider.alpha = MorphicPreferences.isFlat ? 0.1 : 0.3;
-  slider.color = this.accentColor.darker();
+  slider.color = this.getControlBarColor().darker();
   slider.alpha = 0.3;
   slider.setExtent(new Point(50, 14));
   this.controlBar.add(slider);
@@ -4237,7 +4246,7 @@ IDE_Morph.prototype.snapMenu = function () {
   menu = new MenuMorph(this);
   this.ideRender(menu);
   console.log(menu.outlinePath);
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
 
   menu.addItem("About...", "aboutSnap");
   menu.addLine();
@@ -4290,7 +4299,7 @@ IDE_Morph.prototype.cloudMenu = function () {
   }
 
   menu = new MenuMorph(this);
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
   this.ideRender(menu);
   if (shiftClicked) {
     menu.addItem("url...", "setCloudURL", null, new Color(255, 100, 100));
@@ -4481,8 +4490,8 @@ IDE_Morph.prototype.settingsMenu = function () {
 
   menu = new MenuMorph(this);
   advancedMenu = new MenuMorph(this);
-  menu.bgColor = this.accentColor;
-  advancedMenu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
+  advancedMenu.bgColor = this.getControlBarColor();
   this.ideRender(menu);
   menu.addMenu(
     [
@@ -5055,7 +5064,7 @@ IDE_Morph.prototype.projectMenu = function () {
     backup = this.availableBackup(shiftClicked);
 
   menu = new MenuMorph(this);
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
   this.ideRender(menu);
   menu.addItem("Notes...", "editNotes");
   menu.addLine();
@@ -5279,7 +5288,7 @@ IDE_Morph.prototype.editMenu = function () {
     myself = this;
 
   menu = new MenuMorph(this);
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
   this.ideRender(menu);
 
   menu.addItem(
@@ -7569,7 +7578,7 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
       this.toggleSingleStepping();
     }
     this.setColor(this.frameColor);
-    this.controlBar.setColor(this.accentColor);
+    this.controlBar.setColor(this.getControlBarColor());
     elements.forEach((e) => e.show());
     this.stage.setScale(1);
     // show all hidden dialogs
@@ -7782,7 +7791,7 @@ IDE_Morph.prototype.microphoneMenu = function () {
     ),
     empty = tick.fullCopy();
 
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
 
   empty.render = nop;
   if (microphone.isReady) {
@@ -7805,7 +7814,7 @@ IDE_Morph.prototype.getLanguageMenu = function () {
     tick = new SymbolMorph("tick", MorphicPreferences.menuFontSize * 0.75),
     empty = tick.fullCopy();
 
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
 
   empty.render = nop;
   SnapTranslator.languages().forEach((lang) =>
@@ -7918,7 +7927,7 @@ IDE_Morph.prototype.looksMenuData = function () {
       MorphicPreferences.menuFontSize * 0.75,
       WHITE
     );
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
   // this.ideRender(menu);
 
   menu.addPreference = function (label, toggle, test, onHint, offHint, hide) {

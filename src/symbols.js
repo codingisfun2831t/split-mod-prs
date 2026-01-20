@@ -157,6 +157,8 @@ SymbolMorph.prototype.names = [
   "speakers",
   "extension",
   "newSprite",
+  "penIcon",
+  "penSeperator"
 ];
 
 // SymbolMorph instance creation:
@@ -537,6 +539,12 @@ SymbolMorph.prototype.renderShape = function (ctx, aColor) {
     case "newSprite":
       this.renderSymbolNewSprite(ctx);
       break;
+    case "penIcon":
+      this.renderSymbolPenIcon(ctx);
+      break;
+    case "penSeperator":
+      this.renderSymbolPenSeperator(ctx);
+      break;
     default:
       throw new Error('unknown symbol name: "' + this.name + '"');
   }
@@ -587,6 +595,8 @@ SymbolMorph.prototype.symbolWidth = function () {
       return size;
     case "loop":
       return size * 1.1;
+    case "penSeperator":
+      return 1;
     default:
       return size;
   }
@@ -686,6 +696,8 @@ SymbolMorph.prototype.eraserBlack = new Image();
 SymbolMorph.prototype.eraserBlack.src = "src/eraser-black.svg";
 SymbolMorph.prototype.paint = new Image();
 SymbolMorph.prototype.paint.src = "src/paintbucket.svg";
+SymbolMorph.prototype.penIconSymbol = new Image();
+SymbolMorph.prototype.penIconSymbol.src = "src/pen-icon.svg";
 SymbolMorph.prototype.paintBlack = new Image();
 SymbolMorph.prototype.paintBlack.src = "src/paintbucket-black.svg";
 SymbolMorph.prototype.pipette = new Image();
@@ -2843,6 +2855,16 @@ SymbolMorph.prototype.renderSymbolExtension = function (ctx, color) {
 SymbolMorph.prototype.renderSymbolNewSprite = function (ctx) {
   this.drawImage(ctx, this.addSpriteSymbol);
 };
+
+SymbolMorph.prototype.renderSymbolPenIcon = function (ctx) {
+  this.drawImage(ctx, this.penIconSymbol);
+};
+
+SymbolMorph.prototype.renderSymbolPenSeperator = function (ctx) {
+  ctx.fillStyle = "#0DA57A";
+  ctx.fillRect(0, 0, this.width(), this.height());
+};
+
 
 /*
 // register examples with the World demo menu

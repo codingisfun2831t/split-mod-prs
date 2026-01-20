@@ -1009,33 +1009,33 @@ SpriteMorph.prototype.primitiveBlocks = function () {
     clear: {
       type: "command",
       category: "pen",
-      spec: "erase all",
+      spec: "$penIcon-2.5 $penSeperator-2.5 erase all",
       animation: true,
     },
     down: {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "pen down",
+      spec: "$penIcon-2.5 $penSeperator-2.5 pen down",
     },
     up: {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "pen up",
+      spec: "$penIcon-2.5 $penSeperator-2.5 pen up",
     },
     getPenDown: {
       only: SpriteMorph,
       type: "predicate",
       category: "pen",
-      spec: "pen down?",
+      spec: "$penIcon-2.5 $penSeperator-2.5 pen down?",
       code: "down?",
     },
     setColor: {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "set pen color to %clr",
+      spec: "$penIcon-2.5 $penSeperator-2.5 set pen color to %clr",
       src: `(
                 (prim t setColor color)
                 (extension "clr_setpen(clr)" (get color)))`,
@@ -1044,7 +1044,7 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "set pen %clrdim to %n",
+      spec: "$penIcon-2.5 $penSeperator-2.5 set pen %clrdim to %n",
       defaults: [["hue"], 50],
       code: "pen=",
     },
@@ -1052,14 +1052,14 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "change pen %clrdim by %n",
+      spec: "$penIcon-2.5 $penSeperator-2.5 change pen %clrdim by %n",
       defaults: [["hue"], 10],
       code: "+pen",
     },
     getPenAttribute: {
       type: "reporter",
       category: "pen",
-      spec: "pen %pen",
+      spec: "$penIcon-2.5 $penSeperator-2.5 pen %pen",
       defaults: [["hue"]],
       code: "pen",
     },
@@ -1067,14 +1067,14 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: StageMorph,
       type: "command",
       category: "pen",
-      spec: "set background color to %clr",
+      spec: "$penIcon-2.5 $penSeperator-2.5 set background color to %clr",
       animation: true,
     },
     setBackgroundColorDimension: {
       only: StageMorph,
       type: "command",
       category: "pen",
-      spec: "set background %clrdim to %n",
+      spec: "$penIcon-2.5 $penSeperator-2.5 set background %clrdim to %n",
       defaults: [["hue"], 50],
       animation: true,
     },
@@ -1082,7 +1082,7 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: StageMorph,
       type: "command",
       category: "pen",
-      spec: "change background %clrdim by %n",
+      spec: "$penIcon-2.5 $penSeperator-2.5 change background %clrdim by %n",
       defaults: [["hue"], 10],
       animation: true,
     },
@@ -1090,7 +1090,7 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "change pen size by %n",
+      spec: "$penIcon-2.5 $penSeperator-2.5 change pen size by %n",
       defaults: [1],
       animation: true,
       code: "+penSize",
@@ -1102,7 +1102,7 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "set pen size to %n",
+      spec: "$penIcon-2.5 $penSeperator-2.5 set pen size to %n",
       defaults: [1],
       animation: true,
       code: "penSize=",
@@ -1111,7 +1111,7 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "stamp",
+      spec: "$penIcon-2.5 $penSeperator-2.5 stamp",
       animation: true,
       code: "stamp",
     },
@@ -1119,7 +1119,7 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "fill",
+      spec: "$penIcon-2.5 $penSeperator-2.5 fill",
       animation: true,
       code: "fill",
     },
@@ -1127,53 +1127,53 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "command",
       category: "pen",
-      spec: "write %s size %n",
+      spec: "$penIcon-2.5 $penSeperator-2.5 write %s size %n",
       defaults: [localize("Hello!"), 12],
       animation: true,
     },
     reportPenTrailsAsCostume: {
       type: "reporter",
       category: "pen",
-      spec: "pen trails",
+      spec: "$penIcon-2.5 $penSeperator-2.5 pen trails",
       code: "trails",
     },
     reportPentrailsAsSVG: {
       type: "reporter",
       category: "pen",
-      spec: "pen vectors",
+      spec: "$penIcon-2.5 $penSeperator-2.5 pen vectors",
       code: "svgTrails",
     },
     doPasteOn: {
       type: "command",
       category: "pen",
-      spec: "paste on %spr",
+      spec: "$penIcon-2.5 $penSeperator-2.5 paste on %spr",
       code: "paste",
       animation: true,
     },
     doCutFrom: {
       type: "command",
       category: "pen",
-      spec: "cut from %spr",
+      spec: "$penIcon-2.5 $penSeperator-2.5 cut from %spr",
       code: "cut",
       animation: true,
     },
     reportColor: {
       type: "reporter",
       category: "pen",
-      spec: "color %clr",
+      spec: "$penIcon-2.5 $penSeperator-2.5 color %clr",
       code: "colorFrom",
     },
     reportColorAttribute: {
       type: "reporter",
       category: "pen",
-      spec: "%color of color %clr",
+      spec: "$penIcon-2.5 $penSeperator-2.5 %color of color %clr",
       defaults: [["hue"]],
       code: "color",
     },
     reportNewColor: {
       type: "reporter",
       category: "pen",
-      spec: "new color %hsbt",
+      spec: "$penIcon-2.5 $penSeperator-2.5 new color %hsbt",
       code: "newColor",
     },
 
@@ -3974,13 +3974,13 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("turn"));
     blocks.push(block("turnLeft"));
     blocks.push("-");
-    blocks.push(block("setHeading"));
-    blocks.push(block("doFaceTowards"));
-    blocks.push("-");
-    blocks.push(block("gotoXY"));
     blocks.push(block("doGotoObject"));
+    blocks.push(block("gotoXY"));
     blocks.push(block("doGlide"));
     //blocks.push(block('doGlideSprite'));
+    blocks.push("-");
+    blocks.push(block("setHeading"));
+    blocks.push(block("doFaceTowards"));
     blocks.push("-");
     blocks.push(block("changeXPosition"));
     blocks.push(block("setXPosition"));
@@ -3997,30 +3997,25 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(watcherToggle("direction"));
     blocks.push(block("direction", this.inheritsAttribute("direction")));
   } else if (category === "looks") {
-    blocks.push(block("doSwitchToCostume"));
-    blocks.push(block("doWearNextCostume"));
-    blocks.push(watcherToggle("getCostumeIdx"));
-    blocks.push(block("getCostumeIdx", this.inheritsAttribute("costume #")));
-    blocks.push("-");
     blocks.push(block("doSayFor"));
     blocks.push(block("bubble"));
     blocks.push(block("doThinkFor"));
     blocks.push(block("doThink"));
     blocks.push("-");
-    blocks.push(block("reportGetImageAttribute"));
-    blocks.push(block("reportNewCostumeStretched"));
-    blocks.push(block("reportNewCostumeSkewed"));
-    blocks.push(block("reportNewCostume"));
-    blocks.push("-");
-    blocks.push(block("changeEffect"));
-    blocks.push(block("setEffect"));
-    blocks.push(block("clearEffects"));
-    blocks.push(block("getEffect"));
+    blocks.push(block("doSwitchToCostume"));
+    blocks.push(block("doWearNextCostume"));
+    blocks.push(watcherToggle("getCostumeIdx"));
+    blocks.push(block("getCostumeIdx", this.inheritsAttribute("costume #")));
     blocks.push("-");
     blocks.push(block("changeScale"));
     blocks.push(block("setScale"));
     blocks.push(watcherToggle("getScale"));
     blocks.push(block("getScale", this.inheritsAttribute("size")));
+    blocks.push("-");
+    blocks.push(block("changeEffect"));
+    blocks.push(block("setEffect"));
+    blocks.push(block("clearEffects"));
+    blocks.push(block("getEffect"));
     blocks.push("-");
     blocks.push(block("show"));
     blocks.push(block("hide"));
@@ -4029,7 +4024,12 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push("-");
     blocks.push(block("goToLayer"));
     blocks.push(block("goBackNew"));
-
+    blocks.push("-");
+    blocks.push(block("reportNewCostume"));
+    blocks.push(block("reportGetImageAttribute"));
+    blocks.push(block("reportNewCostumeStretched"));
+    blocks.push(block("reportNewCostumeSkewed"));
+    
     // for debugging: ///////////////
     if (devMode) {
       blocks.push("-");
@@ -4128,37 +4128,34 @@ SpriteMorph.prototype.blockTemplates = function (
     }
   } else if (category === "control") {
     blocks.push(block("doWarp"));
-    blocks.push("-");
     blocks.push(block("doWait"));
-    blocks.push(block("doWaitUntil"));
     blocks.push("-");
-    blocks.push(block("doForever"));
     blocks.push(block("doRepeat"));
+    blocks.push(block("doForever"));
+    blocks.push("-");
+    blocks.push(block("doIf"));
+    blocks.push(block("doIfElse"));
+    blocks.push(block("reportIfElse"));
+    blocks.push(block("doWaitUntil"));
     blocks.push(block("doUntil"));
     blocks.push(block("doFor"));
     blocks.push("-");
     // blocks.push(block('doVariadicIf'));
-    blocks.push(block("doIf"));
-    blocks.push(block("doIfElse"));
-    blocks.push(block("reportIfElse"));
-    blocks.push("-");
-    blocks.push(block("doReport"));
     blocks.push(block("doStopThis"));
-    blocks.push("-");
-    blocks.push(block("doRun"));
-    blocks.push(block("fork"));
-    blocks.push(block("evaluate"));
-    blocks.push(block("reportPipe"));
-    blocks.push("-");
-    blocks.push(block("doTellTo"));
-    blocks.push(block("reportAskFor"));
+    blocks.push(block("doPauseAll"));
+    blocks.push(block("doReport"));
     blocks.push("-");
     blocks.push(block("receiveOnClone"));
     blocks.push(block("createClone"));
     blocks.push(block("newClone"));
     blocks.push(block("removeClone"));
     blocks.push("-");
-    blocks.push(block("doPauseAll"));
+    blocks.push(block("doRun"));
+    blocks.push(block("fork"));
+    blocks.push(block("evaluate"));
+    blocks.push(block("reportPipe"));
+    blocks.push(block("doTellTo"));
+    blocks.push(block("reportAskFor"));
     blocks.push("-");
     blocks.push(block("receiveUserEdit"));
     blocks.push(block("doDefineBlock"));
@@ -4185,28 +4182,25 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("reportTouchingObject"));
     blocks.push(block("reportTouchingColor"));
     blocks.push(block("reportColorIsTouchingColor"));
+    blocks.push(block("reportRelationTo"));
+    blocks.push(block("reportAspect"));
     blocks.push("-");
-    blocks.push(block("getAsk"));
-    //blocks.push(block('doAsk'));
-    //blocks.push(watcherToggle('getLastAnswer'));
-    //blocks.push(block('getLastAnswer'));
+    blocks.push(block('doAsk'));
+    blocks.push(watcherToggle('getLastAnswer'));
+    blocks.push(block('getLastAnswer'));
     blocks.push("-");
-    blocks.push(block("reportMousePosition"));
+    blocks.push(block("reportKeyPressed"));
+    blocks.push(watcherToggle("reportMouseDown"));
+    blocks.push(block("reportMouseDown"));
     blocks.push(watcherToggle("reportMouseX"));
     blocks.push(block("reportMouseX"));
     blocks.push(watcherToggle("reportMouseY"));
     blocks.push(block("reportMouseY"));
-    blocks.push(watcherToggle("reportMouseDown"));
-    blocks.push(block("reportMouseDown"));
+    blocks.push(block("reportMousePosition"));
     blocks.push("-");
-    blocks.push(block("reportKeyPressed"));
-    blocks.push("-");
-    blocks.push(block("reportRelationTo"));
-    blocks.push(block("reportAspect"));
-    blocks.push("-");
-    blocks.push(block("doResetTimer"));
     blocks.push(watcherToggle("getTimer"));
     blocks.push(block("getTimer"));
+    blocks.push(block("doResetTimer"));
     blocks.push(block("reportDate"));
     blocks.push("-");
     blocks.push(block("reportAttributeOf"));
@@ -4248,13 +4242,6 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("reportQuotient"));
     blocks.push(block("reportPower"));
     blocks.push("-");
-    blocks.push(block("reportModulus"));
-    blocks.push(block("reportVariadicMin"));
-    blocks.push(block("reportVariadicMax"));
-    blocks.push("-");
-    blocks.push(block("reportRound"));
-    blocks.push(block("reportMonadic"));
-    blocks.push(block("reportAtan2"));
     blocks.push(block("reportRandom"));
     blocks.push("-");
     blocks.push(block("reportVariadicLessThan"));
@@ -4267,9 +4254,17 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("reportBoolean"));
     blocks.push("-");
     blocks.push(block("reportJoinWords"));
-    blocks.push(block("reportTextSplit"));
     blocks.push(block("reportLetter"));
     blocks.push(block("reportTextAttribute"));
+    blocks.push(block("reportTextSplit"));
+    blocks.push("-");
+    blocks.push(block("reportModulus"));
+    blocks.push(block("reportRound"));
+    blocks.push(block("reportVariadicMin"));
+    blocks.push(block("reportVariadicMax"));
+    blocks.push("-");
+    blocks.push(block("reportMonadic"));
+    blocks.push(block("reportAtan2"));
     blocks.push("-");
     blocks.push(block("reportUnicode"));
     blocks.push(block("reportUnicodeAsLetter"));
@@ -4481,7 +4476,7 @@ SpriteMorph.prototype.deleteVariableButton = function () {
 SpriteMorph.prototype.categoryText = function (category) {
   var txt = new StringMorph(
     localize(category[0].toUpperCase().concat(category.slice(1))),
-    11,
+    12,
     null,
     true
   );
@@ -4658,12 +4653,12 @@ SpriteMorph.prototype.palette = function (category) {
 SpriteMorph.prototype.freshPalette = function (category) {
   var myself = this,
     palette = new ScrollFrameMorph(null, null),
-    unit = SyntaxElementMorph.prototype.fontSize * 1.5,
+    unit = SyntaxElementMorph.prototype.fontSize * 2,
     ide = this.parentThatIsA(IDE_Morph),
     showCategories,
     showButtons,
     x = 0,
-    y = 5,
+    y = 10,
     ry = 0,
     blocks,
     hideNextSpace = false,
@@ -4672,7 +4667,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
     makeButton;
 
   palette.owner = this;
-  palette.padding = unit / 2;
+  palette.padding = 6;
   palette.color = this.paletteColor;
   palette.alpha = 1;
   palette.growth = new Point(0, MorphicPreferences.scrollBarSize);
@@ -4759,7 +4754,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
     blocks = SpriteMorph.prototype
       .allCategories()
       .reduce((blocks, category) => {
-        let header = [this.categoryText(category), "-"],
+        let header = [this.categoryText(category)],
           primitives = this.getPrimitiveTemplates(category),
           customs = this.customBlockTemplatesForCategory(category),
           showHeader =
@@ -4852,6 +4847,9 @@ SpriteMorph.prototype.freshPalette = function (category) {
       } else {
         x = 0;
         y += block.height();
+      }
+      if (block instanceof StringMorph) {
+        y += 5;
       }
     }
   });

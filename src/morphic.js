@@ -11235,6 +11235,8 @@ HandMorph.prototype.drop = function () {
     if (target.reactToDropOf) {
       target.reactToDropOf(morphToDrop, this);
     }
+
+    this.processCursor();
   }
 };
 
@@ -11433,6 +11435,24 @@ HandMorph.prototype.processDoubleClick = function () {
   this.mouseButton = null;
 };
 
+HandMorph.prototype.processCursor = function () {
+  var cursorMorph = this.morphAtPointer();
+  var cursor = cursorMorph.hoverCursor;
+
+  while (!cursor && cursorMorph.parent) {
+    cursorMorph = cursorMorph.parent;
+    cursor = cursorMorph.hoverCursor;
+  }
+
+  if (this.children.length) {
+    this.world.worldCanvas.style.cursor = "grabbing";
+  } else if (cursor) {
+    this.world.worldCanvas.style.cursor = cursor;
+  } else {
+    this.world.worldCanvas.style.cursor = "auto";
+  }
+}
+
 HandMorph.prototype.processMouseMove = function (event) {
   var pos,
     posInDocument = getDocumentPositionOf(this.world.worldCanvas),
@@ -11557,20 +11577,7 @@ HandMorph.prototype.processMouseMove = function (event) {
   this.mouseOverList = mouseOverNew;
   this.mouseOverBounds = mouseOverBoundsNew;
 
-  // cursor handling
-  var cursorMorph = this.morphAtPointer();
-  var cursor = cursorMorph.hoverCursor;
-
-  while (!cursor && cursorMorph.parent) {
-    cursorMorph = cursorMorph.parent;
-    cursor = cursorMorph.hoverCursor;
-  }
-
-  if (cursor) {
-    this.world.worldCanvas.style.cursor = cursor;
-  } else {
-    this.world.worldCanvas.style.cursor = "auto";
-  }
+  this.processCursor();
 };
 
 HandMorph.prototype.processMouseScroll = function (event) {

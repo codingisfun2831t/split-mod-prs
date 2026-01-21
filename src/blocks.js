@@ -16796,12 +16796,15 @@ CommentMorph.prototype.init = function (contents) {
   this.isCollapsed = false;
   this.titleBar = new BoxMorph(this.rounding, scale, new Color(228, 219, 140));
   this.titleBar.color = new Color(228, 219, 140);
+  this.titleBar.hoverCursor = "grab";
   this.titleBar.setHeight(20);
   this.title = null;
   this.arrow = new ArrowMorph("down", this.fontSize);
   this.arrow.mouseClickLeft = () => this.toggleExpand();
+  this.arrow.hoverCursor = "pointer";
   this.close = new SymbolMorph("commentClose", 8);
   this.close.mouseClickLeft = () => this.userDestroy();
+  this.close.hoverCursor = "pointer";
   this.contents = new TextMorph(
     contents || localize("add comment here..."),
     this.fontSize
@@ -16810,6 +16813,7 @@ CommentMorph.prototype.init = function (contents) {
   this.contents.enableSelecting();
   this.contents.maxWidth = 90 * scale;
   this.contents.fixLayout();
+  this.hoverCursor = "text";
   this.handle = new HandleMorph(this.contents, 80, this.fontSize * 2, -2, -2);
   this.handle.setExtent(new Point(11 * scale, 11 * scale));
   this.anchor = null;

@@ -2998,7 +2998,7 @@ DialogBoxMorph.prototype.createButtons = function () {
   if (this.closeButton) {
     this.closeButton.destroy();
   }
-  this.buttons = new AlignmentMorph("row", this.padding);
+  this.buttons = new AlignmentMorph("row", this.padding, "right");
   this.addCloseButton();
   this.buttons.fixLayout = (...args) => (
     AlignmentMorph.prototype.fixLayout.call(this.buttons, ...args),
@@ -3341,14 +3341,14 @@ AlignmentMorph.uber = Morph.prototype;
 
 // AlignmentMorph instance creation:
 
-function AlignmentMorph(orientation, padding) {
-  this.init(orientation, padding);
+function AlignmentMorph(orientation, padding, alignment) {
+  this.init(orientation, padding, alignment);
 }
 
-AlignmentMorph.prototype.init = function (orientation, padding) {
+AlignmentMorph.prototype.init = function (orientation, padding, alignment) {
   // additional properties:
   this.orientation = orientation || "row"; // or 'column'
-  this.alignment = "center"; // or 'left' in a column
+  this.alignment = alignment || "center"; // or 'left' in a column
   this.padding = padding || 0;
   this.respectHiddens = false;
 

@@ -158,7 +158,8 @@ SymbolMorph.prototype.names = [
   "extension",
   "newSprite",
   "penIcon",
-  "penSeperator"
+  "penSeperator",
+  "commentClose",
 ];
 
 // SymbolMorph instance creation:
@@ -545,6 +546,9 @@ SymbolMorph.prototype.renderShape = function (ctx, aColor) {
     case "penSeperator":
       this.renderSymbolPenSeperator(ctx);
       break;
+    case "commentClose":
+      this.renderSymbolCommentClose(ctx);
+      break;
     default:
       throw new Error('unknown symbol name: "' + this.name + '"');
   }
@@ -690,6 +694,8 @@ SymbolMorph.prototype.brush = new Image();
 SymbolMorph.prototype.brush.src = "src/brush.svg";
 SymbolMorph.prototype.brushBlack = new Image();
 SymbolMorph.prototype.brushBlack.src = "src/brush-black.svg";
+SymbolMorph.prototype.commentClose = new Image();
+SymbolMorph.prototype.commentClose.src = "src/comment-close.svg";
 SymbolMorph.prototype.eraser = new Image();
 SymbolMorph.prototype.eraser.src = "src/eraser.svg";
 SymbolMorph.prototype.eraserBlack = new Image();
@@ -2864,6 +2870,10 @@ SymbolMorph.prototype.renderSymbolPenSeperator = function (ctx) {
   var shift = this.width() / 4;
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   ctx.fillRect(shift, 0, this.width() - shift * 2, this.height());
+};
+
+SymbolMorph.prototype.renderSymbolCommentClose = function (ctx) {
+  this.drawImage(ctx, this.commentClose);
 };
 
 

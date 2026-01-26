@@ -1160,20 +1160,20 @@ SpriteMorph.prototype.primitiveBlocks = function () {
     reportColor: {
       type: "reporter",
       category: "pen",
-      spec: "$penIcon-2.3 $penSeperator-2.5 color %clr",
+      spec: "color %clr",
       code: "colorFrom",
     },
     reportColorAttribute: {
       type: "reporter",
       category: "pen",
-      spec: "$penIcon-2.3 $penSeperator-2.5 %color of color %clr",
+      spec: "%color of color %clr",
       defaults: [["hue"]],
       code: "color",
     },
     reportNewColor: {
       type: "reporter",
       category: "pen",
-      spec: "$penIcon-2.3 $penSeperator-2.5 new color %hsbt",
+      spec: "new color %hsbt",
       code: "newColor",
     },
 

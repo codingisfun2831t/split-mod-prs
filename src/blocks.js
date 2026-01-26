@@ -2581,7 +2581,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
   }
 
   // center text in ReporterBlockMorph
-
+  if(lines.length == 1 && isReporter) {
   lines.forEach((line) => {
     if (
       ((line.length == 2 && line[0].isBlockLabelBreak) || line.length === 1) &&
@@ -2597,6 +2597,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
       );
     }
   });
+}
 
   // set my extent (silently, because we'll redraw later anyway):
   this.alwaysRound = lines.length == 1;

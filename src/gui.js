@@ -5504,7 +5504,7 @@ IDE_Morph.prototype.popupMediaImportDialog = function (folderName, items) {
     frame.contents.adjustBounds();
     this.label.setCenter(this.center());
     this.label.setTop(this.top() + (th - this.label.height()) / 2);
-    this.buttons.setCenter(this.center());
+    this.buttons.setRight(this.right() - this.padding);
     this.buttons.setBottom(this.bottom() - this.padding);
 
     // refresh shadow
@@ -10420,7 +10420,7 @@ ProjectDialogMorph.prototype.fixLayout = function () {
   }
 
   if (this.buttons && this.buttons.children.length > 0) {
-    this.buttons.setCenter(this.center());
+    this.buttons.setRight(this.right() - this.padding);
     this.buttons.setBottom(this.bottom() - this.padding);
   }
 
@@ -10675,7 +10675,7 @@ ProjectRecoveryDialogMorph.prototype.fixLayout = function () {
 
   if (this.buttons) {
     this.buttons.fixLayout();
-    this.buttons.setCenter(this.center());
+    this.buttons.setRight(this.right() - this.padding);
     this.buttons.setBottom(this.bottom() - this.padding);
   }
 
@@ -11001,7 +11001,7 @@ LibraryImportDialogMorph.prototype.fixLayout = function () {
 
   if (this.buttons) {
     this.buttons.fixLayout();
-    this.buttons.setCenter(this.center());
+    this.buttons.setRight(this.right() - this.padding);
     this.buttons.setBottom(this.bottom() - this.padding);
   }
 

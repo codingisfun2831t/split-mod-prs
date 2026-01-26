@@ -3144,7 +3144,7 @@ DialogBoxMorph.prototype.fixLayout = function () {
     this.bounds.setWidth(
       Math.max(this.width(), this.buttons.width() + 2 * this.padding),
     );
-    this.buttons.setCenter(this.center());
+    this.buttons.setRight(this.right() - this.padding);
     this.buttons.setBottom(this.bottom() - this.padding);
   }
 

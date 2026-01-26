@@ -8090,7 +8090,7 @@ MenuMorph.prototype.popup = function (world, pos) {
 
   this.createItems();
   this.setPosition(pos);
-  this?.noShadow || this.addShadow(new Point(...([0, 0])), 50);
+  this?.noShadow ? this.addShadow(new Point(...([0, 4])), 200, new Color(0, 0, 0, 0.5)) : this.addShadow(new Point(...([0, 0])), 50);
   this.keepWithin(world);
   console.warn(!this?.noShadow)
   if (this.bottom() > world.bottom()) {
@@ -8101,7 +8101,7 @@ MenuMorph.prototype.popup = function (world, pos) {
     this.addShadow(new Point(2, 2), 80);
     scroller.setHeight(world.bottom() - scroller.top() - 6);
     scroller.adjustScrollBars(); // ?
-  } else if ((this.bgColor ? this.bgColor.eq(WHITE) : false) && !this?.noShadow && (this.height() > world.height() / 2)) {
+  } else if (!this?.noShadow && (this.height() > world.height() / 2)) {
     // scroll menu items if the menu is taller than half the height of the world
     this.setHeight(world.height() / 2);
     this.setPosition(pos);

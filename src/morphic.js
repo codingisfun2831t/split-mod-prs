@@ -8090,7 +8090,7 @@ MenuMorph.prototype.popup = function (world, pos) {
 
   this.createItems();
   this.setPosition(pos);
-  this?.noShadow || this.addShadow(new Point(...([0, 0])), 50);
+  this?.noShadow ? this.addShadow(new Point(...([0, 4])), 200, new Color(0, 0, 0, 0.5)) : this.addShadow(new Point(...([0, 0])), 50);
   this.keepWithin(world);
   console.warn(!this?.noShadow)
   if (this.bottom() > world.bottom()) {
@@ -8101,7 +8101,7 @@ MenuMorph.prototype.popup = function (world, pos) {
     this.addShadow(new Point(2, 2), 80);
     scroller.setHeight(world.bottom() - scroller.top() - 6);
     scroller.adjustScrollBars(); // ?
-  } else if ((this.bgColor ? this.bgColor.eq(WHITE) : false) && !this?.noShadow && (this.height() > world.height() / 2)) {
+  } else if (!this?.noShadow && (this.height() > world.height() / 2)) {
     // scroll menu items if the menu is taller than half the height of the world
     this.setHeight(world.height() / 2);
     this.setPosition(pos);
@@ -11235,6 +11235,8 @@ HandMorph.prototype.drop = function () {
     if (target.reactToDropOf) {
       target.reactToDropOf(morphToDrop, this);
     }
+
+    this.processCursor();
   }
 };
 
@@ -11433,6 +11435,24 @@ HandMorph.prototype.processDoubleClick = function () {
   this.mouseButton = null;
 };
 
+HandMorph.prototype.processCursor = function () {
+  var cursorMorph = this.morphAtPointer();
+  var cursor = cursorMorph.hoverCursor;
+
+  while (!cursor && cursorMorph.parent) {
+    cursorMorph = cursorMorph.parent;
+    cursor = cursorMorph.hoverCursor;
+  }
+
+  if (this.children.length) {
+    this.world.worldCanvas.style.cursor = "grabbing";
+  } else if (cursor) {
+    this.world.worldCanvas.style.cursor = cursor;
+  } else {
+    this.world.worldCanvas.style.cursor = "auto";
+  }
+}
+
 HandMorph.prototype.processMouseMove = function (event) {
   var pos,
     posInDocument = getDocumentPositionOf(this.world.worldCanvas),
@@ -11557,20 +11577,7 @@ HandMorph.prototype.processMouseMove = function (event) {
   this.mouseOverList = mouseOverNew;
   this.mouseOverBounds = mouseOverBoundsNew;
 
-  // cursor handling
-  var cursorMorph = this.morphAtPointer();
-  var cursor = cursorMorph.hoverCursor;
-
-  while (!cursor && cursorMorph.parent) {
-    cursorMorph = cursorMorph.parent;
-    cursor = cursorMorph.hoverCursor;
-  }
-
-  if (cursor) {
-    this.world.worldCanvas.style.cursor = cursor;
-  } else {
-    this.world.worldCanvas.style.cursor = "auto";
-  }
+  this.processCursor();
 };
 
 HandMorph.prototype.processMouseScroll = function (event) {

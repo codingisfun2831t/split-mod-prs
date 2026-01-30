@@ -3385,7 +3385,7 @@ BlockDialogMorph.prototype.fixLayout = function () {
                     + this.buttons.height()
                     + this.padding
         );
-        this.buttons.setCenter(this.center());
+        this.buttons.setRight(this.right() - this.padding);
         this.buttons.setBottom(this.bottom() - this.padding);
     }
 
@@ -3908,7 +3908,7 @@ BlockEditorMorph.prototype.fixLayout = function () {
     }
 
     if (this.buttons && (this.buttons.children.length > 0)) {
-        this.buttons.setCenter(this.center());
+        this.buttons.setRight(this.right() - this.padding);
         this.buttons.setBottom(this.bottom() - this.padding);
     }
 
@@ -5776,7 +5776,7 @@ VariableDialogMorph.prototype.fixLayout = function () {
                     + this.buttons.height()
                     + this.padding
         );
-        this.buttons.setCenter(this.center());
+        this.buttons.setRight(this.right() - this.padding);
         this.buttons.setBottom(this.bottom() - this.padding);
     }
 

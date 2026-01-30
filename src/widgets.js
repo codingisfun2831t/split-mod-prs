@@ -46,6 +46,7 @@
         AlignmentMorph
         DialogBoxMorph
         InputFieldMorph
+        SplitColorPickerMorph
     TriggerMorph*
         MenuItemMorph*
             PianoKeyMorph
@@ -2998,7 +2999,7 @@ DialogBoxMorph.prototype.createButtons = function () {
   if (this.closeButton) {
     this.closeButton.destroy();
   }
-  this.buttons = new AlignmentMorph("row", this.padding);
+  this.buttons = new AlignmentMorph("row", this.padding, "right");
   this.addCloseButton();
   this.buttons.fixLayout = (...args) => (
     AlignmentMorph.prototype.fixLayout.call(this.buttons, ...args),
@@ -3143,7 +3144,7 @@ DialogBoxMorph.prototype.fixLayout = function () {
     this.bounds.setWidth(
       Math.max(this.width(), this.buttons.width() + 2 * this.padding),
     );
-    this.buttons.setCenter(this.center());
+    this.buttons.setRight(this.right() - this.padding);
     this.buttons.setBottom(this.bottom() - this.padding);
   }
 
@@ -3341,14 +3342,14 @@ AlignmentMorph.uber = Morph.prototype;
 
 // AlignmentMorph instance creation:
 
-function AlignmentMorph(orientation, padding) {
-  this.init(orientation, padding);
+function AlignmentMorph(orientation, padding, alignment) {
+  this.init(orientation, padding, alignment);
 }
 
-AlignmentMorph.prototype.init = function (orientation, padding) {
+AlignmentMorph.prototype.init = function (orientation, padding, alignment) {
   // additional properties:
   this.orientation = orientation || "row"; // or 'column'
-  this.alignment = "center"; // or 'left' in a column
+  this.alignment = alignment || "center"; // or 'left' in a column
   this.padding = padding || 0;
   this.respectHiddens = false;
 
@@ -3772,6 +3773,76 @@ InputFieldMorph.prototype.drawRectBorder = function (ctx) {
   ctx.lineTo(this.width() - shift, this.height() - this.edge);
   ctx.stroke();
 };
+
+// SplitColorPickerMorph ///////////////////////////////////////////////
+/*
+    I am a replication of the Scratch color picker, used for the
+    ColorSlotMorph in blocks.js.
+*/
+
+// SplitColorPickerMorph inherits from Morph
+
+SplitColorPickerMorph.prototype = new Morph();
+SplitColorPickerMorph.prototype.constructor = SplitColorPickerMorph;
+SplitColorPickerMorph.uber = Morph.prototype;
+
+// SplitColorPickerMorph instance creation:
+
+function SplitColorPickerMorph(setter, getter) {
+  this.init(setter, getter);
+}
+
+SplitColorPickerMorph.prototype.init = function (setter, getter) {
+  this.setter = setter;
+  this.getter = getter;
+  this.colorLabel = null;
+  this.colorReadout = null;
+  this.colorSlider = null;
+  this.saturationLabel = null;
+  this.saturationReadout = null;
+  this.brightnessLabel = null;
+  this.brightnessReadout = null;
+
+  this.buildContents();
+  this.fixLayout();
+  this.refresh();
+}
+
+// SplitColorPickerMorph contents:
+
+SplitColorPickerMorph.prototype.buildContents = function () {
+  this.colorLabel = new StringMorph("Color", 11, null, true);
+  this.colorLabel.setColor(WHITE);
+  this.add(this.colorLabel);
+
+  this.colorReadout = new StringMorph("0", 11);
+  this.colorReadout.setColor(WHITE);
+  this.add(this.colorReadout);
+
+  this.colorSlider = new SliderMorph(0, 100, Math.floor(this.getter().hsv()[0] * 100));
+  this.colorSlider.toggleOrientation();
+  this.colorSlider.setWidth(150);
+  this.colorSlider.action = function(num) {
+    console.log(num);
+  };
+  this.add(this.colorSlider);
+}
+
+// SplitColorPickerMorph layout:
+
+SplitColorPickerMorph.prototype.fixLayout = function () {
+  this.colorLabel.setPosition(this.topLeft().add(new Point(8, 8)));
+  this.colorReadout.setPosition(this.colorLabel.topRight().add(new Point(12)));
+  this.colorSlider.setPosition(this.colorLabel.bottomLeft().add(new Point(0, 8)));
+  this.setExtent(new Point(166, 282));
+}
+
+// SplitColorPickerMorph refreshing:
+
+SplitColorPickerMorph.prototype.refresh = function () {
+  //this.colorSlider.value = Math.floor(this.getter().hsv()[0] * 100);
+  this.colorSlider.fixLayout();
+}
 
 // PianoMenuMorph //////////////////////////////////////////////////////
 /* 

@@ -1215,7 +1215,7 @@ IDE_Morph.prototype.createControlBar = function () {
     myself = this;
 
   function createMenuButton(action, icon, label) {
-    button = new TriggerMorph(this, action);
+    button = new TriggerMorph(myself, action);
 
     buttonIcon = new SymbolMorph(icon, 20);
     buttonLabel = new TextMorph(label);
@@ -1455,7 +1455,9 @@ IDE_Morph.prototype.createControlBar = function () {
 
     this.label = new InputFieldMorph(name); //new FrameMorph();
     this.label.doConstrastingColor = false;
-    this.label.color = this.color.lighter(10);
+    this.label.color = myself.isBright ?
+      this.color.lighter(25) :
+      new Color(30, 30, 30);
     this.label.contents().text.color = WHITE;
     this.label.contents().text.isBold = true;
     this.label.contents().isBold = true;
@@ -1464,6 +1466,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.label.acceptsDrops = false;
     this.label.typeInPadding = 10;
     this.label.contents().text.fixLayout();
+    this.label.out
     //this.label.add(txt);
     if (myself.cloud.disabled) {
       this.label.setLeft(this.editButton.right() + padding);

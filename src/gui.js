@@ -2548,7 +2548,7 @@ IDE_Morph.prototype.createCorral = function (keepSceneAlbum) {
   this.corral.newSpriteButton.color = this.accentColor;
   this.corral.newSpriteButton.corner = 26;
   this.corral.newSpriteButton.highlightColor = new Color(15, 189, 140);
-  this.corral.newSpriteButton.outlineColor = this.accentColor.lighter(55);
+  this.corral.newSpriteButton.outlineColor = this.accentColor.withAlpha(0.25);
   this.corral.newSpriteButton.outline = 4;
 
   this.corral.newSpriteButton._mouseEnter =

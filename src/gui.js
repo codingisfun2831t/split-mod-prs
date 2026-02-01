@@ -1214,6 +1214,39 @@ IDE_Morph.prototype.createControlBar = function () {
     buttonArrow,
     myself = this;
 
+  function createMenuButton(action, icon, label) {
+    button = new TriggerMorph(this, action);
+
+    buttonIcon = new SymbolMorph(icon, 20);
+    buttonLabel = new TextMorph(label);
+    buttonArrow = new ArrowMorph("vertical", 14, 2, WHITE);
+    buttonArrow.scale = 1;
+    button.setHeight(48);
+    button.setWidth(
+      buttonIcon.width() + buttonLabel.width() + buttonArrow.width() + 30,
+    );
+    button.color = colors[0];
+    button.highlightColor = colors[0].darker(25);
+    button.pressColor = button.highlightColor;
+
+    buttonIcon.setColor(WHITE);
+    buttonIcon.fixLayout();
+    buttonIcon.setCenter(button.center());
+    buttonIcon.setLeft(button.left() + 10);
+    buttonLabel.setColor(WHITE);
+    buttonLabel.setCenter(button.center());
+    buttonLabel.setLeft(buttonIcon.right() + 5);
+    buttonLabel.isBold = true;
+    buttonArrow.setCenter(button.center());
+    buttonArrow.setTop(buttonArrow.top() - 2);
+    buttonArrow.setLeft(buttonLabel.right());
+
+    button.label.destroy();
+    button.add(buttonIcon);
+    button.add(buttonLabel);
+    button.add(buttonArrow);
+  }
+
   if (this.controlBarBackground) {
     this.controlBarBackground.destroy();
   }
@@ -1290,145 +1323,28 @@ IDE_Morph.prototype.createControlBar = function () {
   this.controlBar.steppingSlider = slider;
 
   // projectButton
-  button = new TriggerMorph(this, "projectMenu");
-
-  buttonIcon = new SymbolMorph("file", 20);
-  buttonLabel = new TextMorph("File");
-  buttonArrow = new ArrowMorph("vertical", 16, 2, WHITE);
-  buttonArrow.scale = 1;
-  button.setHeight(48);
-  button.setWidth(
-    buttonIcon.width() + buttonLabel.width() + buttonArrow.width() + 30,
-  );
-  button.color = colors[0];
-  button.highlightColor = colors[0].darker(25);
-  button.pressColor = button.highlightColor;
-
-  buttonIcon.setColor(WHITE);
-  buttonIcon.fixLayout();
-  buttonIcon.setCenter(button.center());
-  buttonIcon.setLeft(button.left() + 10);
-  buttonLabel.setColor(WHITE);
-  buttonLabel.setCenter(button.center());
-  buttonLabel.setLeft(buttonIcon.right() + 5);
-  buttonLabel.isBold = true;
-  buttonArrow.setCenter(button.center());
-  buttonArrow.setLeft(buttonLabel.right() + 5);
-
-  button.label.destroy();
-  button.add(buttonIcon);
-  button.add(buttonLabel);
-  button.add(buttonArrow);
-
+  createMenuButton("projectMenu", "file", "File");
   projectButton = button;
   this.controlBar.add(projectButton);
   this.controlBar.projectButton = projectButton; // for menu positioning
 
   // settingsButton
-  button = new TriggerMorph(this, "settingsMenu");
-
-  buttonIcon = new SymbolMorph("gears", 20);
-  buttonLabel = new TextMorph("Settings");
-  buttonArrow = new ArrowMorph("vertical", 16, 2, WHITE);
-  buttonArrow.scale = 1;
-  button.setHeight(48);
-  button.setWidth(
-    buttonIcon.width() + buttonLabel.width() + buttonArrow.width() + 30,
-  );
-  button.color = colors[0];
-  button.highlightColor = colors[0].darker(25);
-  button.pressColor = button.highlightColor;
-
-  buttonIcon.setColor(WHITE);
-  buttonIcon.fixLayout();
-  buttonIcon.setCenter(button.center());
-  buttonIcon.setLeft(button.left() + 10);
-  buttonLabel.setColor(WHITE);
-  buttonLabel.setCenter(button.center());
-  buttonLabel.setLeft(buttonIcon.right() + 5);
-  buttonLabel.isBold = true;
-  buttonArrow.setCenter(button.center());
-  buttonArrow.setLeft(buttonLabel.right() + 5);
-
-  button.label.destroy();
-  button.add(buttonIcon);
-  button.add(buttonLabel);
-  button.add(buttonArrow);
-
+  createMenuButton("settingsMenu", "gears", "Settings");
   settingsButton = button;
   this.controlBar.add(settingsButton);
   this.controlBar.settingsButton = settingsButton; // for menu positioning
 
   // editButton
-  button = new TriggerMorph(this, "editMenu");
-
-  buttonIcon = new SymbolMorph("edit", 20);
-  buttonLabel = new TextMorph("Edit");
-  buttonArrow = new ArrowMorph("vertical", 16, 2, WHITE);
-  buttonArrow.scale = 1;
-  button.setHeight(48);
-  button.setWidth(
-    buttonIcon.width() + buttonLabel.width() + buttonArrow.width() + 30,
-  );
-  button.color = colors[0];
-  button.highlightColor = colors[0].darker(25);
-  button.pressColor = button.highlightColor;
-
-  buttonIcon.setColor(WHITE);
-  buttonIcon.fixLayout();
-  buttonIcon.setCenter(button.center());
-  buttonIcon.setLeft(button.left() + 10);
-  buttonLabel.setColor(WHITE);
-  buttonLabel.setCenter(button.center());
-  buttonLabel.setLeft(buttonIcon.right() + 5);
-  buttonLabel.isBold = true;
-  buttonArrow.setCenter(button.center());
-  buttonArrow.setLeft(buttonLabel.right() + 5);
-
-  button.label.destroy();
-  button.add(buttonIcon);
-  button.add(buttonLabel);
-  button.add(buttonArrow);
-
+  createMenuButton("editMenu", "edit", "Edit");
   editButton = button;
   this.controlBar.add(editButton);
   this.controlBar.editButton = editButton; // for menu positioning
 
   // cloudButton
-  button = new TriggerMorph(this, "cloudMenu");
-
-  buttonIcon = new SymbolMorph("cloudOutline", 11);
-  buttonLabel = new TextMorph("Cloud");
-  buttonArrow = new ArrowMorph("vertical", 16, 2, WHITE);
-  buttonArrow.scale = 1;
-  button.setHeight(48);
-  button.setWidth(
-    buttonIcon.width() + buttonLabel.width() + buttonArrow.width() + 30,
-  );
-  button.color = colors[0];
-  button.highlightColor = colors[0].darker(25);
-  button.pressColor = button.highlightColor;
-
+  createMenuButton("cloudMenu", "cloudOutline", "Cloud");
   button.refresh = function () {
     buttonIcon.name = !isNil(myself.cloud.username) ? "cloud" : "cloudOutline";
   };
-
-  buttonIcon.setColor(WHITE);
-  buttonIcon.fixLayout();
-  buttonIcon.setCenter(button.center());
-  buttonIcon.setLeft(button.left() + 10);
-  buttonLabel.setColor(WHITE);
-  buttonLabel.setCenter(button.center());
-  buttonLabel.setLeft(buttonIcon.right() + 5);
-  buttonLabel.isBold = true;
-  buttonArrow.setCenter(button.center());
-  buttonArrow.setLeft(buttonLabel.right() + 5);
-
-  button.label.destroy();
-  button.add(buttonIcon);
-  button.add(buttonLabel);
-  button.add(buttonArrow);
-  button.iconMorph = buttonIcon;
 
   cloudButton = button;
   this.controlBar.add(cloudButton);

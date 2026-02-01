@@ -12631,7 +12631,7 @@ InputSlotMorph.prototype.fixLayout = function () {
     this.isReadOnly || this.isStatic ? WHITE : new Color(87, 94, 117);
 
   if (this.choices) {
-    arrow.setSize(fontHeight(this.fontSize));
+    arrow.setSize(12);
     arrow.show();
   } else {
     arrow.hide();

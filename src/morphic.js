@@ -8090,7 +8090,7 @@ MenuMorph.prototype.popup = function (world, pos) {
 
   this.createItems();
   this.setPosition(pos);
-  this?.noShadow ? this.addShadow(new Point(...([0, 4])), 200, new Color(0, 0, 0, 0.5)) : this.addShadow(new Point(...([0, 0])), 50);
+  this?.noShadow ? this.addShadow(new Point(...([0, 4])), 200, new Color(0, 0, 0, 0.5)) : this.addShadow(new Point(...([0, 0])), 50, new Color(0, 0, 0, 0.7));
   this.keepWithin(world);
   console.warn(!this?.noShadow)
   if (this.bottom() > world.bottom()) {

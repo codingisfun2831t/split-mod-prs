@@ -13841,7 +13841,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
   }
 
   ctx.fill();
-  if (!this.isEmptySlot() || progress > 0) {
+  if (this.parentThatIsA(BlockMorph)?.alpha < 0.6 || !this.isEmptySlot() || progress > 0) {
     var e = this.flatEdge / 2;
     ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
     ctx.lineWidth = this.flatEdge;

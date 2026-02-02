@@ -265,13 +265,7 @@ SyntaxElementMorph.prototype.contrast = 65;
 SyntaxElementMorph.prototype.setScale = function (num) {
   var scale = Math.max(num, (1 / 1.2)) * 1.2;
 
-  var highContrast;
-  try {
-    highContrast = SpriteMorph?.prototype?.isHighContrast || false;
-  } catch (error) {
-    highContrast = false;
-  }
-  this.contrast = highContrast ? 70 : 20; //65;
+  this.contrast = 20; //65;
   this.scale = scale;
   this.corner = 3 * scale;
   this.rounding = 9 * scale;
@@ -1926,9 +1920,7 @@ SyntaxElementMorph.prototype.doWithAlpha = function (alpha, callback) {
 SyntaxElementMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
   this.contrast =
     this instanceof BlockMorph
-      ? SpriteMorph.prototype.isHighContrast
-        ? 70
-        : 20
+      ? 20
       : this.contrast;
   this.children.forEach((morph) => {
     if (morph instanceof SyntaxElementMorph) {
@@ -3608,9 +3600,7 @@ BlockMorph.prototype.userMenu = function () {
     field,
     rcvr;
   menu.bgColor = SpriteMorph.prototype.blockColorFor(this.category);
-  if (SpriteMorph.prototype.isHighContrast) {
-    menu.bgColor = menu.bgColor.darker(70);
-  }
+  
 
   menu.rerender();
   function addOption(label, toggle, test, onHint, offHint) {
@@ -5722,25 +5712,20 @@ BlockMorph.prototype.clearAlpha = function () {
 // BlockMorph drawing
 
 BlockMorph.prototype.render = function (ctx) {
-  var highContrast = SpriteMorph.prototype.isHighContrast;
   this.cachedClr = this.color.toString();
   this.cachedClrBright = this.bright();
   this.cachedClrDark = this.dark();
 
   if (MorphicPreferences.isFlat) {
     // draw the outline
-    ctx.fillStyle = SpriteMorph.prototype.isHighContrast
-      ? this.cachedClr
-      : this.cachedClrDark;
+    ctx.fillStyle = this.cachedClrDark;
     ctx.beginPath();
     this.outlinePath(ctx, 0);
     ctx.closePath();
     ctx.fill();
 
     // draw the inner filled shaped
-    ctx.fillStyle = SpriteMorph.prototype.isHighContrast
-      ? this.cachedClrDark
-      : this.cachedClr;
+    ctx.fillStyle = this.cachedClr;
     ctx.beginPath();
     this.outlinePath(ctx, this.flatEdge);
     ctx.closePath();
@@ -6029,7 +6014,6 @@ BlockMorph.prototype.outline = function (color, border) {
 // BlockMorph zebra coloring
 
 BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
-  this.contrast = SpriteMorph.prototype.isHighContrast ? 70 : 20;
   var nearest = nearestBlock,
     clr,
     cslot;
@@ -6038,7 +6022,7 @@ BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
     return;
   }
   if (!this.zebraContrast && isForced) {
-    return this.forceNormalColoring(true);
+    return this.forceNormalColoring();
   }
 
   if (!nearest) {
@@ -6072,6 +6056,9 @@ BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
   ) {
     this.alternateBlockColor();
   }
+  if (this.isHighContrast) {
+    this.alternateBlockColor();
+  }
   if (isForced) {
     this.fixChildrensBlockColor(true);
   }
@@ -6086,6 +6073,9 @@ BlockMorph.prototype.forceNormalColoring = function () {
     MorphicPreferences.isFlat ? ZERO : this.embossing
   );
   this.fixChildrensBlockColor(true);
+  if (this.isHighContrast) {
+    this.alternateBlockColor();
+  }
 };
 
 BlockMorph.prototype.alternateBlockColor = function () {
@@ -6120,7 +6110,7 @@ BlockMorph.prototype.fixLabelColor = function () {
       );
     } else {
       this.setLabelColor(
-        SpriteMorph.prototype.isHighContrast ? WHITE : BLACK,
+        BLACK,
         clr.lighter(this.zebraContrast).lighter(this.labelContrast * 2),
         MorphicPreferences.isFlat ? null : this.embossing.neg()
       );
@@ -8597,9 +8587,7 @@ RingMorph.prototype.render = function (ctx) {
   if (MorphicPreferences.isFlat) {
     // draw the outer filled shape
     // draw the outline
-    ctx.fillStyle = SpriteMorph.prototype.isHighContrast
-      ? this.cachedClr
-      : this.cachedClrDark;
+    ctx.fillStyle = this.cachedClrDark;
     ctx.beginPath();
     this.outlinePath(ctx, 0);
 
@@ -8612,9 +8600,7 @@ RingMorph.prototype.render = function (ctx) {
 
     // draw the inner filled shaped
     // draw the outline
-    ctx.fillStyle = SpriteMorph.prototype.isHighContrast
-      ? this.cachedClrDark
-      : this.cachedClr;
+    ctx.fillStyle = this.cachedClr;
     ctx.beginPath();
     this.outlinePath(ctx, this.flatEdge);
 
@@ -11435,9 +11421,7 @@ InputSlotMorph.prototype.init = function (
   this.add(contents);
   this.add(arrow);
   contents.isEditable = true;
-  contents.color = this.isReadOnly;
-  WHITE: attempt(() => SpriteMorph.prototype.isHighContrast)
-    ? WHITE
+  contents.color = this.isReadOnly ? WHITE
     : new Color(87, 94, 117);
   contents.isDraggable = false;
   contents.enableSelecting();
@@ -11585,9 +11569,7 @@ InputSlotMorph.prototype.menuFromDict = function (
     trgt = block.scriptTarget(true),
     menu = new MenuMorph(this.userSetContents, null, this, this.fontSize);
   menu.bgColor = this.parent.color;
-  if (SpriteMorph.prototype.isHighContrast) {
-    menu.bgColor = menu.bgColor.darker(70);
-  }
+  
 
   function update(num) {
     myself.setContents(num);
@@ -12592,13 +12574,7 @@ InputSlotMorph.prototype.fixLayout = function () {
     arrowWidth,
     contents = this.contents(),
     arrow = this.arrow(),
-    tp = this.topBlock(),
-    attempt = (x) => {
-      try {
-        return x();
-      } catch (e) {}
-    },
-    highContrast = attempt(() => SpriteMorph.prototype.isHighContrast);
+    tp = this.topBlock();
 
   contents.isNumeric = this.isNumeric && !this.isAlphanumeric;
   contents.isEditable = !this.isReadOnly;
@@ -12608,16 +12584,12 @@ InputSlotMorph.prototype.fixLayout = function () {
     contents.color = WHITE;
   } else {
     contents.enableSelecting();
-    contents.color = highContrast ? WHITE : new Color(87, 94, 117);
+    contents.color = new Color(87, 94, 117);
     //contents.color = new Color(87, 94, 117);
   }
   arrow.color =
     this.isReadOnly || this.isStatic
       ? WHITE
-      : highContrast
-      ? WHITE
-      : highContrast
-      ? BLACK
       : new Color(87, 94, 117);
 
   if (this.choices) {
@@ -12920,7 +12892,7 @@ InputSlotMorph.prototype.isEmptySlot = function () {
 // InputSlotMorph single-stepping:
 
 InputSlotMorph.prototype.flash = function (aColor) {
-  // don't redraw the label b/c zebra coloriFng
+  // don't redraw the label b/c zebra coloring
   if (!this.cachedNormalColor) {
     this.cachedNormalColor = this.color;
     this.color = aColor || this.activeHighlight;
@@ -12942,8 +12914,7 @@ InputSlotMorph.prototype.unflash = function () {
 
 InputSlotMorph.prototype.render = function (ctx) {
   var borderColor,
-    r,
-    highContrast = SpriteMorph.prototype.isHighContrast;
+    r;
 
   // initialize my surface property
   if (this.cachedNormalColor) {
@@ -12954,16 +12925,12 @@ InputSlotMorph.prototype.render = function (ctx) {
   } else {
     borderColor = new Color(120, 120, 120);
   }
-  ctx.fillStyle = highContrast
-    ? this.color.darker(70).toString()
-    : this.color.toString();
+  ctx.fillStyle = this.color.toString();
   if (this.isReadOnly && !this.cachedNormalColor) {
     // unless flashing
-    ctx.fillStyle = borderColor.darker(highContrast ? 80 : 10).toString();
+    ctx.fillStyle = borderColor.darker(10).toString();
     if (this.isStatic) {
-      ctx.fillStyle = highContrast
-        ? borderColor.darker(70).toString()
-        : borderColor.toString();
+      ctx.fillStyle = borderColor.toString();
     }
   }
 
@@ -14983,8 +14950,8 @@ MultiArgMorph.prototype.init = function (
 
   // /*
   // listSymbol = new SymbolMorph('listNarrow', this.fontSize * 0.8);
-  listSymbol = new SymbolMorph("verticalEllipsis", this.fontSize);
-  listSymbol.alpha = 0.5;
+  listSymbol = new SymbolMorph("verticalEllipsis", this.fontSize, WHITE);
+  listSymbol.alpha = 1;
   listSymbol.getRenderColor = function () {
     // behave the same as arrows when fading the blocks
     if (IDE_Morph.prototype.isBright) {

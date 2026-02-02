@@ -2547,9 +2547,12 @@ SymbolMorph.prototype.renderSymbolVerticalEllipsis = function (ctx, color) {
 
   ctx.fillStyle = color.toString();
   ctx.beginPath();
-  ctx.arc(r, r, r, radians(0), radians(360), false);
-  ctx.arc(r, r * 5, r, radians(0), radians(360), false);
-  ctx.arc(r, r * 9, r, radians(0), radians(360), false);
+  ctx.rect(0, 0, r * 2, r * 2);
+  ctx.rect(0, r * 4, r * 2, r * 2);
+  ctx.rect(0, r * 8, r * 2, r * 2);
+  // ctx.arc(r, r, r, radians(0), radians(360), false);
+  // ctx.arc(r, r * 5, r, radians(0), radians(360), false);
+  // ctx.arc(r, r * 9, r, radians(0), radians(360), false);
   ctx.fill();
 };
 

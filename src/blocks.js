@@ -14951,7 +14951,7 @@ MultiArgMorph.prototype.init = function (
   // /*
   // listSymbol = new SymbolMorph('listNarrow', this.fontSize * 0.8);
   listSymbol = new SymbolMorph("verticalEllipsis", this.fontSize, WHITE);
-  listSymbol.alpha = 0.9;
+  listSymbol.alpha = 1;
   listSymbol.getRenderColor = function () {
     // behave the same as arrows when fading the blocks
     if (IDE_Morph.prototype.isBright) {

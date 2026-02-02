@@ -236,7 +236,7 @@ IDE_Morph.prototype.setBrightTheme = function () {
   TurtleIconMorph.prototype.labelColor = IDE_Morph.prototype.buttonLabelColor;
   SceneIconMorph.prototype.labelColor = IDE_Morph.prototype.buttonLabelColor;
 
-  ScriptsMorph.prototype.feedbackColor = BLACK; //new Color(153, 255, 213);
+  ScriptsMorph.prototype.feedbackColor = WHITE; //new Color(153, 255, 213);
 };
 
 IDE_Morph.prototype.scriptsTexture = function () {

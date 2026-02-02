@@ -470,7 +470,7 @@ PaintEditorMorph.prototype.populatePropertiesMenu = function () {
             ctx.fillStyle = color.toString();
             ctx.fillRect(0, 0, 180, 15);
         }
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = PushButtonMorph.prototype.labelColor.toString();
         ctx.lineWidth = Math.min(myself.paper.settings.linewidth, 20);
         ctx.beginPath();
         ctx.lineCap = "round";

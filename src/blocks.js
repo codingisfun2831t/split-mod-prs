@@ -8989,6 +8989,7 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
   if (target instanceof MultiArgMorph) {
     this.feedbackMorph.color = SpriteMorph.prototype.blockColor.lists.copy();
     this.feedbackMorph.borderColor = SpriteMorph.prototype.blockColor.lists;
+    this.feedbackMorph.edge = SyntaxElementMorph.prototype.rounding / 2;
     target = target.arrows();
   } else {
     this.feedbackMorph.color = this.feedbackColor.copy();
@@ -9021,7 +9022,7 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   this.feedbackMorph.bounds.setHeight(
     block.height()
   );
-  this.feedbackMorph.color = this.feedbackColor.withAlpha(0.5);
+  this.feedbackMorph.color = new Color(0, 0, 0, 0.5);
   // TODO: will add rendering;
   console.warn(target)
   
@@ -15345,9 +15346,9 @@ MultiArgMorph.prototype.fixArrowsLayout = function () {
     }
   }
   leftArrow.setCenter(arrows.center());
-  leftArrow.setLeft(arrows.left() - this.scale);
+  leftArrow.setLeft(arrows.left() - (this.isStatic ? 0 : this.scale));
   rightArrow.setCenter(arrows.center());
-  rightArrow.setRight(arrows.right() + this.scale);
+  rightArrow.setRight(arrows.right() + (this.isStatic ? 0 : this.scale));
   if (centerList) {
     listSymbol.setCenter(arrows.center());
   }

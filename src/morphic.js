@@ -10380,7 +10380,7 @@ ScrollFrameMorph.prototype.adjustScrollBars = function () {
       new Point(this.left(), this.bottom() - this.hBar.height())
     );
     this.hBar.start = 0;
-    this.hBar.stop = this.contents.width() - this.width() + this.scrollBarSize;
+    this.hBar.stop = this.contents.width() - this.width();
     this.hBar.size = (this.width() / this.contents.width()) * this.hBar.stop;
     this.hBar.value = this.left() - this.contents.left();
     this.hBar.fixLayout();
@@ -10399,7 +10399,7 @@ ScrollFrameMorph.prototype.adjustScrollBars = function () {
     );
     this.vBar.start = 0;
     this.vBar.stop =
-      this.contents.height() - this.height() + this.scrollBarSize;
+      this.contents.height() - this.height();
     this.vBar.size = (this.height() / this.contents.height()) * this.vBar.stop;
     this.vBar.value = this.top() - this.contents.top();
     this.vBar.fixLayout();

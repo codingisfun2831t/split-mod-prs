@@ -263,7 +263,7 @@ SyntaxElementMorph.uber = Morph.prototype;
 SyntaxElementMorph.prototype.contrast = 65;
 
 SyntaxElementMorph.prototype.setScale = function (num) {
-  var scale = Math.max(num, (1 / 1.2)) * 1.2;
+  var scale = Math.max(num, 1 / 1.2) * 1.2;
 
   this.contrast = 20; //65;
   this.scale = scale;
@@ -289,7 +289,7 @@ SyntaxElementMorph.prototype.setScale = function (num) {
   this.fontSize = 9.5 * scale; //10 * scale;
   this.embossing = new Point(
     -1 * Math.max(scale / 2, 1),
-    -1 * Math.max(scale / 2, 1)
+    -1 * Math.max(scale / 2, 1),
   );
   this.labelWidth = 450 * scale;
   this.labelWordWrap = true;
@@ -1427,7 +1427,7 @@ SyntaxElementMorph.prototype.parts = function () {
     (child) =>
       child !== nb &&
       !(child instanceof ShadowMorph) &&
-      !(child instanceof BlockHighlightMorph)
+      !(child instanceof BlockHighlightMorph),
   );
 };
 
@@ -1435,7 +1435,7 @@ SyntaxElementMorph.prototype.inputs = function () {
   // answer my arguments and nested reporters
   if (isNil(this.cachedInputs) || !this.isCachingInputs) {
     this.cachedInputs = this.parts().filter(
-      (part) => part instanceof SyntaxElementMorph
+      (part) => part instanceof SyntaxElementMorph,
     );
   }
   // this.debugCachedInputs();
@@ -1447,12 +1447,12 @@ SyntaxElementMorph.prototype.debugCachedInputs = function () {
   var realInputs, i;
   if (!isNil(this.cachedInputs)) {
     realInputs = this.parts().filter(
-      (part) => part instanceof SyntaxElementMorph
+      (part) => part instanceof SyntaxElementMorph,
     );
   }
   if (this.cachedInputs.length !== realInputs.length) {
     throw new Error(
-      "cached inputs size do not match: " + this.constructor.name
+      "cached inputs size do not match: " + this.constructor.name,
     );
   }
   for (i = 0; i < realInputs.length; i += 1) {
@@ -1465,7 +1465,7 @@ SyntaxElementMorph.prototype.debugCachedInputs = function () {
           " " +
           this.cachedInputs[i].constructor.name +
           " != " +
-          realInputs[i].constructor.name
+          realInputs[i].constructor.name,
       );
     }
   }
@@ -1479,7 +1479,7 @@ SyntaxElementMorph.prototype.allInputs = function () {
     .filter(
       (child) =>
         child instanceof ArgMorph ||
-        (child instanceof ReporterBlockMorph && child !== this)
+        (child instanceof ReporterBlockMorph && child !== this),
     );
 };
 
@@ -1558,8 +1558,8 @@ SyntaxElementMorph.prototype.replaceInput = function (oldArg, newArg) {
   if (oldArg instanceof MultiArgMorph) {
     oldArg.inputs().forEach(
       (
-        inp // preserve nested reporters
-      ) => oldArg.replaceInput(inp, new InputSlotMorph())
+        inp, // preserve nested reporters
+      ) => oldArg.replaceInput(inp, new InputSlotMorph()),
     );
     if (
       (this.dynamicInputLabels || oldArg.collapse) &&
@@ -1729,7 +1729,7 @@ SyntaxElementMorph.prototype.getVarNamesDict = function () {
     var proto;
     if (morph instanceof BlockEditorMorph) {
       proto = morph.body.contents.children.find(
-        (child) => child instanceof PrototypeHatBlockMorph
+        (child) => child instanceof PrototypeHatBlockMorph,
       );
       if (proto) {
         morph = proto;
@@ -1744,7 +1744,7 @@ SyntaxElementMorph.prototype.getVarNamesDict = function () {
           .allChildrenExcept(
             (each) =>
               // exclude declarations inside rings
-              each instanceof RingMorph
+              each instanceof RingMorph,
           )
           .forEach((child) => {
             if (child instanceof TemplateSlotMorph) {
@@ -1870,7 +1870,7 @@ SyntaxElementMorph.prototype.setColor = function (aColor) {
 SyntaxElementMorph.prototype.setLabelColor = function (
   textColor,
   shadowColor,
-  shadowOffset
+  shadowOffset,
 ) {
   this.children.forEach((morph) => {
     if (morph instanceof StringMorph && !morph.isProtectedLabel) {
@@ -1918,10 +1918,7 @@ SyntaxElementMorph.prototype.doWithAlpha = function (alpha, callback) {
 // SyntaxElementMorph zebra coloring
 
 SyntaxElementMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
-  this.contrast =
-    this instanceof BlockMorph
-      ? 20
-      : this.contrast;
+  this.contrast = this instanceof BlockMorph ? 20 : this.contrast;
   this.children.forEach((morph) => {
     if (morph instanceof SyntaxElementMorph) {
       morph.fixBlockColor(nearestBlock, isForced);
@@ -1946,7 +1943,13 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
   ) {
     // check for variable multi-arg-slot:
     if (spec.length > 5 && spec.slice(0, 5) === "%mult") {
-      part = new MultiArgMorph(spec.slice(5), null, null, null, this.alpha > 0.5 ? WHITE : BLACK);
+      part = new MultiArgMorph(
+        spec.slice(5),
+        null,
+        null,
+        null,
+        this.alpha > 0.5 ? WHITE : BLACK,
+      );
       part.initialSlots = 1;
       part.addInput();
       return part;
@@ -1957,7 +1960,13 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         .slice(7)
         .split("%")
         .map((each) => "%" + each);
-      part = new MultiArgMorph(tokens, null, null, null, this.alpha > 0.5 ? WHITE : BLACK);
+      part = new MultiArgMorph(
+        tokens,
+        null,
+        null,
+        null,
+        this.alpha > 0.5 ? WHITE : BLACK,
+      );
       part.groupInputs = tokens.length;
       return part;
     }
@@ -2055,14 +2064,14 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
           info.infix,
           info.collapse,
           info.dflt,
-          info.group
+          info.group,
         );
         part.setMaxSlots(info.max);
         part.initialSlots = Math.max(
           // this needs some fixing
           part.initialSlots,
           isNil(info.min) ? 0 : +info.min,
-          isNil(info.defaults) ? 0 : +info.defaults
+          isNil(info.defaults) ? 0 : +info.defaults,
         );
         for (i = 0; i < info.defaults || 0; i += 1) {
           part.addInput();
@@ -2190,7 +2199,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
     part.color = new Color(
       +tokens[2] === 0 ? 0 : +tokens[2] || 255,
       +tokens[3] === 0 ? 0 : +tokens[3] || 255,
-      +tokens[4] === 0 ? 0 : +tokens[4] || 255
+      +tokens[4] === 0 ? 0 : +tokens[4] || 255,
     );
     part.isProtectedLabel = tokens.length > 2; // zebra colors
     part.shadowColor = MorphicPreferences.isFlat
@@ -2209,7 +2218,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
       MorphicPreferences.isFlat ? ZERO : this.embossing, // shadowOffset
       this.color.darker(this.labelContrast), // shadowColor
       WHITE, // color
-      this.labelFontName // fontName
+      this.labelFontName, // fontName
     );
   }
 
@@ -2340,7 +2349,6 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         ((line[0] instanceof InputSlotMorph ||
           line[0] instanceof BooleanSlotMorph) &&
         this.constructor.name.includes("ReporterBlockMorph") &&
-        !this.isPredicate &&
         !line[0]?.isSquare?.()
           ? 2
           : 1);
@@ -2351,14 +2359,19 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         this.left() +
         ico +
         this.rounding *
-          (line[0] instanceof BlockLabelMorph || line[0].constructor.name == 'BlockLabelFragmentPlaceHolderMorph' ||
+          (line[0] instanceof BlockLabelMorph ||
+          line[0].constructor.name == "BlockLabelFragmentPlaceHolderMorph" ||
           line[0] instanceof BooleanSlotMorph ||
           (line[0] instanceof MultiArgMorph && line[0].slotSpec.includes("%b"))
-            ? 1.3
-            : 1.9);
+            ? 1.1
+            : 1.4);
     } else if (this instanceof MultiArgMorph || this instanceof ArgLabelMorph) {
       x = this.left();
-    } else if (isReporter && (line[0] instanceof BlockLabelMorph || line[0].constructor.name == 'BlockLabelFragmentPlaceHolderMorph')) {
+    } else if (
+      isReporter &&
+      (line[0] instanceof BlockLabelMorph ||
+        line[0].constructor.name == "BlockLabelFragmentPlaceHolderMorph")
+    ) {
       x =
         this.left() +
         ico +
@@ -2384,7 +2397,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
           part instanceof BooleanSlotMorph ||
           part instanceof ReporterBlockMorph ||
           (!(part instanceof BlockLabelMorph) &&
-          !(part.constructor.name == 'BlockLabelFragmentPlaceHolderMorph') &&
+            !(part.constructor.name == "BlockLabelFragmentPlaceHolderMorph") &&
             !(part instanceof CSlotMorph) &&
             !(part instanceof ArrowMorph) &&
             !(part instanceof MultiArgMorph && part.slotSpec.includes("%cs")) &&
@@ -2394,7 +2407,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         if (typeof x == "number") {
           x = Math.max(
             x,
-            this.left() + this.dent + this.inset + this.corner * 4
+            this.left() + this.dent + this.inset + this.corner * 4,
           );
         }
       }
@@ -2421,8 +2434,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
           Math.max(
             ...part.children
               .filter((each) => each.isVisible && !(each instanceof CSlotMorph))
-              .map((each) => each.right())
-          )
+              .map((each) => each.right()),
+          ),
         );
       } else {
         if (part?.name == "loop") {
@@ -2445,7 +2458,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         maxX = Math.max(maxX, x);
         lineHeight = Math.max(
           lineHeight,
-          part instanceof StringMorph ? part.rawHeight() : part.height()
+          part instanceof StringMorph ? part.rawHeight() : part.height(),
         );
       }
       var i = this instanceof CommandBlockMorph ? -2 : 0,
@@ -2456,8 +2469,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
           isCommand && index == 0
             ? this.scale * 22
             : isCommand
-            ? this.scale * 15
-            : this.scale * 18
+              ? this.scale * 15
+              : this.scale * 18,
         ) + i;
     });
 
@@ -2474,8 +2487,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         new Point(
           0,
           Math.floor((lineHeight - part.height()) / 2) -
-            (part instanceof BlockLabelMorph ? 0.2 * this.scale : 0)
-        )
+            (part instanceof BlockLabelMorph ? 0.2 * this.scale : 0),
+        ),
       );
     });
   });
@@ -2498,7 +2511,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     if (isReporter && !this.isPredicate) {
       bottomCorrection = Math.max(
         this.bottomPadding,
-        this.rounding - this.bottomPadding
+        this.rounding - this.bottomPadding,
       );
     }
     y += bottomCorrection;
@@ -2523,12 +2536,12 @@ SyntaxElementMorph.prototype.fixLayout = function () {
       blockWidth,
       maxX -
         this.left() -
-        space * (this.arrows && this.arrows().children[1].isVisible ? 1.5 : 0)
+        space * (this.arrows && this.arrows().children[1].isVisible ? 1.5 : 0),
     );
   } else {
     blockWidth = Math.max(
       blockWidth,
-      maxX - this.left() + this.labelPadding * 1 - this.edge
+      maxX - this.left() + this.labelPadding * 1 - this.edge,
     );
     rightCorrection = space;
   }
@@ -2573,29 +2586,30 @@ SyntaxElementMorph.prototype.fixLayout = function () {
   }
 
   // center text in ReporterBlockMorph
-  if(lines.length == 1 && isReporter) {
-  lines.forEach((line) => {
-    if (
-      ((line.length == 2 && line[0].isBlockLabelBreak) || line.length === 1) &&
-      isReporter &&
-      !parts.some((part) => part instanceof CSlotMorph)
-    ) {
-      line[0].moveBy(
-        new Point(
-          Math.floor(blockWidth - line[0].width()) / 2 -
-            (line[0].left() - this.left()),
-          0
-        )
-      );
-    }
-  });
-}
+  if (lines.length == 1 && isReporter) {
+    lines.forEach((line) => {
+      if (
+        ((line.length == 2 && line[0].isBlockLabelBreak) ||
+          line.length === 1) &&
+        isReporter &&
+        !parts.some((part) => part instanceof CSlotMorph)
+      ) {
+        line[0].moveBy(
+          new Point(
+            Math.floor(blockWidth - line[0].width()) / 2 -
+              (line[0].left() - this.left()),
+            0,
+          ),
+        );
+      }
+    });
+  }
 
   // set my extent (silently, because we'll redraw later anyway):
   this.alwaysRound = lines.length == 1;
   this.bounds.setWidth(blockWidth);
   this.bounds.setHeight(
-    blockHeight + (this instanceof CommandBlockMorph ? this.dentPlus : 0)
+    blockHeight + (this instanceof CommandBlockMorph ? this.dentPlus : 0),
   );
 
   // adjust CSlots and collect holes
@@ -2608,13 +2622,13 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     ) {
       if (this.isPredicate) {
         part.bounds.setWidth(
-          blockWidth - ico - this.rounding - this.inset - this.corner
+          blockWidth - ico - this.rounding - this.inset - this.corner,
         );
         adjustMultiWidth = this.corner;
       } else {
         part.setRight(this.left() + this.width());
         part.setLeft(this.left() + this.labelPadding);
-        part.bounds.setWidth(blockWidth - (part.left() - this.left()));
+        part.bounds.corner.x = this.right() + this.labelPadding;
         //part.setWidth(this.width() - this.labelPadding);
         //adjustMultiWidth = this.corner + this.edge;
       }
@@ -2629,13 +2643,13 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         .forEach(
           (slot) =>
             !(slot instanceof ArrowMorph) &&
-            slot.setLeft(this.left() + this.labelPadding)
+            slot.setLeft(this.left() + this.labelPadding),
         );
     }
     part.fixHolesLayout();
     this.holes.push.apply(
       this.holes,
-      part.holes.map((hole) => hole.translateBy(part.position().subtract(pos)))
+      part.holes.map((hole) => hole.translateBy(part.position().subtract(pos))),
     );
   });
 
@@ -2644,8 +2658,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     nb.setPosition(
       new Point(
         this.left(),
-        this.bottom() - (this.corner + this.dentPlus + this.flatEdge)
-      )
+        this.bottom() - (this.corner + this.dentPlus + this.flatEdge),
+      ),
     );
   }
 
@@ -2892,7 +2906,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
           "ExactRational",
           "ExactInteger",
         ],
-        value != null ? value.constructor.name : ""
+        value != null ? value.constructor.name : "",
       ) &&
       value instanceof Object
         ? ((x) => {
@@ -2933,7 +2947,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
     morphToShow.userMenu = function () {
       var menu = new MenuMorph(this);
       menu.addItem("export", () =>
-        ide.saveFileAs(value, "text/plain;charset=utf-8", localize("data"))
+        ide.saveFileAs(value, "text/plain;charset=utf-8", localize("data")),
       );
       menu.addItem("copy", () => writeClipboardText(value, ide));
       return menu;
@@ -2948,7 +2962,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
       }
       anchor = detect(
         ide.corral.frame.contents.children,
-        (icon) => icon.object === target
+        (icon) => icon.object === target,
       );
     } else {
       target = ide;
@@ -2990,7 +3004,7 @@ SyntaxElementMorph.prototype.exportPictureWithResult = function (aBubble) {
     "image/png",
     (ide.getProjectName() || localize("untitled")) +
       " " +
-      localize("script pic")
+      localize("script pic"),
   );
 };
 
@@ -3043,7 +3057,7 @@ function BlockLabelMorph(
   shadowOffset,
   shadowColor,
   color,
-  fontName
+  fontName,
 ) {
   this.init(
     text,
@@ -3055,7 +3069,7 @@ function BlockLabelMorph(
     shadowOffset,
     shadowColor,
     color,
-    fontName
+    fontName,
   );
 }
 
@@ -3426,12 +3440,12 @@ BlockMorph.prototype.setSpec = function (spec, definition) {
       if (part instanceof InputSlotMorph) {
         part.setChoices.apply(
           part,
-          (definition || this.definition).inputOptionsOfIdx(inputIdx)
+          (definition || this.definition).inputOptionsOfIdx(inputIdx),
         );
       }
       if (part instanceof ArgMorph && !(part instanceof TemplateSlotMorph)) {
         part.isStatic = (definition || this.definition).isIrreplaceableInputIdx(
-          inputIdx
+          inputIdx,
         );
         part.canBeEmpty = !part.isStatic;
       }
@@ -3454,7 +3468,7 @@ BlockMorph.prototype.userSetSpec = function (spec) {
     "block",
     "label",
     old,
-    this.abstractBlockSpec()
+    this.abstractBlockSpec(),
   );
 };
 
@@ -3494,7 +3508,7 @@ BlockMorph.prototype.abstractBlockSpec = function () {
   // with an underscore. Used as "name" of the Block.
   return this.parseSpec(this.blockSpec)
     .map((str) =>
-      str === "%br" ? "$nl" : str.length > 1 && str[0] === "%" ? "_" : str
+      str === "%br" ? "$nl" : str.length > 1 && str[0] === "%" ? "_" : str,
     )
     .join(" ");
 };
@@ -3600,7 +3614,6 @@ BlockMorph.prototype.userMenu = function () {
     field,
     rcvr;
   menu.bgColor = SpriteMorph.prototype.blockColorFor(this.category);
-  
 
   menu.rerender();
   function addOption(label, toggle, test, onHint, offHint) {
@@ -3609,17 +3622,17 @@ BlockMorph.prototype.userMenu = function () {
         test
           ? new SymbolMorph(
               "checkedBox",
-              MorphicPreferences.menuFontSize * 0.75
+              MorphicPreferences.menuFontSize * 0.75,
             )
           : new SymbolMorph(
               "rectangle",
-              MorphicPreferences.menuFontSize * 0.75
+              MorphicPreferences.menuFontSize * 0.75,
             ),
         localize(label),
       ],
       toggle,
       test ? onHint : offHint,
-      WHITE
+      WHITE,
     );
   }
 
@@ -3640,13 +3653,13 @@ BlockMorph.prototype.userMenu = function () {
             myself.parent.fragment.labelString = newName;
           }
         : myself.userSetSpec,
-      myself
+      myself,
     ).prompt(
       "Variable name",
       frag ? frag.labelString : myself.blockSpec,
       world,
       blck.doWithAlpha(1, () => blck.fullImage()), // pic
-      InputSlotMorph.prototype.getVarNamesDict.call(myself)
+      InputSlotMorph.prototype.getVarNamesDict.call(myself),
     );
   }
   if (showHelp) {
@@ -3670,13 +3683,13 @@ BlockMorph.prototype.userMenu = function () {
           "rename...",
           renameVar,
           "rename only\nthis reporter",
-          WHITE
+          WHITE,
         );
         menu.addItem(
           "rename all...",
           "refactorInlineTemplate",
           "rename all blocks that\naccess this variable",
-          WHITE
+          WHITE,
         );
         if (
           this.parent.parent instanceof MultiArgMorph &&
@@ -3692,7 +3705,7 @@ BlockMorph.prototype.userMenu = function () {
                 "insert a variable",
                 () => mult.insertNewInputBefore(slot, localize("variable")),
                 undefined,
-                WHITE
+                WHITE,
               );
             }
           }
@@ -3701,7 +3714,7 @@ BlockMorph.prototype.userMenu = function () {
               "delete variable",
               () => mult.deleteSlot(slot),
               undefined,
-              WHITE
+              WHITE,
             );
           }
         }
@@ -3717,7 +3730,7 @@ BlockMorph.prototype.userMenu = function () {
             () => rcvr.toggleInheritedVariable(this.blockSpec),
             true,
             "uncheck to\ndisinherit",
-            null
+            null,
           );
         } else {
           // not inherited
@@ -3728,7 +3741,7 @@ BlockMorph.prototype.userMenu = function () {
               () => rcvr.toggleInheritedVariable(this.blockSpec),
               false,
               null,
-              localize("check to inherit\nfrom") + " " + rcvr.exemplar.name
+              localize("check to inherit\nfrom") + " " + rcvr.exemplar.name,
             );
           }
           addOption(
@@ -3737,20 +3750,20 @@ BlockMorph.prototype.userMenu = function () {
             this.isTransientVariable(),
             "uncheck to save contents\nin the project",
             "check to prevent contents\nfrom being saved",
-            WHITE
+            WHITE,
           );
           menu.addLine();
           menu.addItem(
             "rename...",
             "refactorPaletteTemplate",
             "rename only\nthis reporter",
-            WHITE
+            WHITE,
           );
           menu.addItem(
             "rename all...",
             () => this.refactorPaletteTemplate(true), // everywhere
             "rename all blocks that\naccess this variable",
-            WHITE
+            WHITE,
           );
           menu.addLine();
           menu.addItem(
@@ -3758,10 +3771,10 @@ BlockMorph.prototype.userMenu = function () {
             () =>
               rcvr.deleteVariable(
                 this.instantiationSpec || this.blockSpec,
-                !this.isLocalVarTemplate
+                !this.isLocalVarTemplate,
               ),
             undefined,
-            WHITE
+            WHITE,
           );
         }
       }
@@ -3787,7 +3800,7 @@ BlockMorph.prototype.userMenu = function () {
             () => rcvr.toggleInheritanceForAttribute(field),
             rcvr.inheritsAttribute(field),
             "uncheck to\ndisinherit",
-            localize("check to inherit\nfrom") + " " + rcvr.exemplar.name
+            localize("check to inherit\nfrom") + " " + rcvr.exemplar.name,
           );
         }
       }
@@ -3810,7 +3823,7 @@ BlockMorph.prototype.userMenu = function () {
         "relabel...",
         () => this.relabel(alternatives),
         undefined,
-        WHITE
+        WHITE,
       );
     }
   } else {
@@ -3822,7 +3835,7 @@ BlockMorph.prototype.userMenu = function () {
         "relabel...",
         () => this.relabel(alternatives),
         undefined,
-        WHITE
+        WHITE,
       );
     }
   }
@@ -3833,7 +3846,7 @@ BlockMorph.prototype.userMenu = function () {
   if (
     contains(
       ["reportMap", "reportKeep", "reportFindFirst", "reportCombine"],
-      this.selector
+      this.selector,
     )
   ) {
     compiledAlternatives = {
@@ -3847,7 +3860,7 @@ BlockMorph.prototype.userMenu = function () {
       () => this.setSelector(compiledAlternatives[this.selector]),
       "experimental!\nmake this reporter fast and uninterruptable\n" +
         "CAUTION: Errors in the ring\ncan break your Snap! session!",
-      WHITE
+      WHITE,
     );
   } else if (
     contains(
@@ -3857,7 +3870,7 @@ BlockMorph.prototype.userMenu = function () {
         "reportAtomicFindFirst",
         "reportAtomicCombine",
       ],
-      this.selector
+      this.selector,
     )
   ) {
     compiledAlternatives = {
@@ -3870,12 +3883,12 @@ BlockMorph.prototype.userMenu = function () {
       "uncompile",
       () => this.setSelector(compiledAlternatives[this.selector]),
       undefined,
-      WHITE
+      WHITE,
     );
   } else if (
     contains(
       ["reportPenTrailsAsCostume", "reportPentrailsAsSVG"],
-      this.selector
+      this.selector,
     )
   ) {
     alternatives = {
@@ -3887,69 +3900,22 @@ BlockMorph.prototype.userMenu = function () {
       () => {
         this.setSelector(alternatives[this.selector]);
         this.changed();
-      }
+      },
     );
   }
 
-  menu.addItem(
-    "duplicate",
-    () => {
-      var dup = this.fullCopy(),
-        ide = this.parentThatIsA(IDE_Morph),
-        blockEditor = this.parentThatIsA(BlockEditorMorph);
-      dup.pickUp(world);
-      // register the drop-origin, so the block can
-      // slide back to its former situation if dropped
-      // somewhere where it gets rejected
-      if (!ide && blockEditor) {
-        ide = blockEditor.target.parentThatIsA(IDE_Morph);
-      }
-      if (ide) {
-        world.hand.grabOrigin = {
-          origin: ide.palette,
-          position: ide.palette.center(),
-        };
-
-        this.scriptTarget().recordUserEdit(
-          "scripts",
-          "block",
-          "duplicate",
-          this.abstractBlockSpec()
-        );
-      }
-    },
-    "make a copy\nand pick it up",
-    WHITE
-  );
+  menu.addItem("duplicate", "duplicate", "make a copy\nand pick it up", WHITE);
   if (this instanceof CommandBlockMorph && this.nextBlock()) {
     menu.addItem(
       (proc ? this.fullCopy() : this).thumbnail(0.5, 60),
-      () => {
-        var cpy = this.fullCopy(),
-          nb = cpy.nextBlock(),
-          ide = this.parentThatIsA(IDE_Morph),
-          blockEditor = this.parentThatIsA(BlockEditorMorph);
-        if (nb) {
-          nb.destroy();
-        }
-        cpy.pickUp(world);
-        if (!ide && blockEditor) {
-          ide = blockEditor.target.parentThatIsA(IDE_Morph);
-        }
-        if (ide) {
-          world.hand.grabOrigin = {
-            origin: ide.palette,
-            position: ide.palette.center(),
-          };
-        }
-      },
-      "only duplicate this block"
+      "extractAndCopyThis",
+      "only duplicate this block",
     );
     menu.addItem(
       "extract",
       "userExtractJustThis",
       "only grab this block",
-      WHITE
+      WHITE,
     );
   }
   menu.addItem("delete", "userDestroy", undefined, WHITE);
@@ -3981,7 +3947,7 @@ BlockMorph.prototype.userMenu = function () {
         scripts.recordDrop(world.hand.grabOrigin);
       },
       undefined,
-      WHITE
+      WHITE,
     );
   }
   menu.addLine();
@@ -3995,10 +3961,14 @@ BlockMorph.prototype.userMenu = function () {
           top instanceof PrototypeHatBlockMorph
             ? ide.blocksLibraryXML(
                 [top.definition].concat(
-                  top.definition.collectDependencies([], [], top.scriptTarget())
+                  top.definition.collectDependencies(
+                    [],
+                    [],
+                    top.scriptTarget(),
+                  ),
                 ),
                 null,
-                true
+                true,
               )
             : top.toXMLString();
       ide.saveFileAs(
@@ -4006,11 +3976,11 @@ BlockMorph.prototype.userMenu = function () {
         "image/png",
         (ide.getProjectName() || localize("untitled")) +
           " " +
-          localize("script pic")
+          localize("script pic"),
       );
     },
     "save a picture\nof this script",
-    WHITE
+    WHITE,
   );
   if (
     top instanceof ReporterBlockMorph ||
@@ -4022,7 +3992,7 @@ BlockMorph.prototype.userMenu = function () {
         "result pic...",
         () => top.exportResultPic(),
         "save a picture of both\nthis script and its result",
-        WHITE
+        WHITE,
       );
     }
   }
@@ -4031,14 +4001,14 @@ BlockMorph.prototype.userMenu = function () {
       "export...",
       () => top.exportBlockDefinition(),
       "including dependencies",
-      WHITE
+      WHITE,
     );
   } else {
     menu.addItem(
       "export script",
       () => top.exportScript(),
       "download this script\nas an XML file",
-      WHITE
+      WHITE,
     );
   }
   if (StageMorph.prototype.enableCodeMapping) {
@@ -4047,20 +4017,20 @@ BlockMorph.prototype.userMenu = function () {
       "code...",
       () => top.showBubble(top.toCode(), null, rcvr || top.scriptTarget()),
       undefined,
-      WHITE
+      WHITE,
     );
   }
   menu.addItem(
     "Lisp code...",
     () => top.showBubble(top.toLisp(4), null, rcvr || top.scriptTarget()),
     undefined,
-    WHITE
+    WHITE,
   );
   if (proc) {
     if (vNames.length) {
       menu.addLine();
       vNames.forEach((vn) =>
-        menu.addItem(vn + "...", () => proc.doShowVar(vn), undefined, WHITE)
+        menu.addItem(vn + "...", () => proc.doShowVar(vn), undefined, WHITE),
       );
     }
     proc.homeContext.variables.names().forEach((vn) => {
@@ -4087,7 +4057,7 @@ BlockMorph.prototype.userMenu = function () {
         "receiveOnClone",
         "receiveGo",
       ],
-      this.selector
+      this.selector,
     )
   ) {
     hasLine = true;
@@ -4096,7 +4066,7 @@ BlockMorph.prototype.userMenu = function () {
       this.selector.indexOf("receive") === 0 ? "senders..." : "receivers...",
       "showMessageUsers",
       undefined,
-      WHITE
+      WHITE,
     );
   }
   if (
@@ -4188,7 +4158,7 @@ BlockMorph.prototype.messageUsers = function () {
       .asArray()
       .concat([ide.stage])
       .filter(
-        (sprite) => sprite[getter](message, receiverName, knownSenders).length
+        (sprite) => sprite[getter](message, receiverName, knownSenders).length,
       );
   }
   return [];
@@ -4241,8 +4211,8 @@ BlockMorph.prototype.developersMenu = function () {
     new DialogBoxMorph(this, this.userSetSpec, this).prompt(
       menu.title + "\nspec",
       this.blockSpec,
-      this.world()
-    )
+      this.world(),
+    ),
   );
   return menu;
 };
@@ -4278,8 +4248,8 @@ BlockMorph.prototype.type = function () {
   return this instanceof CommandBlockMorph
     ? "command"
     : this.isPredicate
-    ? "predicate"
-    : "reporter";
+      ? "predicate"
+      : "reporter";
 };
 
 BlockMorph.prototype.isUnattached = function () {
@@ -4300,7 +4270,7 @@ BlockMorph.prototype.isInheritedVariable = function (shadowedOnly) {
   ) {
     return contains(
       this.scriptTarget().inheritedVariableNames(shadowedOnly),
-      this.blockSpec
+      this.blockSpec,
     );
   }
   return false;
@@ -4405,7 +4375,7 @@ BlockMorph.prototype.ringify = function () {
     "scripts",
     "block",
     "ringify",
-    this.abstractBlockSpec()
+    this.abstractBlockSpec(),
   );
 };
 
@@ -4450,7 +4420,7 @@ BlockMorph.prototype.unringify = function () {
     "scripts",
     "block",
     "unringify",
-    this.abstractBlockSpec()
+    this.abstractBlockSpec(),
   );
 };
 
@@ -4490,16 +4460,16 @@ BlockMorph.prototype.relabel = function (alternativeSelectors) {
           "block",
           "relabel",
           old,
-          this.abstractBlockSpec()
+          this.abstractBlockSpec(),
         );
-      }
+      },
     );
   });
   menu.popup(
     this.world(),
     this.bottomLeft().subtract(
-      new Point(8, this instanceof CommandBlockMorph ? this.corner : 0)
-    )
+      new Point(8, this instanceof CommandBlockMorph ? this.corner : 0),
+    ),
   );
 };
 
@@ -4749,7 +4719,7 @@ BlockMorph.prototype.showHelp = function () {
         block.doWithAlpha(1, () => {
           block.addShadow();
           return block.fullImage();
-        })
+        }),
       );
       return;
     }
@@ -4826,7 +4796,7 @@ BlockMorph.prototype.toXMLString = function (receiver) {
       if (!varNames.includes(name)) {
         varNames.push(name);
       }
-    })
+    }),
   );
   localData = (receiver || ide.currentSprite).variables.fork(varNames);
   localVarNames = localData.names(true); // include hidden
@@ -4845,7 +4815,7 @@ BlockMorph.prototype.toXMLString = function (receiver) {
           null, // more categories
           false, // as file
           globalData,
-          localData
+          localData,
         )
       : "") +
     (isReporter ? "<script>" : "") +
@@ -4901,7 +4871,7 @@ BlockMorph.prototype.components = function (parameterNames = []) {
     return this.syntaxTree(parameterNames);
   }
   var seq = new List(this.blockSequence(true)).map((block, i) =>
-    block.syntaxTree(i < 1 ? parameterNames : [])
+    block.syntaxTree(i < 1 ? parameterNames : []),
   );
   return seq.length() === 1 ? seq.at(1) : seq;
 };
@@ -4992,7 +4962,7 @@ BlockMorph.prototype.copyWithInputs = function (inputs) {
           ? inp.expression instanceof BlockMorph
             ? inp.expression.fullCopy()
             : inp.expression
-          : inp
+          : inp,
       ),
     count = 0,
     dflt;
@@ -5211,7 +5181,7 @@ BlockMorph.prototype.mapToHeader = function () {
         StageMorph.prototype.codeHeaders[key] = code;
       }
     },
-    this
+    this,
   ).promptCode(
     "Header mapping",
     this.isCustomBlock
@@ -5219,7 +5189,7 @@ BlockMorph.prototype.mapToHeader = function () {
       : StageMorph.prototype.codeHeaders[key] || "",
     this.world(),
     pic,
-    help
+    help,
   );
 };
 
@@ -5239,7 +5209,7 @@ BlockMorph.prototype.mapToCode = function () {
         StageMorph.prototype.codeMappings[key] = code;
       }
     },
-    this
+    this,
   ).promptCode(
     "Code mapping",
     this.isCustomBlock
@@ -5249,7 +5219,7 @@ BlockMorph.prototype.mapToCode = function () {
     pic,
     "Enter code that corresponds to the block's operation " +
       "(usually a single\nfunction invocation). Use <#n> to " +
-      "reference actual arguments as shown."
+      "reference actual arguments as shown.",
   );
 };
 
@@ -5296,8 +5266,8 @@ BlockMorph.prototype.mappedCode = function (definitions) {
     key === "reportGetVar"
       ? this.blockSpec
       : this.isCustomBlock
-      ? this.definition.codeMapping || ""
-      : StageMorph.prototype.codeMappings[key] || "";
+        ? this.definition.codeMapping || ""
+        : StageMorph.prototype.codeMappings[key] || "";
 
   // map header
   if (key !== "reportGetVar" && !defs.hasOwnProperty(defKey)) {
@@ -5321,11 +5291,11 @@ BlockMorph.prototype.mappedCode = function (definitions) {
           }
           headerLines[idx] = headerLine.replace(
             new RegExp("<body>"),
-            bodyLines.join("\n" + prefix)
+            bodyLines.join("\n" + prefix),
           );
           headerLines[idx] = headerLines[idx].replace(
             new RegExp("<body>", "g"),
-            bodyLines.join("\n")
+            bodyLines.join("\n"),
           );
         });
         header = headerLines.join("\n");
@@ -5357,7 +5327,7 @@ BlockMorph.prototype.mappedCode = function (definitions) {
       }
       codeLines[idx] = codeLine.replace(
         new RegExp(placeHolder),
-        partLines.join("\n" + prefix)
+        partLines.join("\n" + prefix),
       );
       codeLines[idx] = codeLines[idx].replace(rx, partLines.join("\n"));
     });
@@ -5448,8 +5418,8 @@ BlockMorph.prototype.elementsAtLOC = function (definitions) {
     key === "reportGetVar"
       ? this.blockSpec
       : this.isCustomBlock
-      ? this.definition.codeMapping || ""
-      : StageMorph.prototype.codeMappings[key] || "";
+        ? this.definition.codeMapping || ""
+        : StageMorph.prototype.codeMappings[key] || "";
 
   codeLines = code.split("\n");
   elementLOC = codeLines.map(() => [this]);
@@ -5469,7 +5439,7 @@ BlockMorph.prototype.elementsAtLOC = function (definitions) {
       if (matches) {
         // merge the first line with the current code line's elements
         (partElements.shift() || []).forEach((each) =>
-          elementLOC[i + insertionIdx].unshift(each)
+          elementLOC[i + insertionIdx].unshift(each),
         );
 
         // insert the following lines behind the current code line
@@ -5524,7 +5494,7 @@ BlockMorph.prototype.refactorPaletteTemplate = function (everywhere) {
           oldName,
           newName,
           !myself.isLocalVarTemplate,
-          everywhere
+          everywhere,
         )
     ) {
       // rename the template
@@ -5541,7 +5511,7 @@ BlockMorph.prototype.refactorPaletteTemplate = function (everywhere) {
     oldName,
     this.world(),
     cpy.doWithAlpha(1, () => cpy.fullImage()), // pic
-    InputSlotMorph.prototype.getVarNamesDict.call(this)
+    InputSlotMorph.prototype.getVarNamesDict.call(this),
   );
 };
 
@@ -5578,7 +5548,7 @@ BlockMorph.prototype.refactorInlineTemplate = function () {
     oldName,
     this.world(),
     cpy.doWithAlpha(1, () => cpy.fullImage()), // pic
-    InputSlotMorph.prototype.getVarNamesDict.call(this)
+    InputSlotMorph.prototype.getVarNamesDict.call(this),
   );
 };
 
@@ -5626,8 +5596,8 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth) {
   trgt = newCanvas(
     new Point(
       clipWidth ? Math.min(ext.x * scale, clipWidth) : ext.x * scale,
-      ext.y * scale
-    )
+      ext.y * scale,
+    ),
   );
   ctx = trgt.getContext("2d");
   ctx.scale(scale, scale);
@@ -5638,7 +5608,7 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth) {
       trgt.width / scale - fadeout,
       0,
       trgt.width / scale,
-      0
+      0,
     );
     gradient.addColorStop(0, "transparent");
     gradient.addColorStop(1, "black");
@@ -5648,7 +5618,7 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth) {
       trgt.width / scale - fadeout,
       0,
       trgt.width / scale,
-      trgt.height / scale
+      trgt.height / scale,
     );
   }
   if (nb) {
@@ -5668,8 +5638,8 @@ BlockMorph.prototype.scriptPic = function () {
     ctx.drawImage(
       comment.fullImage(),
       comment.fullBounds().left() - fb.left(),
-      comment.top() - fb.top()
-    )
+      comment.top() - fb.top(),
+    ),
   );
   ctx.drawImage(scr, 0, 0);
   return pic;
@@ -5768,7 +5738,7 @@ BlockMorph.prototype.drawRoundedDent = function (ctx, inset, x, y) {
     c + offset,
     -0 + h + inset,
     c * 2 + offset,
-    -0 + h + inset / 4
+    -0 + h + inset / 4,
   );
   ctx.lineTo(w - c * 2 + offset, h + inset / 4);
   ctx.bezierCurveTo(
@@ -5777,7 +5747,7 @@ BlockMorph.prototype.drawRoundedDent = function (ctx, inset, x, y) {
     w - c + offset,
     -h + h + inset,
     w + offset,
-    -h + h + inset
+    -h + h + inset,
   );
   if (!isNil(x)) {
     ctx.restore();
@@ -5856,7 +5826,7 @@ BlockMorph.prototype.addHighlight = function (oldHighlight) {
   highlight = this.highlight(
     oldHighlight ? oldHighlight.color : this.activeHighlight,
     this.activeBlur,
-    this.activeBorder
+    this.activeBorder,
   );
   this.addBack(highlight);
   this.fullChanged();
@@ -5877,7 +5847,7 @@ BlockMorph.prototype.addErrorHighlight = function () {
   highlight = this.highlight(
     this.errorHighlight,
     this.activeBlur,
-    this.activeBorder
+    this.activeBorder,
   );
   this.addBack(highlight);
   this.fullChanged();
@@ -5919,14 +5889,14 @@ BlockMorph.prototype.highlight = function (color, blur, border) {
         var merged = newCanvas(
             this.fullBounds()
               .extent()
-              .add(blur * 2)
+              .add(blur * 2),
           ),
           ctx = merged.getContext("2d");
         ctx.drawImage(this.highlightImageBlurred(color, blur), 0, 0);
         ctx.drawImage(
           this.highlightImage(color, border),
           blur - border,
-          blur - border
+          blur - border,
         );
         return merged;
       })()
@@ -6070,7 +6040,7 @@ BlockMorph.prototype.forceNormalColoring = function () {
   this.setLabelColor(
     WHITE,
     clr.darker(this.labelContrast),
-    MorphicPreferences.isFlat ? ZERO : this.embossing
+    MorphicPreferences.isFlat ? ZERO : this.embossing,
   );
   this.fixChildrensBlockColor(true);
   if (this.isHighContrast) {
@@ -6086,7 +6056,7 @@ BlockMorph.prototype.alternateBlockColor = function () {
       this.zebraContrast < 0
         ? clr.darker(Math.abs(this.zebraContrast))
         : clr.lighter(this.zebraContrast),
-      this.hasLabels() // silently
+      this.hasLabels(), // silently
     );
   } else {
     this.setColor(clr, this.hasLabels()); // silently
@@ -6106,13 +6076,13 @@ BlockMorph.prototype.fixLabelColor = function () {
       this.setLabelColor(
         WHITE,
         clr.darker(this.labelContrast),
-        MorphicPreferences.isFlat ? null : this.embossing
+        MorphicPreferences.isFlat ? null : this.embossing,
       );
     } else {
       this.setLabelColor(
         BLACK,
         clr.lighter(this.zebraContrast).lighter(this.labelContrast * 2),
-        MorphicPreferences.isFlat ? null : this.embossing.neg()
+        MorphicPreferences.isFlat ? null : this.embossing.neg(),
       );
     }
   }
@@ -6179,7 +6149,7 @@ BlockMorph.prototype.reactToTemplateCopy = function () {
 
 BlockMorph.prototype.hasBlockVars = function () {
   return this.anyChild(
-    (any) => any.isCustomBlock && any.variables.names().length
+    (any) => any.isCustomBlock && any.variables.names().length,
   );
 };
 
@@ -6271,7 +6241,7 @@ BlockMorph.prototype.mouseEnterBounds = function (dragged) {
           "receiveOnClone",
           "receiveGo",
         ],
-        this.selector
+        this.selector,
       )
     ) {
       this.showMessageUsers();
@@ -6289,7 +6259,7 @@ BlockMorph.prototype.mouseEnterBounds = function (dragged) {
       rcvr = this.scriptTarget();
       rcvr.flashScope(
         this.instantiationSpec || this.blockSpec,
-        !this.isLocalVarTemplate
+        !this.isLocalVarTemplate,
       );
     } else {
       // highlight the variable declaration this block is referring to,
@@ -6300,7 +6270,7 @@ BlockMorph.prototype.mouseEnterBounds = function (dragged) {
           (elem) =>
             elem.selector === "reportGetVar" &&
             elem.isTemplate &&
-            (elem.instantiationSpec || elem.blockSpec) === vName
+            (elem.instantiationSpec || elem.blockSpec) === vName,
         );
         if (dec) {
           dec.flash(this.activeHighlight.darker());
@@ -6337,7 +6307,7 @@ BlockMorph.prototype.mouseLeaveBounds = function (dragged) {
       rcvr = this.scriptTarget();
       rcvr.unflashScope(
         this.instantiationSpec || this.blockSpec,
-        !this.isLocalVarTemplate
+        !this.isLocalVarTemplate,
       );
     } else {
       vName = this.getVarName();
@@ -6346,7 +6316,7 @@ BlockMorph.prototype.mouseLeaveBounds = function (dragged) {
           (elem) =>
             elem.selector === "reportGetVar" &&
             elem.isTemplate &&
-            (elem.instantiationSpec || elem.blockSpec) === vName
+            (elem.instantiationSpec || elem.blockSpec) === vName,
         );
         (dec || this).unflash();
       }
@@ -6517,7 +6487,7 @@ BlockMorph.prototype.scopeFor = function (varName, afterThis) {
   // scope is being determined.
 
   return this.fullScopeFor(varName, afterThis).filter(
-    (elem) => elem instanceof BlockMorph && elem.isVariableAccessorFor(varName)
+    (elem) => elem instanceof BlockMorph && elem.isVariableAccessorFor(varName),
   );
 };
 
@@ -6527,7 +6497,7 @@ BlockMorph.prototype.isVariableAccessorFor = function (varName) {
     return this.blockSpec === varName;
   }
   return this.inputs().some(
-    (any) => any.choices === "getVarNamesDict" && any.evaluate() === varName
+    (any) => any.choices === "getVarNamesDict" && any.evaluate() === varName,
   );
 };
 
@@ -6540,7 +6510,7 @@ BlockMorph.prototype.fullScopeFor = function (varName, afterThis) {
 
   function select(opsArray) {
     var end = opsArray.findIndex(
-        (e) => e instanceof TemplateSlotMorph && e.contents() === varName
+        (e) => e instanceof TemplateSlotMorph && e.contents() === varName,
       ),
       scope = [],
       i,
@@ -6725,7 +6695,7 @@ BlockMorph.prototype.rewind = function (scriptOnly = false) {
       declarations = ide.palette.contents.children
         .filter(
           (morph) =>
-            morph instanceof BlockMorph && morph.selector === "reportGetVar"
+            morph instanceof BlockMorph && morph.selector === "reportGetVar",
         )
         .reverse();
       declarations.forEach((block) => trace.push(block));
@@ -6847,8 +6817,8 @@ CommandBlockMorph.prototype.nextBlock = function (block) {
     block.setPosition(
       new Point(
         this.left(),
-        this.bottom() - this.corner - this.dentPlus - this.flatEdge
-      )
+        this.bottom() - this.corner - this.dentPlus - this.flatEdge,
+      ),
     );
     if (affected) {
       affected.fixLayout();
@@ -6856,7 +6826,7 @@ CommandBlockMorph.prototype.nextBlock = function (block) {
   } else {
     return detect(
       this.children,
-      (child) => child instanceof CommandBlockMorph && !child.isPrototype
+      (child) => child instanceof CommandBlockMorph && !child.isPrototype,
     );
   }
 };
@@ -6875,12 +6845,12 @@ CommandBlockMorph.prototype.wrapAttachPoint = function () {
   var cslot = detect(
     // could be a method making uses of caching...
     this.inputs(), // ... although these already are cached
-    (each) => each instanceof CSlotMorph
+    (each) => each instanceof CSlotMorph,
   );
   if (cslot && !cslot.nestedBlock()) {
     return new Point(
       cslot.left() + cslot.inset * 2 + cslot.corner,
-      cslot.top() + cslot.corner * 2
+      cslot.top() + cslot.corner * 2,
     );
   }
   return null;
@@ -6944,14 +6914,16 @@ CommandBlockMorph.prototype.allAttachTargets = function (newParent) {
   }
   topBlocks = target.children.filter(
     (child) =>
-      child !== this && child instanceof SyntaxElementMorph && !child.isTemplate
+      child !== this &&
+      child instanceof SyntaxElementMorph &&
+      !child.isTemplate,
   );
   topBlocks.forEach((block) =>
     block.forAllChildren((child) => {
       if (child.attachTargets) {
         child.attachTargets().forEach((at) => answer.push(at));
       }
-    })
+    }),
   );
   return answer;
 };
@@ -7001,7 +6973,7 @@ CommandBlockMorph.prototype.closestAttachTarget = function (newParent) {
           answer = eachTarget;
         }
       }
-    })
+    }),
   );
   return answer;
 };
@@ -7056,7 +7028,7 @@ CommandBlockMorph.prototype.snap = function (hand) {
     cslot = detect(
       // this should be a method making use of caching
       this.inputs(), // these are already cached, so maybe it's okay
-      (each) => each instanceof CSlotMorph
+      (each) => each instanceof CSlotMorph,
     );
     // assume the cslot is (still) empty, was checked determining the target
     before = target.element.parent;
@@ -7101,6 +7073,12 @@ CommandBlockMorph.prototype.prepareToBeGrabbed = function (handMorph) {
     handMorph.grabOrigin.action = "extract"; // ???
     return;
   }
+  if (handMorph && handMorph.world.currentKey === 18 && this.nextBlock()) {
+    this.duplicate(); // NOTE: no infinite recursion, because extract()
+    // doesn't call this again with a hand
+    handMorph.grabOrigin.action = "extract"; // ???
+    return;
+  }
 
   var oldPos = this.position();
 
@@ -7120,7 +7098,7 @@ CommandBlockMorph.prototype.isStop = function () {
   }
   return (
     ["doForever", "doReport", "removeClone", "doSwitchToScene"].indexOf(
-      this.selector
+      this.selector,
     ) > -1
   );
 };
@@ -7194,6 +7172,54 @@ CommandBlockMorph.prototype.userDestroyJustThis = function () {
   }
 };
 
+CommandBlockMorph.prototype.extractAndCopyThis = function () {
+  var world = this.world(),
+    cpy = this.fullCopy(),
+    nb = cpy.nextBlock(),
+    ide = this.parentThatIsA(IDE_Morph),
+    blockEditor = this.parentThatIsA(BlockEditorMorph);
+  if (nb) {
+    nb.destroy();
+  }
+  cpy.pickUp(world);
+  if (!ide && blockEditor) {
+    ide = blockEditor.target.parentThatIsA(IDE_Morph);
+  }
+  if (ide) {
+    world.hand.grabOrigin = {
+      origin: ide.palette,
+      position: ide.palette.center(),
+    };
+  }
+};
+
+CommandBlockMorph.prototype.duplicate = function () {
+  var cpy = this.fullCopy(),
+    ide = this.parentThatIsA(IDE_Morph),
+    blockEditor = this.parentThatIsA(BlockEditorMorph);
+  cpy.pickUp(world);
+  // register the drop-origin, so the block can
+  // slide back to its former situation if dropped
+  // somewhere where it gets rejected
+  if (!ide && blockEditor) {
+    ide = blockEditor.target.parentThatIsA(IDE_Morph);
+  }
+  if (ide) {
+    world.hand.grabOrigin = {
+      origin: ide.palette,
+      position: ide.palette.center(),
+    };
+    if (this.scriptTarget(true)) {
+      this.scriptTarget().recordUserEdit(
+        "scripts",
+        "block",
+        "duplicate",
+        this.abstractBlockSpec(),
+      );
+    }
+  }
+};
+
 CommandBlockMorph.prototype.userExtractJustThis = function () {
   // extract just this one block, reattach next block to the previous one,
   var situation = this.situation();
@@ -7231,7 +7257,7 @@ CommandBlockMorph.prototype.extract = function () {
       "scripts",
       "block",
       "extract",
-      this.abstractBlockSpec()
+      this.abstractBlockSpec(),
     );
   }
   if (ide) {
@@ -7280,7 +7306,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
       radius,
       radians(-90),
       radians(-45),
-      false
+      false,
     );
     ctx.lineTo(indent / 1.1, this.corner / 2 + this.dentPlus + inset); //left edge of dent
     if (false) {
@@ -7290,7 +7316,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
         radius,
         radians(45),
         radians(180),
-        false
+        false,
       );
     }
     ctx.lineTo(indent, this.corner + this.dentPlus + inset);
@@ -7302,7 +7328,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
       radius,
       radians(-135),
       radians(-90),
-      false
+      false,
     );
   } else {
     var w = this.dent * 1.75 + this.corner / 2,
@@ -7316,7 +7342,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
       c + offset,
       -0 + h + inset,
       c * 2 + offset,
-      -0 + h + inset / 4
+      -0 + h + inset / 4,
     );
     ctx.lineTo(w - c * 2 + offset, h + inset / 4);
     ctx.bezierCurveTo(
@@ -7325,7 +7351,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
       w - c + offset,
       -h + h + inset,
       w + offset,
-      -h + h + inset
+      -h + h + inset,
     );
   }
 
@@ -7338,7 +7364,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
     radius,
     radians(-90),
     radians(-0),
-    false
+    false,
   );
 
   // C-Slots
@@ -7353,7 +7379,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
     radius,
     radians(0),
     radians(90),
-    false
+    false,
   );
 
   if (!this.isStop()) {
@@ -7361,7 +7387,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
       ctx.lineTo(this.width() - this.corner, bottom - inset - this.dentPlus);
       ctx.lineTo(
         this.corner * 3 + this.inset + this.dent,
-        bottom - inset + 0 - this.dentPlus
+        bottom - inset + 0 - this.dentPlus,
       );
       ctx.lineTo(indent + this.dent, bottom + this.corner - inset + 0);
       ctx.lineTo(indent, bottom + this.corner - inset - 0);
@@ -7371,7 +7397,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
         radius,
         radians(-90),
         radians(-45),
-        false
+        false,
       );
     } else {
       ctx.save();
@@ -7384,7 +7410,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
         c + offset,
         -0 + h - inset,
         c * 2 + offset,
-        -0 + h - inset / 4
+        -0 + h - inset / 4,
       );
       ctx.lineTo(w - c * 2 + offset, h - inset / 4);
       ctx.bezierCurveTo(
@@ -7393,7 +7419,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
         w - c + offset,
         -h + h - inset,
         w + offset,
-        -h + h - inset
+        -h + h - inset,
       );
       ctx.restore();
     }
@@ -7407,7 +7433,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
     radius,
     radians(90),
     radians(180),
-    false
+    false,
   );
 };
 
@@ -7453,7 +7479,7 @@ CommandBlockMorph.prototype.drawTopDentEdge = function (ctx, x, y) {
     lgx - this.edge,
     y + this.edge,
     lgx,
-    y
+    y,
   );
   leftGradient.addColorStop(0, this.cachedClr);
   leftGradient.addColorStop(1, this.cachedClrBright);
@@ -7468,7 +7494,7 @@ CommandBlockMorph.prototype.drawTopDentEdge = function (ctx, x, y) {
     0,
     y + this.corner,
     0,
-    y + this.corner + this.edge
+    y + this.corner + this.edge,
   );
   lowerGradient.addColorStop(0, this.cachedClrBright);
   lowerGradient.addColorStop(1, this.cachedClr);
@@ -7514,7 +7540,7 @@ CommandBlockMorph.prototype.drawBottomDentEdge = function (ctx, x, y) {
     0,
     y + this.corner - this.edge,
     0,
-    y + this.corner
+    y + this.corner,
   );
   lowerGradient.addColorStop(0, this.cachedClr);
   lowerGradient.addColorStop(1, this.cachedClrDark);
@@ -7529,7 +7555,7 @@ CommandBlockMorph.prototype.drawBottomDentEdge = function (ctx, x, y) {
     x + indent + this.dent - this.edge,
     y + this.corner - this.edge,
     x + indent + this.dent,
-    y + this.corner
+    y + this.corner,
   );
   rightGradient.addColorStop(0, this.cachedClr);
   rightGradient.addColorStop(1, this.cachedClrDark);
@@ -7620,7 +7646,7 @@ CommandBlockMorph.prototype.drawTopLeftEdge = function (ctx) {
     this.corner,
     this.corner,
     this.corner,
-    this.corner - this.edge
+    this.corner - this.edge,
   );
   gradient.addColorStop(0, this.cachedClrBright);
   gradient.addColorStop(1, this.cachedClr);
@@ -7638,7 +7664,7 @@ CommandBlockMorph.prototype.drawTopLeftEdge = function (ctx) {
     this.corner - shift,
     radians(-180),
     radians(-90),
-    false
+    false,
   );
   ctx.stroke();
 };
@@ -7655,7 +7681,7 @@ CommandBlockMorph.prototype.drawBottomRightEdge = function (ctx) {
     this.corner,
     x,
     y,
-    this.corner - this.edge
+    this.corner - this.edge,
   );
   gradient.addColorStop(0, this.cachedClrDark);
   gradient.addColorStop(1, this.cachedClr);
@@ -7752,7 +7778,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
     0,
     radians(-sa - 90),
     radians(-90),
-    0
+    0,
   );
   ctx.ellipse(
     s / 2,
@@ -7761,7 +7787,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
     r / 1.4,
     0,
     radians(-sa - 90),
-    radians(sa - 90)
+    radians(sa - 90),
   );
   /*ctx.bezierCurveTo(
         s,
@@ -7779,7 +7805,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
     radius,
     radians(-90),
     radians(-0),
-    false
+    false,
   );
 
   // C-Slots
@@ -7794,7 +7820,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
     radius,
     radians(0),
     radians(90),
-    false
+    false,
   );
 
   if (!this.isStop()) {
@@ -7802,7 +7828,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
       ctx.lineTo(this.width() - this.corner, bottom - inset - this.dentPlus);
       ctx.lineTo(
         this.corner * 3 + this.inset + this.dent,
-        bottom - inset - this.dentPlus
+        bottom - inset - this.dentPlus,
       );
       ctx.lineTo(indent + this.dent, bottom + this.corner - inset);
       ctx.lineTo(indent, bottom + this.corner - inset);
@@ -7821,7 +7847,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
         c + offset,
         -0 + h,
         c * 2 + offset,
-        -0 + h
+        -0 + h,
       );
       ctx.lineTo(w - c * 2 + offset, h);
       ctx.bezierCurveTo(
@@ -7830,7 +7856,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
         w - c + offset,
         -h + h,
         w + offset,
-        -h + h
+        -h + h,
       );
       ctx.restore();
     }
@@ -7843,7 +7869,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
     radius,
     radians(90),
     radians(180),
-    false
+    false,
   );
   ctx.lineTo(0 + inset, h + this.corner);
 };
@@ -7926,7 +7952,7 @@ HatBlockMorph.prototype.drawTopLeftEdge = function (ctx) {
     r - shift,
     radians(-sa - 90),
     radians(-90),
-    false
+    false,
   );
   ctx.moveTo(s / 2, shift);
   ctx.bezierCurveTo(s, shift, s, h + shift, sp, h + shift);
@@ -8168,7 +8194,7 @@ ReporterBlockMorph.prototype.mouseClickLeft = function (pos) {
     new DialogBoxMorph(this, this.userSetSpec, this).prompt(
       label,
       this.blockSpec,
-      this.world()
+      this.world(),
     );
   } else {
     ReporterBlockMorph.uber.mouseClickLeft.call(this, pos);
@@ -8291,7 +8317,7 @@ ReporterBlockMorph.prototype.drawEdgesOval = function (ctx) {
   var h = this.height(),
     r = Math.max(
       !(this instanceof RingMorph) ? h / 2 : Math.min(18, h / 2),
-      this.edge
+      this.edge,
     ),
     w = this.width(),
     shift = this.edge / 2,
@@ -8312,7 +8338,7 @@ ReporterBlockMorph.prototype.drawEdgesOval = function (ctx) {
     r - this.edge,
     r,
     h - r,
-    r + this.edge
+    r + this.edge,
   );
   gradient.addColorStop(0, this.cachedClr);
   gradient.addColorStop(1, this.cachedClrBright);
@@ -8328,7 +8354,7 @@ ReporterBlockMorph.prototype.drawEdgesOval = function (ctx) {
     r - this.edge,
     w - r,
     r,
-    r + this.edge
+    r + this.edge,
   );
   gradient.addColorStop(0, this.cachedClr);
   gradient.addColorStop(1, this.cachedClrDark);
@@ -8365,7 +8391,7 @@ ReporterBlockMorph.prototype.drawEdgesOval = function (ctx) {
     r - this.edge,
     w - r,
     h - r,
-    r
+    r,
   );
   gradient.addColorStop(0, this.cachedClr);
   gradient.addColorStop(1, this.cachedClrDark);
@@ -8783,7 +8809,7 @@ RingMorph.prototype.userMenu = function () {
       this.parent.inputs().length < this.parent.maxInputs
     ) {
       menu.addItem("insert a slot", () =>
-        this.parent.insertNewInputBefore(this)
+        this.parent.insertNewInputBefore(this),
       );
     }
     if (
@@ -8808,7 +8834,7 @@ RingMorph.prototype.unwind = function () {
         : this.parent.parentThatIsA(BlockMorph);
   if (nested) {
     return [parms.concat(nested.unwind()).concat([this])].concat(
-      nxt ? nxt.unwindAfter(this) : []
+      nxt ? nxt.unwindAfter(this) : [],
     );
   }
   return [parms].concat([this]).concat(nxt ? nxt.unwindAfter(this) : []);
@@ -8860,7 +8886,7 @@ function ScriptsMorph() {
 
 ScriptsMorph.prototype.init = function () {
   this.feedbackMorph = new BoxMorph();
-  
+
   this.rejectsHats = false;
 
   // "undrop" attributes:
@@ -8928,7 +8954,7 @@ ScriptsMorph.prototype.getRenderColor = function () {
   }
   return this.color.mixed(
     Math.max(SyntaxElementMorph.prototype.alpha - 0.15, 0),
-    SpriteMorph.prototype.paletteColor
+    SpriteMorph.prototype.paletteColor,
   );
 };
 
@@ -9019,13 +9045,11 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   this.feedbackMorph.edge = 0;
   this.feedbackMorph.alpha = 1;
   this.feedbackMorph.bounds.setWidth(block.width());
-  this.feedbackMorph.bounds.setHeight(
-    block.height()
-  );
+  this.feedbackMorph.bounds.setHeight(block.height());
   this.feedbackMorph.color = new Color(0, 0, 0, 0.5);
   // TODO: will add rendering;
-  console.warn(target)
-  
+  console.warn(target);
+
   y = target.point.y - target.element.corner - target.element.dentPlus;
   if (target.loc !== "bottom") {
     y = target.point.y - block.height() + block.corner + block.dentPlus;
@@ -9053,8 +9077,8 @@ ScriptsMorph.prototype.showCommentDropFeedback = function (comment, hand) {
   this.feedbackMorph.bounds = target.bounds.expandBy(
     Math.max(
       BlockMorph.prototype.edge * 2,
-      BlockMorph.prototype.reporterDropFeedbackPadding
-    )
+      BlockMorph.prototype.reporterDropFeedbackPadding,
+    ),
   );
   this.feedbackMorph.edge = SyntaxElementMorph.prototype.rounding;
   this.feedbackMorph.border = 2 * SyntaxElementMorph.prototype.scale;
@@ -9085,7 +9109,7 @@ ScriptsMorph.prototype.closestInput = function (reporter, hand) {
   var fb = reporter.fullBoundsNoShadow(),
     stacks = this.children.filter(
       (child) =>
-        child instanceof BlockMorph && child.fullBounds().intersects(fb)
+        child instanceof BlockMorph && child.fullBounds().intersects(fb),
     ),
     blackList = reporter.allInputs(),
     handPos,
@@ -9122,7 +9146,7 @@ ScriptsMorph.prototype.closestInput = function (reporter, hand) {
             input.isEmptySlot()) &&
           !input.isLocked() &&
           input.bounds.containsPoint(handPos) &&
-          !contains(blackList, input)
+          !contains(blackList, input),
       );
       if (target) {
         return target;
@@ -9138,7 +9162,7 @@ ScriptsMorph.prototype.closestInput = function (reporter, hand) {
         !input.isLocked() &&
         input.bounds.intersects(fb) &&
         !contains(blackList, input) &&
-        touchingVariadicArrowsIfAny(input, handPos)
+        touchingVariadicArrowsIfAny(input, handPos),
     );
     if (target) {
       return target;
@@ -9155,7 +9179,7 @@ ScriptsMorph.prototype.closestInput = function (reporter, hand) {
         input.bounds.containsPoint(handPos) &&
         !(input.parent instanceof PrototypeHatBlockMorph) &&
         !contains(blackList, input) &&
-        touchingVariadicArrowsIfAny(input, handPos)
+        touchingVariadicArrowsIfAny(input, handPos),
     );
     if (target) {
       return target;
@@ -9169,7 +9193,7 @@ ScriptsMorph.prototype.closestInput = function (reporter, hand) {
       input.fullBounds().intersects(fb) &&
       !(input.parent instanceof PrototypeHatBlockMorph) &&
       !contains(blackList, input) &&
-      touchingVariadicArrowsIfAny(input)
+      touchingVariadicArrowsIfAny(input),
   );
 };
 
@@ -9178,7 +9202,7 @@ ScriptsMorph.prototype.closestBlock = function (comment, hand) {
   var fb = comment.bounds,
     stacks = this.children.filter(
       (child) =>
-        child instanceof BlockMorph && child.fullBounds().intersects(fb)
+        child instanceof BlockMorph && child.fullBounds().intersects(fb),
     ),
     handPos,
     target,
@@ -9191,7 +9215,7 @@ ScriptsMorph.prototype.closestBlock = function (comment, hand) {
         .allChildren()
         .slice(0)
         .reverse()
-        .filter((child) => child instanceof BlockMorph && !child.isTemplate)
+        .filter((child) => child instanceof BlockMorph && !child.isTemplate),
     );
   });
   if (all.length === 0) {
@@ -9205,7 +9229,7 @@ ScriptsMorph.prototype.closestBlock = function (comment, hand) {
       (block) =>
         !block.comment &&
         !block.isPrototype &&
-        block.bounds.containsPoint(handPos)
+        block.bounds.containsPoint(handPos),
     );
     if (target) {
       return target;
@@ -9214,7 +9238,7 @@ ScriptsMorph.prototype.closestBlock = function (comment, hand) {
   return detect(
     all,
     (block) =>
-      !block.comment && !block.isPrototype && block.bounds.intersects(fb)
+      !block.comment && !block.isPrototype && block.bounds.intersects(fb),
   );
 };
 
@@ -9235,16 +9259,16 @@ ScriptsMorph.prototype.userMenu = function () {
         test
           ? new SymbolMorph(
               "checkedBox",
-              MorphicPreferences.menuFontSize * 0.75
+              MorphicPreferences.menuFontSize * 0.75,
             )
           : new SymbolMorph(
               "rectangle",
-              MorphicPreferences.menuFontSize * 0.75
+              MorphicPreferences.menuFontSize * 0.75,
             ),
         localize(label),
       ],
       toggle,
-      test ? onHint : offHint
+      test ? onHint : offHint,
     );
   }
 
@@ -9265,7 +9289,7 @@ ScriptsMorph.prototype.userMenu = function () {
         ],
         "undrop",
         "^Z",
-        "undo the last\nblock drop\nin this pane"
+        "undo the last\nblock drop\nin this pane",
       );
     }
     if (this.dropRecord.nextRecord) {
@@ -9277,7 +9301,7 @@ ScriptsMorph.prototype.userMenu = function () {
         ],
         "redrop",
         "^Y",
-        "redo the last undone\nblock drop\nin this pane"
+        "redo the last undone\nblock drop\nin this pane",
       );
     }
     if (hasUndropQueue) {
@@ -9290,7 +9314,7 @@ ScriptsMorph.prototype.userMenu = function () {
             this.recordDrop();
           },
           "forget recorded block drops\non this pane",
-          new Color(100, 0, 0)
+          new Color(100, 0, 0),
         );
       }
       menu.addLine();
@@ -9302,7 +9326,7 @@ ScriptsMorph.prototype.userMenu = function () {
   menu.addItem(
     "scripts pic...",
     "exportScriptsPicture",
-    "save a picture\nof all scripts"
+    "save a picture\nof all scripts",
   );
   if (ide) {
     menu.addLine();
@@ -9312,7 +9336,7 @@ ScriptsMorph.prototype.userMenu = function () {
         () => obj.toggleInheritanceForAttribute("scripts"),
         obj.inheritsAttribute("scripts"),
         "uncheck to\ndisinherit",
-        localize("check to inherit\nfrom") + " " + obj.exemplar.name
+        localize("check to inherit\nfrom") + " " + obj.exemplar.name,
       );
     }
     menu.addItem("make a block...", () =>
@@ -9330,8 +9354,8 @@ ScriptsMorph.prototype.userMenu = function () {
             new BlockEditorMorph(definition, obj).popUp();
           }
         },
-        this
-      ).prompt("Make a block", null, this.world())
+        this,
+      ).prompt("Make a block", null, this.world()),
     );
   }
   return menu;
@@ -9346,7 +9370,7 @@ ScriptsMorph.prototype.cleanUp = function () {
   target.children
     .sort((a, b) =>
       // make sure the prototype hat block always stays on top
-      a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top()
+      a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top(),
     )
     .forEach((child) => {
       if (child instanceof CommentMorph && child.block) {
@@ -9355,7 +9379,7 @@ ScriptsMorph.prototype.cleanUp = function () {
       child.setPosition(origin.add(new Point(target.cleanUpMargin, y)));
       if (child instanceof BlockMorph) {
         child.allComments().forEach(
-          (comment) => comment.align(child, true) // ignore layer
+          (comment) => comment.align(child, true), // ignore layer
         );
       }
       y += child.stackHeight() + target.cleanUpSpacing;
@@ -9378,14 +9402,14 @@ ScriptsMorph.prototype.exportScriptsPicture = function () {
         "image/png",
         (ide.getProjectName() || localize("untitled")) +
           " " +
-          localize("script pic")
+          localize("script pic"),
       );
     } else {
       ide.saveCanvasAs(
         pic,
         (ide.getProjectName() || localize("untitled")) +
           " " +
-          localize("script pic")
+          localize("script pic"),
       );
     }
   }
@@ -9411,7 +9435,7 @@ ScriptsMorph.prototype.scriptsPicture = function () {
       ctx.drawImage(
         child.fullImage(),
         pos.x - boundingBox.origin.x,
-        pos.y - boundingBox.origin.y
+        pos.y - boundingBox.origin.y,
       );
     }
   });
@@ -9427,10 +9451,10 @@ ScriptsMorph.prototype.scriptsXML = function () {
   if (blockEditor) {
     return ide.blocksLibraryXML(
       [blockEditor.definition].concat(
-        blockEditor.definition.collectDependencies([], [], blockEditor.target)
+        blockEditor.definition.collectDependencies([], [], blockEditor.target),
       ),
       null,
-      true
+      true,
     );
   }
   if (scripts.length === 1) {
@@ -9482,7 +9506,7 @@ ScriptsMorph.prototype.undrop = function () {
     () => {
       this.updateToolbar();
       this.isAnimating = false;
-    }
+    },
   );
   this.dropRecord = this.dropRecord.lastRecord;
 };
@@ -9511,7 +9535,7 @@ ScriptsMorph.prototype.redrop = function () {
       () => {
         this.updateToolbar();
         this.isAnimating = false;
-      }
+      },
     );
   }
 };
@@ -9558,7 +9582,7 @@ ScriptsMorph.prototype.recoverLastDrop = function (forRedrop) {
         var cslot = detect(
           // could be cached...
           rec.lastDroppedBlock.inputs(), // ...although these are
-          (each) => each instanceof CSlotMorph
+          (each) => each instanceof CSlotMorph,
         );
         if (rec.lastWrapParent instanceof CommandBlockMorph) {
           if (forRedrop) {
@@ -9589,12 +9613,12 @@ ScriptsMorph.prototype.recoverLastDrop = function (forRedrop) {
       if (forRedrop) {
         rec.lastDropTarget.replaceInput(
           rec.lastReplacedInput,
-          rec.lastDroppedBlock
+          rec.lastDroppedBlock,
         );
       } else {
         rec.lastDropTarget.replaceInput(
           rec.lastDroppedBlock,
-          rec.lastReplacedInput
+          rec.lastReplacedInput,
         );
       }
       rec.lastDropTarget.fixBlockColor(null, true);
@@ -9682,7 +9706,7 @@ ScriptsMorph.prototype.addToolbar = function () {
   toolBar.undoButton = new PushButtonMorph(
     this,
     "undrop",
-    new SymbolMorph("turnBack", 12)
+    new SymbolMorph("turnBack", 12),
   );
   toolBar.undoButton.alpha = 0.2;
   toolBar.undoButton.padding = 4;
@@ -9695,7 +9719,7 @@ ScriptsMorph.prototype.addToolbar = function () {
   toolBar.redoButton = new PushButtonMorph(
     this,
     "redrop",
-    new SymbolMorph("turnForward", 12)
+    new SymbolMorph("turnForward", 12),
   );
   toolBar.redoButton.alpha = 0.2;
   toolBar.redoButton.padding = 4;
@@ -9710,7 +9734,7 @@ ScriptsMorph.prototype.addToolbar = function () {
     this, // target
     "toggleKeyboardEntry",
     [new SymbolMorph("keyboard", 12), new SymbolMorph("keyboardFilled", 12)],
-    () => !isNil(this.focus) // query
+    () => !isNil(this.focus), // query
   );
   toolBar.keyboardButton.alpha = 0.2;
   toolBar.keyboardButton.padding = 4;
@@ -9780,7 +9804,7 @@ ScriptsMorph.prototype.addSwitchToStageButton = function () {
   toolBar.switchToStageButton = new PushButtonMorph(
     this, // target
     "switchToStage",
-    new SymbolMorph("turtleOutline", 12)
+    new SymbolMorph("turtleOutline", 12),
   );
   toolBar.switchToStageButton.alpha = 0.2;
   toolBar.switchToStageButton.padding = 4;
@@ -9798,11 +9822,11 @@ ScriptsMorph.prototype.addSwitchToStageButton = function () {
 ScriptsMorph.prototype.sortedElements = function () {
   // return all scripts and unattached comments
   var scripts = this.children.filter((each) =>
-    each instanceof CommentMorph ? !each.block : true
+    each instanceof CommentMorph ? !each.block : true,
   );
   scripts.sort((a, b) =>
     // make sure the prototype hat block always stays on top
-    a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top()
+    a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top(),
   );
   return scripts;
 };
@@ -9970,7 +9994,7 @@ ScriptsMorph.prototype.blockAtIdx = function (idx) {
   // return the innermost block corresponding to the character index given
   // at the textual code applying the current mapping
   var elements = this.sortedElements().filter(
-      (each) => each instanceof BlockMorph
+      (each) => each instanceof BlockMorph,
     ),
     scripts = elements.map((each) => each.mappedCode()),
     code = (scripts.length ? scripts : [""]).reduce((a, b) => a + "\n\n" + b),
@@ -9982,7 +10006,7 @@ ScriptsMorph.prototype.blockAtIdx = function (idx) {
 
   function discover(index) {
     return tuples.find((tuple) =>
-      code.slice(index).replace(/\s+/g, "").startsWith(tuple[0])
+      code.slice(index).replace(/\s+/g, "").startsWith(tuple[0]),
     );
   }
 
@@ -10040,7 +10064,7 @@ ScriptsMorph.prototype.unflash = function () {
 ScriptsMorph.prototype.flashOutlineCodeIdx = function (
   idx,
   color = null,
-  border = 3
+  border = 3,
 ) {
   // highlight the innermost block located in the textual code indicated
   // by the given character index. Optional color string, form "r,g,b[,a]".
@@ -10181,7 +10205,7 @@ ArgMorph.prototype.userMenu = function () {
       this.parent.inputs().length < this.parent.maxInputs
     ) {
       menu.addItem("insert a slot", () =>
-        this.parent.insertNewInputBefore(this)
+        this.parent.insertNewInputBefore(this),
       );
     }
     if (this.parent.inputs().length > this.parent.minInputs) {
@@ -10360,17 +10384,17 @@ CommandSlotMorph.prototype.fixLayout = function () {
     nb.setPosition(
       new Point(
         this.left() + this.edge + this.rfBorder,
-        this.top() + this.edge + this.rfBorder
-      )
+        this.top() + this.edge + this.rfBorder,
+      ),
     );
     this.bounds.setWidth(
-      nb.fullBounds().width() + (this.edge + this.rfBorder) * 2
+      nb.fullBounds().width() + (this.edge + this.rfBorder) * 2,
     );
     this.bounds.setHeight(
       nb.fullBounds().height() +
         this.edge +
         this.rfBorder * 2 -
-        (this.corner - this.edge)
+        (this.corner - this.edge),
     );
   } else {
     this.bounds.setHeight(this.corner * 6);
@@ -10406,7 +10430,7 @@ CommandSlotMorph.prototype.attach = function () {
       if (each.fixLayout) {
         each.fixLayout();
       }
-    })
+    }),
   );
   if (choices.length > 0) {
     menu.popUpAtHand(this.world());
@@ -10469,7 +10493,7 @@ CommandSlotMorph.prototype.drawFlat = function (ctx) {
     this.corner,
     radians(-180),
     radians(-90),
-    false
+    false,
   );
 
   // dent:
@@ -10486,7 +10510,7 @@ CommandSlotMorph.prototype.drawFlat = function (ctx) {
     this.corner,
     radians(-90),
     radians(-0),
-    false
+    false,
   );
 
   // bottom right:
@@ -10496,7 +10520,7 @@ CommandSlotMorph.prototype.drawFlat = function (ctx) {
     this.corner,
     radians(0),
     radians(90),
-    false
+    false,
   );
 
   // bottom left:
@@ -10529,7 +10553,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     0,
     this.height(),
     0,
-    this.height() - this.edge
+    this.height() - this.edge,
   );
   gradient.addColorStop(0, this.cachedClr);
   gradient.addColorStop(1, this.cachedClrBright);
@@ -10547,7 +10571,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     this.corner,
     this.width() - (this.corner + edge),
     this.height() - (this.corner + edge),
-    this.corner + edge
+    this.corner + edge,
   );
   gradient.addColorStop(0, this.cachedClrBright);
   gradient.addColorStop(1, this.cachedClr);
@@ -10560,7 +10584,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     this.corner + shift,
     radians(0),
     radians(90),
-    false
+    false,
   );
   ctx.stroke();
 
@@ -10569,7 +10593,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     this.width(),
     0,
     this.width() - this.edge,
-    0
+    0,
   );
   gradient.addColorStop(0, this.cachedClr);
   gradient.addColorStop(1, this.cachedClrBright);
@@ -10604,7 +10628,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     this.corner,
     this.corner + edge,
     this.corner + edge,
-    this.corner + edge
+    this.corner + edge,
   );
   gradient.addColorStop(0, this.cachedClrDark);
   gradient.addColorStop(1, this.cachedClr);
@@ -10617,7 +10641,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     this.corner + shift,
     radians(-180),
     radians(-90),
-    false
+    false,
   );
   ctx.stroke();
 
@@ -10637,7 +10661,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     0,
     this.corner,
     0,
-    this.corner + edge
+    this.corner + edge,
   );
   lowerGradient.addColorStop(0, this.cachedClr);
   lowerGradient.addColorStop(1, this.cachedClrDark);
@@ -10653,7 +10677,7 @@ CommandSlotMorph.prototype.drawEdges = function (ctx) {
     indent + edge + rf * 2 + (dent - rf * 2) - shift,
     this.corner,
     indent + edge + rf * 2 + (dent - rf * 2) + shift * 0.7,
-    this.corner + shift + shift * 0.7
+    this.corner + shift + shift * 0.7,
   );
   rightGradient.addColorStop(0, this.cachedClr);
   rightGradient.addColorStop(1, this.cachedClrDark);
@@ -10752,7 +10776,7 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
     this.corner,
     radians(-180),
     radians(-90),
-    false
+    false,
   );
 
   // dent:
@@ -10760,15 +10784,15 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
   if (false) {
     ctx.lineTo(
       indent + edge + rf * 2 + ox,
-      this.corner + edge + oy + this.dentPlus
+      this.corner + edge + oy + this.dentPlus,
     );
     ctx.lineTo(
       indent + edge + rf * 2 + (dent - rf * 2) + ox,
-      this.corner + edge + oy + this.dentPlus
+      this.corner + edge + oy + this.dentPlus,
     );
     ctx.lineTo(
       indent + edge + rf * 2 + (dent - rf * 2) + this.corner + ox,
-      edge + oy
+      edge + oy,
     );
   } else {
     (() => {
@@ -10786,7 +10810,7 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
         c + dentOffset,
         -0 + dentH,
         c * 2 + dentOffset,
-        -0 + dentH
+        -0 + dentH,
       );
       ctx.lineTo(dentW - c * 2 + dentOffset, dentH);
       ctx.bezierCurveTo(
@@ -10795,7 +10819,7 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
         dentW - c + dentOffset,
         -dentH + dentH,
         dentW + dentOffset,
-        -dentH + dentH
+        -dentH + dentH,
       );
       ctx.restore();
     })();
@@ -10809,7 +10833,7 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
     this.corner,
     radians(-90),
     radians(-0),
-    false
+    false,
   );
 
   // bottom right:
@@ -10819,7 +10843,7 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
     this.corner,
     radians(0),
     radians(90),
-    false
+    false,
   );
 
   // bottom left:
@@ -10829,13 +10853,13 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
     this.corner,
     radians(90),
     radians(180),
-    false
+    false,
   );
 
   // close the path, so we can clip it:
   ctx.lineTo(
     this.corner + edge + ox - this.corner, // this needs to be adjusted
-    this.corner + edge + oy
+    this.corner + edge + oy,
   );
 };
 
@@ -10895,7 +10919,7 @@ CSlotMorph.prototype.mappedCode = function (definitions) {
     }
     codeLines[idx] = codeLine.replace(
       new RegExp("<#1>"),
-      partLines.join("\n" + prefix)
+      partLines.join("\n" + prefix),
     );
     codeLines[idx] = codeLines[idx].replace(rx, partLines.join("\n"));
   });
@@ -10922,7 +10946,7 @@ CSlotMorph.prototype.elementsAtLOC = function (definitions) {
     if (matches) {
       // merge the first line with the current code line's elements
       (partElements.shift() || []).forEach((each) =>
-        elementLOC[i + insertionIdx].unshift(each)
+        elementLOC[i + insertionIdx].unshift(each),
       );
 
       // insert the following lines behind the current code line
@@ -10941,15 +10965,18 @@ CSlotMorph.prototype.fixLayout = function () {
   var nb = this.nestedBlock();
   if (nb) {
     nb.setPosition(
-      new Point(this.left() + this.inset, this.top() + this.corner)
+      new Point(this.left() + this.inset, this.top() + this.corner),
     );
     this.bounds.setHeight(nb.fullBounds().height() + this.corner);
     this.bounds.setWidth(nb.fullBounds().width() + this.cSlotPadding * 2);
   } else {
     this.bounds.setHeight(this.corner * 6 + this.cSlotPadding); // default
     this.bounds.setWidth(
-      this.corner * 4 + this.inset * 2 + this.dent + this.cSlotPadding * 2
+      this.corner * 4 + this.inset * 2 + this.dent + this.cSlotPadding * 2,
     );
+    if (this.parent) {
+      this.bounds.corner.x = this.parent.right()
+    }
   }
 
   if (this.parent && this.parent.fixLayout) {
@@ -10981,7 +11008,7 @@ CSlotMorph.prototype.fixHolesLayout = function () {
       this.inset,
       this.corner,
       this.width(),
-      this.height() - this.corner
+      this.height() - this.corner,
     ),
   ];
 };
@@ -11027,7 +11054,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     radius,
     radians(90),
     radians(0),
-    true
+    true,
   );
 
   // jigsaw shape:
@@ -11035,15 +11062,15 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
   if (false) {
     ctx.lineTo(
       this.inset * 2 + this.corner * 3 + this.dent + ox,
-      this.corner + oy - inset
+      this.corner + oy - inset,
     );
     ctx.lineTo(
       this.inset * 2 + this.corner * 2 + this.dent + ox,
-      this.corner * 2 + oy - inset + this.dentPlus
+      this.corner * 2 + oy - inset + this.dentPlus,
     );
     ctx.lineTo(
       this.inset * 2 + this.corner * 2 + ox,
-      this.corner * 2 + oy - inset + this.dentPlus
+      this.corner * 2 + oy - inset + this.dentPlus,
     );
 
     ctx.lineTo(this.inset * 2 + this.corner + ox, this.corner + oy - inset);
@@ -11062,7 +11089,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
       c + offset,
       -0 + h,
       c * 2 + offset,
-      -0 + h
+      -0 + h,
     );
     ctx.lineTo(w - c * 2 + offset, h);
     ctx.bezierCurveTo(
@@ -11071,7 +11098,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
       w - c + offset,
       -h + h,
       w + offset,
-      -h + h
+      -h + h,
     );
     ctx.restore();
   }
@@ -11081,13 +11108,13 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     this.corner + inset,
     radians(270),
     radians(180),
-    true
+    true,
   );
 
   // bottom:
   ctx.lineTo(
     this.inset + ox - inset,
-    this.height() - this.corner * 2 + oy - this.dentPlus
+    this.height() - this.corner * 2 + oy - this.dentPlus,
   );
   ctx.arc(
     this.inset + this.corner + ox,
@@ -11095,7 +11122,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     this.corner + inset,
     radians(180),
     radians(90),
-    true
+    true,
   );
   var block = this.nestedBlock(),
     flatEdge = true;
@@ -11107,7 +11134,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     ctx.save();
     ctx.translate(
       1 * this.scale,
-      this.height() - this.corner + oy + inset - this.dentPlus
+      this.height() - this.corner + oy + inset - this.dentPlus,
     );
     ctx.lineTo(0 + offset, -h + h);
     ctx.bezierCurveTo(
@@ -11116,7 +11143,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
       c + offset,
       -0 + h,
       c * 2 + offset,
-      -0 + h
+      -0 + h,
     );
     ctx.lineTo(w - c * 2 + offset, h);
     ctx.bezierCurveTo(
@@ -11125,12 +11152,12 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
       w - c + offset,
       -h + h,
       w + offset,
-      -h + h
+      -h + h,
     );
     ctx.restore();
     ctx.lineTo(
       this.width() - this.corner + ox,
-      this.height() - this.corner + oy + inset - this.dentPlus
+      this.height() - this.corner + oy + inset - this.dentPlus,
     );
   }
   ctx.arc(
@@ -11139,7 +11166,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     radius,
     radians(-90),
     radians(-0),
-    false
+    false,
   );
 };
 
@@ -11155,7 +11182,7 @@ CSlotMorph.prototype.drawTopRightEdge = function (ctx) {
     this.corner,
     x,
     y,
-    this.corner - this.edge
+    this.corner - this.edge,
   );
   gradient.addColorStop(0, this.cachedClrDark);
   gradient.addColorStop(1, this.cachedClr);
@@ -11196,7 +11223,7 @@ CSlotMorph.prototype.drawTopEdge = function (ctx, x, y) {
     0,
     y + this.corner - this.edge,
     0,
-    y + this.corner
+    y + this.corner,
   );
   lowerGradient.addColorStop(0, this.cachedClr);
   lowerGradient.addColorStop(1, this.cachedClrDark);
@@ -11211,7 +11238,7 @@ CSlotMorph.prototype.drawTopEdge = function (ctx, x, y) {
     x + this.inset + this.corner * 2 + this.dent - shift,
     y + this.corner - shift - shift,
     x + this.inset + this.corner * 2 + this.dent + shift * 0.7,
-    y + this.corner - shift + shift * 0.7
+    y + this.corner - shift + shift * 0.7,
   );
   rightGradient.addColorStop(0, this.cachedClr);
   rightGradient.addColorStop(1, this.cachedClrDark);
@@ -11220,7 +11247,7 @@ CSlotMorph.prototype.drawTopEdge = function (ctx, x, y) {
   ctx.beginPath();
   ctx.moveTo(
     x + this.inset + this.corner * 2 + this.dent,
-    y + this.corner - shift
+    y + this.corner - shift,
   );
   ctx.lineTo(x + this.corner * 3 + this.inset + this.dent, y - shift);
   ctx.stroke();
@@ -11242,7 +11269,7 @@ CSlotMorph.prototype.drawTopLeftEdge = function (ctx) {
     this.corner,
     this.corner + this.inset,
     this.corner * 2,
-    this.corner + this.edge
+    this.corner + this.edge,
   );
   gradient.addColorStop(0, this.cachedClrDark);
   gradient.addColorStop(1, this.cachedClr);
@@ -11260,7 +11287,7 @@ CSlotMorph.prototype.drawTopLeftEdge = function (ctx) {
     this.corner + shift,
     radians(-180),
     radians(-90),
-    false
+    false,
   );
   ctx.stroke();
 };
@@ -11300,7 +11327,7 @@ CSlotMorph.prototype.drawBottomEdge = function (ctx) {
     this.corner /*- this.edge*/, // uncomment for half-tone
     this.corner + this.inset,
     this.height() - this.corner * 2,
-    this.corner + this.edge
+    this.corner + this.edge,
   );
   upperGradient.addColorStop(0, this.cachedClrBright);
   upperGradient.addColorStop(1, this.cachedClr);
@@ -11312,7 +11339,7 @@ CSlotMorph.prototype.drawBottomEdge = function (ctx) {
     this.corner + shift,
     radians(180),
     radians(90),
-    true
+    true,
   );
   ctx.stroke();
 
@@ -11320,7 +11347,7 @@ CSlotMorph.prototype.drawBottomEdge = function (ctx) {
     0,
     this.height() - this.corner,
     0,
-    this.height() - this.corner + this.edge
+    this.height() - this.corner + this.edge,
   );
   gradient.addColorStop(0, this.cachedClrBright);
   gradient.addColorStop(1, this.cachedClr);
@@ -11379,7 +11406,7 @@ InputSlotMorph.prototype.init = function (
   text,
   isNumeric,
   choiceDict,
-  isReadOnly
+  isReadOnly,
 ) {
   var contents = new InputSlotStringMorph(""),
     arrow = new ArrowMorph(
@@ -11387,7 +11414,7 @@ InputSlotMorph.prototype.init = function (
       0,
       Math.max(Math.floor(this.fontSize / 6), 1),
       new Color(87, 94, 117),
-      true
+      true,
     ),
     attempt = (x) => {
       try {
@@ -11422,8 +11449,7 @@ InputSlotMorph.prototype.init = function (
   this.add(contents);
   this.add(arrow);
   contents.isEditable = true;
-  contents.color = this.isReadOnly ? WHITE
-    : new Color(87, 94, 117);
+  contents.color = this.isReadOnly ? WHITE : new Color(87, 94, 117);
   contents.isDraggable = false;
   contents.enableSelecting();
   this.setContents(text);
@@ -11528,7 +11554,7 @@ InputSlotMorph.prototype.userSetContents = function (aStringOrFloat) {
       "input slot",
       "set",
       block.abstractBlockSpec(),
-      aStringOrFloat
+      aStringOrFloat,
     );
   }
   this.reactToEdit();
@@ -11559,7 +11585,7 @@ InputSlotMorph.prototype.dropDownMenu = function (enableKeyboard) {
 InputSlotMorph.prototype.menuFromDict = function (
   choices,
   noEmptyOption,
-  enableKeyboard
+  enableKeyboard,
 ) {
   var key,
     dial,
@@ -11570,7 +11596,6 @@ InputSlotMorph.prototype.menuFromDict = function (
     trgt = block.scriptTarget(true),
     menu = new MenuMorph(this.userSetContents, null, this, this.fontSize);
   menu.bgColor = this.parent.color;
-  
 
   function update(num) {
     myself.setContents(num);
@@ -11581,7 +11606,7 @@ InputSlotMorph.prototype.menuFromDict = function (
         "input slot",
         "set choice",
         block.abstractBlockSpec(),
-        num
+        num,
       );
     }
   }
@@ -11596,7 +11621,7 @@ InputSlotMorph.prototype.menuFromDict = function (
         "JavaScript extensions for Snap!\nare turned off",
         null,
         null,
-        WHITE
+        WHITE,
       );
       return menu;
     }
@@ -11612,7 +11637,7 @@ InputSlotMorph.prototype.menuFromDict = function (
           'cannot find extension menu "' + selector + '"',
           null,
           null,
-          WHITE
+          WHITE,
         );
         return menu;
       }
@@ -11636,7 +11661,7 @@ InputSlotMorph.prototype.menuFromDict = function (
           this.doWithAlpha(1, getImg(choices[key])),
           choices[key],
           null,
-          WHITE
+          WHITE,
         );
       } else if (key.indexOf("§_dir") === 0) {
         dial = new DialMorph();
@@ -11668,7 +11693,7 @@ InputSlotMorph.prototype.menuFromDict = function (
             null, // doubleClickAction
             null, // shortcut
             !(choices[key] instanceof Array) &&
-              typeof choices[key] !== "function" // verbatim?
+              typeof choices[key] !== "function", // verbatim?
           );
         }
       } else if (key === "__shout__go__") {
@@ -11687,7 +11712,7 @@ InputSlotMorph.prototype.menuFromDict = function (
           key,
           this.menuFromDict(choices[key], true),
           null, // indicator
-          true // verbatim? - don't translate
+          true, // verbatim? - don't translate
         );
       } else if (
         choices[key] instanceof Array &&
@@ -11698,7 +11723,7 @@ InputSlotMorph.prototype.menuFromDict = function (
           key,
           this.menuFromDict(choices[key][0], true),
           null, // indicator
-          false // verbatim? - do translate, if inside an array
+          false, // verbatim? - do translate, if inside an array
         );
       } else {
         menu.addItem(
@@ -11712,7 +11737,7 @@ InputSlotMorph.prototype.menuFromDict = function (
           null, // shortcut
           !(choices[key] instanceof Array) &&
             typeof choices[key] !== "function" &&
-            typeof choices[key] !== "number" // verbatim?
+            typeof choices[key] !== "number", // verbatim?
         );
       }
     }
@@ -11739,7 +11764,7 @@ InputSlotMorph.prototype.dynamicMenu = function (searching, enableKeyboard) {
       (each) =>
         each.selector === "receiveSlotEvent" &&
         each.inputs()[0].evaluate() === inputName &&
-        each.inputs()[1].evaluateOption() === "menu"
+        each.inputs()[1].evaluateOption() === "menu",
     ),
     stage = rcvr.parentThatIsA(StageMorph),
     isTxtOrNum = (dta) => isString(dta) || parseFloat(dta) === +dta,
@@ -11802,7 +11827,7 @@ InputSlotMorph.prototype.dynamicMenu = function (searching, enableKeyboard) {
     null, // clicked
     true, // right away
     null, // atomic
-    vars
+    vars,
   );
 };
 
@@ -11914,7 +11939,7 @@ InputSlotMorph.prototype.messagesMenu = function (searching) {
     new DialogBoxMorph(this, this.setContents, this).prompt(
       "Message name",
       null,
-      this.world()
+      this.world(),
     );
   return dict;
 };
@@ -11951,7 +11976,7 @@ InputSlotMorph.prototype.messagesReceivedMenu = function (searching) {
     new DialogBoxMorph(this, this.setContents, this).prompt(
       "Message name",
       null,
-      this.world()
+      this.world(),
     );
   return dict;
 };
@@ -12360,7 +12385,7 @@ InputSlotMorph.prototype.attributesMenu = function (searching) {
       varNames.forEach((name) => (dict[name] = name));
     }
     obj.allBlocks(true).forEach(
-      (def, i) => (dict["§_def" + i] = def.blockInstance(true)) // include translations
+      (def, i) => (dict["§_def" + i] = def.blockInstance(true)), // include translations
     );
   }
   return dict;
@@ -12477,14 +12502,14 @@ InputSlotMorph.prototype.pianoKeyboardMenu = function (searching) {
     this.fontSize,
     instrument,
     1,
-    this.parent.color
+    this.parent.color,
   );
 
   menu.bgColor = this.parent.color;
   menu.backColor = this.parent.color;
   menu.popup(
     this.world(),
-    new Point(this.right() - menu.width() / 2, this.bottom())
+    new Point(this.right() - menu.width() / 2, this.bottom()),
   );
   menu.selectKey(Math.min(Math.max(+this.evaluate(), 0), 143));
 };
@@ -12589,9 +12614,7 @@ InputSlotMorph.prototype.fixLayout = function () {
     //contents.color = new Color(87, 94, 117);
   }
   arrow.color =
-    this.isReadOnly || this.isStatic
-      ? WHITE
-      : new Color(87, 94, 117);
+    this.isReadOnly || this.isStatic ? WHITE : new Color(87, 94, 117);
 
   if (this.choices) {
     arrow.setSize(fontHeight(this.fontSize));
@@ -12630,7 +12653,7 @@ InputSlotMorph.prototype.fixLayout = function () {
           height +
           arrowWidth / 6 -
           this.typeInPadding * 1.5,
-        this.scale * (this.isReadOnly ? 30 : 24)
+        this.scale * (this.isReadOnly ? 30 : 24),
       );
     } else {
       width = Math.max(
@@ -12642,7 +12665,7 @@ InputSlotMorph.prototype.fixLayout = function () {
         contents.rawHeight // single vs. multi-line contents
           ? contents.rawHeight() + arrowWidth
           : fontHeight(contents.fontSize) / 1.3 + arrowWidth,
-        this.scale * (this.isReadOnly ? 30 : 24) //this.minWidth // for text-type slots
+        this.scale * (this.isReadOnly ? 30 : 24), //this.minWidth // for text-type slots
       );
     }
   }
@@ -12657,16 +12680,16 @@ InputSlotMorph.prototype.fixLayout = function () {
           contents.width() / 2 -
           this.typeInPadding -
           arrowWidth / 3,
-        this.edge + this.typeInPadding * 0.9
+        this.edge + this.typeInPadding * 0.9,
       )
         .add(new Point(this.typeInPadding, 0))
-        .add(this.position())
+        .add(this.position()),
     );
   } else {
     contents.setPosition(
       new Point(this.edge, this.edge + this.typeInPadding * 0.7)
         .add(new Point(this.typeInPadding, 0))
-        .add(this.position())
+        .add(this.position()),
     );
   }
 
@@ -12674,8 +12697,8 @@ InputSlotMorph.prototype.fixLayout = function () {
     arrow.setPosition(
       new Point(
         this.right() - arrowWidth - this.edge,
-        contents.top() - arrowWidth0 / 8
-      )
+        contents.top() - arrowWidth0 / 8,
+      ),
     );
   }
 
@@ -12730,12 +12753,12 @@ InputSlotMorph.prototype.reactToEdit = function () {
       "input slot",
       "edit",
       block.abstractBlockSpec(),
-      this.evaluate()
+      this.evaluate(),
     );
   }
   if (block.isCustomBlock) {
     block.fireSlotEditedEvent(
-      this.parent instanceof MultiArgMorph ? this.parent : this
+      this.parent instanceof MultiArgMorph ? this.parent : this,
     );
   }
 };
@@ -12797,11 +12820,11 @@ InputSlotMorph.prototype.mapStringToCode = function () {
   new DialogBoxMorph(
     this,
     (code) => (StageMorph.prototype.codeMappings.string = code),
-    this
+    this,
   ).promptCode(
     "Code mapping - String <#1>",
     StageMorph.prototype.codeMappings.string || "",
-    this.world()
+    this.world(),
   );
 };
 
@@ -12810,11 +12833,11 @@ InputSlotMorph.prototype.mapNumberToCode = function () {
   new DialogBoxMorph(
     this,
     (code) => (StageMorph.prototype.codeMappings.number = code),
-    this
+    this,
   ).promptCode(
     "Code mapping - Number <#1>",
     StageMorph.prototype.codeMappings.number || "",
-    this.world()
+    this.world(),
   );
 };
 
@@ -12837,7 +12860,7 @@ InputSlotMorph.prototype.mappedCode = function () {
     block &&
     contains(
       ["doSetVar", "doChangeVar", "doShowVar", "doHideVar"],
-      block.selector
+      block.selector,
     )
   ) {
     return val;
@@ -12914,8 +12937,7 @@ InputSlotMorph.prototype.unflash = function () {
 // InputSlotMorph drawing:
 
 InputSlotMorph.prototype.render = function (ctx) {
-  var borderColor,
-    r;
+  var borderColor, r;
 
   // initialize my surface property
   if (this.cachedNormalColor) {
@@ -12951,21 +12973,21 @@ InputSlotMorph.prototype.render = function (ctx) {
       this.corner,
       this.corner,
       radians(-90),
-      radians(0)
+      radians(0),
     );
     ctx.arc(
       this.width() - this.corner * 1.5,
       this.height() - this.corner * 1.5,
       this.corner,
       radians(0),
-      radians(90)
+      radians(90),
     );
     ctx.arc(
       this.corner,
       this.height() - this.corner * 1.5,
       this.corner,
       radians(90),
-      radians(180)
+      radians(180),
     );
     ctx.arc(this.corner, this.corner, this.corner, radians(-180), radians(-90));
     ctx.stroke();
@@ -12984,7 +13006,7 @@ InputSlotMorph.prototype.render = function (ctx) {
       r,
       radians(-90),
       radians(90),
-      false
+      false,
     );
     ctx.closePath();
 
@@ -13000,7 +13022,7 @@ InputSlotMorph.prototype.render = function (ctx) {
     ctx.drawImage(
       this.doWithAlpha(1, () => this.selectedBlock.fullImage()),
       this.edge + this.typeInPadding,
-      this.edge
+      this.edge,
     );
   }
 };
@@ -13047,7 +13069,7 @@ InputSlotMorph.prototype.drawRectBorder = function (ctx) {
     0,
     this.height() - this.edge,
     0,
-    this.height()
+    this.height(),
   );
   gradient.addColorStop(0, this.cachedClrBright);
   gradient.addColorStop(1, this.cachedClr);
@@ -13061,7 +13083,7 @@ InputSlotMorph.prototype.drawRectBorder = function (ctx) {
     this.width() - this.edge,
     0,
     this.width(),
-    0
+    0,
   );
   gradient.addColorStop(0, this.cachedClrBright);
   gradient.addColorStop(1, this.cachedClr);
@@ -13114,7 +13136,7 @@ InputSlotMorph.prototype.drawRoundBorder = function (ctx) {
     0,
     this.height() - this.edge,
     0,
-    this.height()
+    this.height(),
   );
   gradient.addColorStop(0, this.cachedClrBright);
   gradient.addColorStop(1, this.cachedClr);
@@ -13154,7 +13176,7 @@ InputSlotMorph.prototype.drawRoundBorder = function (ctx) {
     r - this.edge,
     this.width() - r,
     r,
-    r
+    r,
   );
   gradient.addColorStop(1, this.cachedClr);
   gradient.addColorStop(0, this.cachedClrBright);
@@ -13187,7 +13209,7 @@ function InputSlotStringMorph(
   shadowOffset,
   shadowColor,
   color,
-  fontName
+  fontName,
 ) {
   this.init(
     text,
@@ -13199,7 +13221,7 @@ function InputSlotStringMorph(
     shadowOffset,
     shadowColor,
     color,
-    fontName
+    fontName,
   );
 }
 
@@ -13208,9 +13230,9 @@ InputSlotStringMorph.prototype.getRenderColor = function () {
     if (this.isEditable) {
       return this.color;
     }
-    return this.parent.alpha > 0.5 ? this.color : this.color;
+    return this.parent.alpha > 0.5 ? this.color : BLACK;
   }
-  return this.parent.alpha > 0.25 ? this.color : WHITE;
+  return this.parent.alpha > 0.4 ? this.color : WHITE;
 };
 
 InputSlotStringMorph.prototype.getShadowRenderColor = function () {
@@ -13240,7 +13262,7 @@ function InputSlotTextMorph(
   width,
   fontName,
   shadowOffset,
-  shadowColor
+  shadowColor,
 ) {
   this.init(
     text,
@@ -13252,7 +13274,7 @@ function InputSlotTextMorph(
     width,
     fontName,
     shadowOffset,
-    shadowColor
+    shadowColor,
   );
 }
 
@@ -13505,11 +13527,11 @@ BooleanSlotMorph.prototype.setContents = function (boolOrNull) {
     typeof boolOrNull === "boolean"
       ? boolOrNull
       : isNil(boolOrNull) ||
-        ["", " ", "null"].includes(boolOrNull) ||
-        +boolOrNull < 0
-      ? null
-      : ["true", "on", "yes", "ok", "y", "+"].includes(boolOrNull) ||
-        +boolOrNull > 0;
+          ["", " ", "null"].includes(boolOrNull) ||
+          +boolOrNull < 0
+        ? null
+        : ["true", "on", "yes", "ok", "y", "+"].includes(boolOrNull) ||
+          +boolOrNull > 0;
   this.rerender();
 };
 
@@ -13530,7 +13552,7 @@ BooleanSlotMorph.prototype.toggleValue = function () {
         "boolean slot",
         "toggle",
         block.abstractBlockSpec(),
-        this.value
+        this.value,
       );
     }
     if (block.isCustomBlock) {
@@ -13631,11 +13653,11 @@ BooleanSlotMorph.prototype.mapTrueToCode = function () {
   new DialogBoxMorph(
     this,
     (code) => (StageMorph.prototype.codeMappings["true"] = code),
-    this
+    this,
   ).promptCode(
     "Code mapping - true",
     StageMorph.prototype.codeMappings["true"] || "true",
-    this.world()
+    this.world(),
   );
 };
 
@@ -13644,11 +13666,11 @@ BooleanSlotMorph.prototype.mapFalseToCode = function () {
   new DialogBoxMorph(
     this,
     (code) => (StageMorph.prototype.codeMappings["false"] = code),
-    this
+    this,
   ).promptCode(
     "Code mapping - false",
     StageMorph.prototype.codeMappings["false"] || "false",
-    this.world()
+    this.world(),
   );
 };
 
@@ -13831,7 +13853,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
     ctx.lineTo(w - r, h - e);
     ctx.lineTo(r, h - e);
     ctx.closePath();
-    ctx.stroke()
+    ctx.stroke();
   }
 
   if (progress < 0 || !this.isEmptySlot() || progress == 1) {
@@ -14038,7 +14060,7 @@ BooleanSlotMorph.prototype.drawKnob = function (ctx, progress) {
     r - outline - this.edge,
     x,
     y,
-    r - outline
+    r - outline,
   );
   gradient.addColorStop(1, topColor.toString());
   gradient.addColorStop(0, color.toString());
@@ -14057,7 +14079,7 @@ BooleanSlotMorph.prototype.drawKnob = function (ctx, progress) {
     r - outline - this.edge,
     x,
     y,
-    r - outline
+    r - outline,
   );
   gradient.addColorStop(1, bottomColor.toString());
   gradient.addColorStop(0, color.toString());
@@ -14077,13 +14099,13 @@ BooleanSlotMorph.prototype.textLabelExtent = function () {
     localize("true"),
     this.fontSize,
     null,
-    true // bold
+    true, // bold
   );
   f = new StringMorph(
     localize("false"),
     this.fontSize,
     null,
-    true // bold
+    true, // bold
   );
   return new Point(Math.max(t.width(), f.width()), t.height());
 };
@@ -14114,7 +14136,7 @@ ArrowMorph.prototype.init = function (
   padding,
   color,
   isLbl,
-  scale
+  scale,
 ) {
   this.direction = direction || "down";
   this.size = size || (size === 0 ? 0 : 50);
@@ -14163,7 +14185,7 @@ ArrowMorph.prototype.drawImage = function (ctx, image, horiz) {
   ctx.drawImage(
     image,
     ...(!horiz ? i1 : [i1[1], i1[0]]),
-    ...(!horiz ? i2 : [i2[1], i2[0]])
+    ...(!horiz ? i2 : [i2[1], i2[0]]),
   );
   image.width = ow;
   image.height = oh;
@@ -14195,18 +14217,18 @@ ArrowMorph.prototype.render = function (ctx) {
             case "right":
               return -90;
           }
-        })(this.direction)
-      )
+        })(this.direction),
+      ),
     );
     ctx.translate(nw / -2, nh / -2);
     this.drawImage(
       ctx,
-      this.color.eq(new Color(87, 94, 117))
+      this.getRenderColor().eq(new Color(87, 94, 117))
         ? ArrowMorph.prototype.greyArrow
-        : this.color.b < 118
-        ? ArrowMorph.prototype.blackArrow
-        : ArrowMorph.prototype.whiteArrow,
-      horiz
+        : this.getRenderColor().b < 118
+          ? ArrowMorph.prototype.blackArrow
+          : ArrowMorph.prototype.whiteArrow,
+      horiz,
     );
 
     ctx.restore();
@@ -14239,7 +14261,7 @@ ArrowMorph.prototype.render = function (ctx) {
 ArrowMorph.prototype.getRenderColor = function () {
   if (this.isBlockLabel) {
     if (IDE_Morph.prototype.isBright) {
-      return this.color;
+      return SyntaxElementMorph.prototype.alpha > 0.5 ? this.color : BLACK;
     }
     return SyntaxElementMorph.prototype.alpha > 0.5 ? this.color : WHITE;
   }
@@ -14269,7 +14291,7 @@ TextSlotMorph.prototype.init = function (
   text,
   isNumeric,
   choiceDict,
-  isReadOnly
+  isReadOnly,
 ) {
   var contents = new InputSlotTextMorph(""),
     arrow = new ArrowMorph(
@@ -14277,7 +14299,7 @@ TextSlotMorph.prototype.init = function (
       0,
       Math.max(Math.floor(this.fontSize / 9), 1),
       BLACK,
-      true
+      true,
     );
 
   contents.fontSize = this.fontSize;
@@ -14367,14 +14389,14 @@ ColorSlotMorph.prototype.setColor = function (clr) {
     isString(clr) && clr.length > 10
       ? Color.fromString(clr)
       : clr instanceof Color
-      ? clr
-      : new Color(
-          ...[
-            Math.random() * 256,
-            Math.random() * 256,
-            Math.random() * 256,
-          ].map((x) => Math.round(x))
-        ) //new Color(145, 26, 68)
+        ? clr
+        : new Color(
+            ...[
+              Math.random() * 256,
+              Math.random() * 256,
+              Math.random() * 256,
+            ].map((x) => Math.round(x)),
+          ), //new Color(145, 26, 68)
   );
 };
 
@@ -14382,14 +14404,17 @@ ColorSlotMorph.prototype.setColor = function (clr) {
 
 ColorSlotMorph.prototype.getUserColor = function (model) {
   var block = this.parentThatIsA(BlockMorph),
-      menu, picker;
+    menu,
+    picker;
 
-  picker = new SplitColorPickerMorph((color) => {
+  picker = new SplitColorPickerMorph(
+    (color) => {
       this.color = color;
       this.rerender();
       block.fireSlotEditedEvent(this);
     },
-    () => this.color);
+    () => this.color,
+  );
 
   menu = new MenuMorph();
   menu.doNotClick = true;
@@ -14626,7 +14651,7 @@ ColorSlotMorph.prototype.render = function (ctx) {
       this.edge,
       this.edge,
       this.width() - this.edge * 2,
-      this.height() - this.edge * 2
+      this.height() - this.edge * 2,
     );
   } else {
     var r = Math.max((this.height() - this.edge * 2) / 2, 0);
@@ -14638,7 +14663,7 @@ ColorSlotMorph.prototype.render = function (ctx) {
       r,
       radians(-90),
       radians(90),
-      false
+      false,
     );
     ctx.closePath();
 
@@ -14712,7 +14737,7 @@ BlockHighlightMorph.prototype.updateReadout = function () {
       this.color.darker(), // borderColor,
       null, // padding,
       1, // isThought - don't draw a hook
-      true // no shadow - faster
+      true, // no shadow - faster
     );
     this.add(readout);
   }
@@ -14748,7 +14773,7 @@ ReporterBubbleMorph.prototype.outlinePath = function (ctx, radius, inset) {
     radius,
     radians(0),
     radians(90),
-    false
+    false,
   );
   if (!this.isThought) {
     // draw speech bubble hook
@@ -14764,7 +14789,7 @@ ReporterBubbleMorph.prototype.outlinePath = function (ctx, radius, inset) {
     radius,
     radians(90),
     radians(180),
-    false
+    false,
   );
   if (this.isThought === true) {
     // use anything but "true" to draw nothing
@@ -14846,7 +14871,7 @@ function MultiArgMorph(
   infix,
   collapse,
   defaults,
-  group
+  group,
 ) {
   this.init(
     slotSpec,
@@ -14861,7 +14886,7 @@ function MultiArgMorph(
     infix,
     collapse,
     defaults,
-    group
+    group,
   );
 }
 
@@ -14878,7 +14903,7 @@ MultiArgMorph.prototype.init = function (
   infix,
   collapse,
   defaults,
-  group
+  group,
 ) {
   var label,
     collapseLabel,
@@ -14926,7 +14951,7 @@ MultiArgMorph.prototype.init = function (
   // label text:
   if (this.labelText || this.slotSpec === "%cs") {
     label = this.labelPart(
-      this.labelText instanceof Array ? this.labelText[0] : this.labelText
+      this.labelText instanceof Array ? this.labelText[0] : this.labelText,
     );
     this.add(label);
     label.hide();
@@ -14938,7 +14963,7 @@ MultiArgMorph.prototype.init = function (
     fontHeight(this.fontSize), // size
     Math.max(Math.floor(this.fontSize / 6), 1), // padding
     arrowColor,
-    true // isLbl
+    true, // isLbl
   );
   leftArrow.hoverCursor = "pointer";
 
@@ -14948,7 +14973,7 @@ MultiArgMorph.prototype.init = function (
     fontHeight(this.fontSize), // size
     Math.max(Math.floor(this.fontSize / 6), 1), // padding
     arrowColor,
-    true // isLbl
+    true, // isLbl
   );
   rightArrow.hoverCursor = "pointer";
 
@@ -15115,8 +15140,8 @@ MultiArgMorph.prototype.setExpand = function (expand) {
         return dta === "$nl"
           ? "%br"
           : dta.startsWith("$_")
-          ? localize(dta.slice(2))
-          : dta;
+            ? localize(dta.slice(2))
+            : dta;
       })
       .filter((each) => each.length);
     return items.length > 1 ? items : items[0] || null;
@@ -15132,7 +15157,7 @@ MultiArgMorph.prototype.setExpand = function (expand) {
   this.removeChild(label); // shouldn't matter if coll is null
   if (this.labelText) {
     label = this.labelPart(
-      this.labelText instanceof Array ? this.labelText[0] : this.labelText
+      this.labelText instanceof Array ? this.labelText[0] : this.labelText,
     );
     this.children.splice(this.collapse ? 1 : 0, null, label);
     label.parent = this;
@@ -15156,7 +15181,7 @@ MultiArgMorph.prototype.setDefaultValue = function (defaultValue) {
       .map((each) =>
         isString(each) && each.length > 2 && each.startsWith("$_")
           ? [each.slice(2)]
-          : each
+          : each,
       );
     return items.length > 1 ? items : items[0] || null;
   }
@@ -15235,7 +15260,7 @@ MultiArgMorph.prototype.show = function () {
 MultiArgMorph.prototype.setLabelColor = function (
   textColor,
   shadowColor,
-  shadowOffset
+  shadowOffset,
 ) {
   this.textColor = textColor;
   this.shadowColor = shadowColor;
@@ -15244,7 +15269,7 @@ MultiArgMorph.prototype.setLabelColor = function (
     this,
     textColor,
     shadowColor,
-    shadowOffset
+    shadowOffset,
   );
 };
 
@@ -15346,9 +15371,15 @@ MultiArgMorph.prototype.fixArrowsLayout = function () {
     }
   }
   leftArrow.setCenter(arrows.center());
-  leftArrow.setLeft(arrows.left() - (this.isStatic && rightArrow.isVisible ? this.scale / 4 : this.scale));
+  leftArrow.setLeft(
+    arrows.left() -
+      (this.isStatic && rightArrow.isVisible ? this.scale / 4 : this.scale),
+  );
   rightArrow.setCenter(arrows.center());
-  rightArrow.setRight(arrows.right() + (this.isStatic && leftArrow.isVisible ? this.scale / 4 : this.scale));
+  rightArrow.setRight(
+    arrows.right() +
+      (this.isStatic && leftArrow.isVisible ? this.scale / 4 : this.scale),
+  );
   if (centerList) {
     listSymbol.setCenter(arrows.center());
   }
@@ -15364,7 +15395,7 @@ MultiArgMorph.prototype.fixHolesLayout = function () {
       if (slot instanceof CSlotMorph) {
         slot.fixHolesLayout();
         this.holes.push(
-          slot.holes[0].translateBy(slot.position().subtract(pos))
+          slot.holes[0].translateBy(slot.position().subtract(pos)),
         );
       }
     });
@@ -15406,7 +15437,7 @@ MultiArgMorph.prototype.deleteSlot = function (anInput) {
     "scripts",
     "poly slot",
     "delete",
-    block.abstractBlockSpec()
+    block.abstractBlockSpec(),
   );
   if (block.isCustomBlock) {
     block.fireSlotEditedEvent(this);
@@ -15443,7 +15474,7 @@ MultiArgMorph.prototype.insertNewInputBefore = function (anInput, contents) {
     "scripts",
     "poly slot",
     "insert",
-    block.abstractBlockSpec()
+    block.abstractBlockSpec(),
   );
   return newPart;
 };
@@ -15480,7 +15511,7 @@ MultiArgMorph.prototype.addInput = function (contents) {
   } else if (contains(["%parms", "%ringparms"], this.elementSpec)) {
     if (this.is3ArgRingInHOF() && idx < 5) {
       newPart.setContents(
-        [localize("value"), localize("index"), localize("list")][idx - 1]
+        [localize("value"), localize("index"), localize("list")][idx - 1],
       );
     } else {
       newPart.setContents("#" + idx);
@@ -15507,10 +15538,10 @@ MultiArgMorph.prototype.addInfix = function () {
     label = this.infix
       ? localize(this.infix)
       : this.labelText instanceof Array
-      ? this.slotSpec instanceof Array
-        ? this.labelText[len % this.slotSpec.length]
-        : this.labelText[len % this.labelText.length]
-      : "";
+        ? this.slotSpec instanceof Array
+          ? this.labelText[len % this.slotSpec.length]
+          : this.labelText[len % this.labelText.length]
+        : "";
 
   if (label === "" || !len || this.children.length < 2) {
     return;
@@ -15633,7 +15664,7 @@ MultiArgMorph.prototype.is3ArgRingInHOF = function () {
             "reportFindFirst",
             "reportAtomicFindFirst",
           ],
-          block.selector
+          block.selector,
         )
       );
     }
@@ -15715,7 +15746,7 @@ MultiArgMorph.prototype.mouseClickLeft = function (pos) {
         "scripts",
         "poly slot",
         "expand",
-        block.abstractBlockSpec()
+        block.abstractBlockSpec(),
       );
     } else {
       // left arrow
@@ -15731,7 +15762,7 @@ MultiArgMorph.prototype.mouseClickLeft = function (pos) {
         "scripts",
         "poly slot",
         "collapse",
-        block.abstractBlockSpec()
+        block.abstractBlockSpec(),
       );
     }
     if (block.isCustomBlock) {
@@ -15789,11 +15820,11 @@ MultiArgMorph.prototype.mapToCode = function (key, label) {
   new DialogBoxMorph(
     this,
     (code) => (StageMorph.prototype.codeMappings[key] = code),
-    this
+    this,
   ).promptCode(
     "Code mapping - " + label,
     StageMorph.prototype.codeMappings[key] || "",
-    this.world()
+    this.world(),
   );
 };
 
@@ -15820,7 +15851,7 @@ MultiArgMorph.prototype.mappedCode = function (definitions) {
   delim = StageMorph.prototype.codeMappings[key + "delim"] || " ";
 
   this.inputs().forEach((input) =>
-    parts.push(itemCode.replace(/<#1>/g, input.mappedCode(definitions)))
+    parts.push(itemCode.replace(/<#1>/g, input.mappedCode(definitions))),
   );
   parts.forEach((part) => {
     if (count) {
@@ -15950,7 +15981,7 @@ ArgLabelMorph.prototype.refresh = function () {
 ArgLabelMorph.prototype.setLabelColor = function (
   textColor,
   shadowColor,
-  shadowOffset
+  shadowOffset,
 ) {
   if (this.labelText !== "") {
     var label = this.label();
@@ -16132,7 +16163,7 @@ FunctionSlotMorph.prototype.drawRounded = function (ctx) {
     r - this.edge,
     w - r,
     h - r,
-    r
+    r,
   );
   gradient.addColorStop(1, this.cachedClr);
   gradient.addColorStop(0, this.cachedClrBright);
@@ -16304,8 +16335,8 @@ ReporterSlotMorph.prototype.emptySlot = function () {
   empty.bounds.setExtent(
     new Point(
       (this.fontSize + this.edge * 2) * (this.isBoolean ? 2.5 : 2) - shrink,
-      this.fontSize * 1.3 + this.edge * 3 - shrink
-    )
+      this.fontSize * 1.3 + this.edge * 3 - shrink,
+    ),
   );
   return empty;
 };
@@ -16344,7 +16375,7 @@ ReporterSlotMorph.prototype.fixLayout = function () {
     this.add(contents);
   }
   this.bounds.setExtent(
-    contents.extent().add(this.edge * 2 + this.rfBorder * 2)
+    contents.extent().add(this.edge * 2 + this.rfBorder * 2),
   );
   contents.setCenter(this.center());
   if (this.parent) {
@@ -16403,7 +16434,7 @@ RingReporterSlotMorph.prototype.getSpec = function () {
 RingReporterSlotMorph.prototype.replaceInput = function (
   source,
   target,
-  noVanish
+  noVanish,
 ) {
   RingReporterSlotMorph.uber.replaceInput.call(this, source, target);
   if (this.parent instanceof RingMorph && !noVanish) {
@@ -16501,7 +16532,7 @@ RingReporterSlotMorph.prototype.outlinePathOval = function (ctx, offset) {
     r,
     radians(-180),
     radians(-90),
-    false
+    false,
   );
 
   // top right:
@@ -16511,7 +16542,7 @@ RingReporterSlotMorph.prototype.outlinePathOval = function (ctx, offset) {
     r,
     radians(-90),
     radians(-0),
-    false
+    false,
   );
 
   // bottom right:
@@ -16521,7 +16552,7 @@ RingReporterSlotMorph.prototype.outlinePathOval = function (ctx, offset) {
     r,
     radians(0),
     radians(90),
-    false
+    false,
   );
 
   // bottom left:
@@ -16531,7 +16562,7 @@ RingReporterSlotMorph.prototype.outlinePathOval = function (ctx, offset) {
     r,
     radians(90),
     radians(180),
-    false
+    false,
   );
 
   // "close" the path
@@ -16611,7 +16642,7 @@ RingReporterSlotMorph.prototype.drawEdgesOval = function (ctx) {
     r - this.edge,
     w - r,
     h - r,
-    r
+    r,
   );
   gradient.addColorStop(1, this.cachedClr);
   gradient.addColorStop(0, this.cachedClrBright);
@@ -16790,7 +16821,7 @@ CommentMorph.prototype.init = function (contents) {
   this.close.hoverCursor = "pointer";
   this.contents = new TextMorph(
     contents || localize("add comment here..."),
-    this.fontSize
+    this.fontSize,
   );
   this.contents.isEditable = true;
   this.contents.enableSelecting();
@@ -16805,7 +16836,7 @@ CommentMorph.prototype.init = function (contents) {
     this,
     this.rounding,
     scale,
-    new Color(254, 244, 156)
+    new Color(254, 244, 156),
   );
   this.color = new Color(254, 244, 156);
   this.isDraggable = true;
@@ -16859,7 +16890,7 @@ CommentMorph.prototype.toggleExpand = function () {
       .recordUserEdit(
         "scripts",
         "comment",
-        this.isCollapsed ? "collapse" : "expand"
+        this.isCollapsed ? "collapse" : "expand",
       );
   }
 };
@@ -16910,13 +16941,13 @@ CommentMorph.prototype.fixLayout = function () {
       this.contents.text,
       this.fontSize,
       null, // style (sans-serif)
-      true // bold
+      true, // bold
     );
     label.rootForGrab = () => this;
     this.title.add(label);
     this.title.setHeight(label.height());
     this.title.setWidth(
-      tw - this.arrow.width() - this.padding * 2 - this.rounding
+      tw - this.arrow.width() - this.padding * 2 - this.rounding,
     );
     this.add(this.title);
   } else {
@@ -16933,7 +16964,7 @@ CommentMorph.prototype.fixLayout = function () {
   this.close.setRight(this.titleBar.right() - this.padding);
   if (this.title) {
     this.title.setPosition(
-      this.arrow.topRight().add(new Point(this.padding, 0))
+      this.arrow.topRight().add(new Point(this.padding, 0)),
     );
   }
   this.changed();
@@ -16941,7 +16972,7 @@ CommentMorph.prototype.fixLayout = function () {
     this.titleBar.height() +
       (this.isCollapsed
         ? 0
-        : this.padding + this.contents.height() + this.padding)
+        : this.padding + this.contents.height() + this.padding),
   );
   this.bounds.setWidth(this.titleBar.width());
   this.rerender();
@@ -16980,7 +17011,7 @@ CommentMorph.prototype.userMenu = function () {
           .recordUserEdit("scripts", "comment", "duplicate");
       }
     },
-    "make a copy\nand pick it up"
+    "make a copy\nand pick it up",
   );
   menu.addItem("delete", "userDestroy");
   menu.addItem(
@@ -16993,10 +17024,10 @@ CommentMorph.prototype.userMenu = function () {
         this.fullImage(),
         (ide.projectName || localize("untitled")) +
           " " +
-          localize("comment pic")
+          localize("comment pic"),
       );
     },
-    "save a picture\nof this comment"
+    "save a picture\nof this comment",
   );
   return menu;
 };
@@ -17081,7 +17112,7 @@ CommentMorph.prototype.snap = function (hand) {
         "scripts",
         "comment",
         "snap",
-        this.block.abstractBlockSpec()
+        this.block.abstractBlockSpec(),
       );
   }
   this.align();
@@ -17110,11 +17141,11 @@ CommentMorph.prototype.align = function (topBlock, ignoreLayer) {
         (child) =>
           child instanceof BlockMorph &&
           child.bottom() > tp &&
-          child.top() < bottom
+          child.top() < bottom,
       );
     rightMost = Math.max.apply(
       null,
-      affectedBlocks.map((block) => block.right())
+      affectedBlocks.map((block) => block.right()),
     );
 
     this.setLeft(rightMost + 5);
@@ -17127,11 +17158,11 @@ CommentMorph.prototype.align = function (topBlock, ignoreLayer) {
       this.anchor.color = this.titleBar.color;
     }
     this.anchor.setPosition(
-      new Point(this.block.right(), this.top() + this.edge)
+      new Point(this.block.right(), this.top() + this.edge),
     );
     this.anchor.bounds.corner = new Point(
       this.left(),
-      this.top() + this.edge + 1
+      this.top() + this.edge + 1,
     );
     this.anchor.rerender();
     this.addBack(this.anchor);
@@ -17300,9 +17331,9 @@ ScriptFocusMorph.prototype.manifestStatement = function () {
       newScript ? SyntaxElementMorph.prototype.hatWidth : this.element.width(),
       Math.max(
         SyntaxElementMorph.prototype.corner,
-        SyntaxElementMorph.prototype.feedbackMinHeight
-      )
-    )
+        SyntaxElementMorph.prototype.feedbackMinHeight,
+      ),
+    ),
   );
   if (this.element instanceof CommandSlotMorph) {
     y += SyntaxElementMorph.prototype.corner;
@@ -17331,8 +17362,8 @@ ScriptFocusMorph.prototype.manifestExpression = function () {
     .expandBy(
       Math.max(
         SyntaxElementMorph.prototype.edge * 2,
-        SyntaxElementMorph.prototype.reporterDropFeedbackPadding
-      )
+        SyntaxElementMorph.prototype.reporterDropFeedbackPadding,
+      ),
     );
   this.rerender();
   delete this.fps;
@@ -17796,17 +17827,17 @@ ScriptFocusMorph.prototype.items = function () {
           each instanceof BooleanSlotMorph ||
           each instanceof RingMorph ||
           each instanceof MultiArgMorph ||
-          each instanceof CommandSlotMorph)
+          each instanceof CommandSlotMorph),
     );
 };
 
 ScriptFocusMorph.prototype.sortedScripts = function () {
   var scripts = this.editor.children.filter(
-    (each) => each instanceof BlockMorph
+    (each) => each instanceof BlockMorph,
   );
   scripts.sort((a, b) =>
     // make sure the prototype hat block always stays on top
-    a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top()
+    a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top(),
   );
   return scripts;
 };

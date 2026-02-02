@@ -10372,7 +10372,7 @@ CommandSlotMorph.prototype.fixLayout = function () {
         (this.corner - this.edge)
     );
   } else {
-    this.bounds.setHeight(this.corner * 5);
+    this.bounds.setHeight(this.corner * 6);
     this.bounds.setWidth(this.corner * 4 + this.inset + this.dent * 1.3);
   }
   if (this.parent && this.parent.fixLayout) {
@@ -13818,6 +13818,20 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
   }
 
   ctx.fill();
+  if (!this.isEmptySlot() || progress > 0) {
+    var e = this.flatEdge / 2;
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.lineWidth = this.flatEdge;
+    ctx.beginPath();
+    ctx.moveTo(e, r);
+    ctx.lineTo(r, e);
+    ctx.lineTo(w - r, e);
+    ctx.lineTo(w - e, r);
+    ctx.lineTo(w - r, h - e);
+    ctx.lineTo(r, h - e);
+    ctx.closePath();
+    ctx.stroke()
+  }
 
   if (progress < 0 || !this.isEmptySlot() || progress == 1) {
     if (this.value) {

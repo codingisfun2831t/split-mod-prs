@@ -1946,7 +1946,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
   ) {
     // check for variable multi-arg-slot:
     if (spec.length > 5 && spec.slice(0, 5) === "%mult") {
-      part = new MultiArgMorph(spec.slice(5), null, null, null, WHITE);
+      part = new MultiArgMorph(spec.slice(5), null, null, null, this.alpha > 0.5 ? WHITE : BLACK);
       part.initialSlots = 1;
       part.addInput();
       return part;
@@ -1957,7 +1957,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         .slice(7)
         .split("%")
         .map((each) => "%" + each);
-      part = new MultiArgMorph(tokens, null, null, null, WHITE);
+      part = new MultiArgMorph(tokens, null, null, null, this.alpha > 0.5 ? WHITE : BLACK);
       part.groupInputs = tokens.length;
       return part;
     }
@@ -2047,7 +2047,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
           info.label,
           info.min || 0,
           spec,
-          WHITE,
+          this.alpha > 0.5 ? WHITE : BLACK,
           null,
           null,
           null,
@@ -14969,7 +14969,7 @@ MultiArgMorph.prototype.init = function (
   listSymbol.getRenderColor = function () {
     // behave the same as arrows when fading the blocks
     if (IDE_Morph.prototype.isBright) {
-      return this.color;
+      return SyntaxElementMorph.prototype.alpha > 0.5 ? WHITE : BLACK;
     }
     return SyntaxElementMorph.prototype.alpha > 0.5 ? WHITE : WHITE;
   };

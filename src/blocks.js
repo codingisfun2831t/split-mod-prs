@@ -15346,9 +15346,9 @@ MultiArgMorph.prototype.fixArrowsLayout = function () {
     }
   }
   leftArrow.setCenter(arrows.center());
-  leftArrow.setLeft(arrows.left() - (this.isStatic ? 0 : this.scale));
+  leftArrow.setLeft(arrows.left() - (this.isStatic && rightArrow.isVisible ? this.scale / 4 : this.scale));
   rightArrow.setCenter(arrows.center());
-  rightArrow.setRight(arrows.right() + (this.isStatic ? 0 : this.scale));
+  rightArrow.setRight(arrows.right() + (this.isStatic && leftArrow.isVisible ? this.scale / 4 : this.scale));
   if (centerList) {
     listSymbol.setCenter(arrows.center());
   }

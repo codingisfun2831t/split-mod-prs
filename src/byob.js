@@ -2297,7 +2297,7 @@ CustomCommandBlockMorph.prototype.alternatives = function () {
     var rcvr = this.scriptTarget(),
         stage = rcvr.parentThatIsA(StageMorph),
         allDefs = rcvr.customBlocks.concat(stage.globalBlocks),
-        type = this instanceof CommandBlockMorph ? 'command'
+        type = this instanceof HatBlockMorph ? "hat" : this instanceof CommandBlockMorph ? 'command'
             : (this.isPredicate ? 'predicate' : 'reporter');
 
     if (this.isGlobal && this.definition.primitive) {

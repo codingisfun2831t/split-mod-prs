@@ -2905,8 +2905,9 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
           "ExactReal",
           "ExactRational",
           "ExactInteger",
+          "Rectangular"
         ],
-        value != null ? value.constructor.name : "",
+        !isNil(value) ? value.constructor.name : "",
       ) &&
       value instanceof Object
         ? ((x) => {
@@ -2921,9 +2922,22 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
     maxHeight = ide.height() / 2;
     morphToShow = new TextMorph(txt, this.fontSize);
     if (
-      value instanceof Function ||
+      (value instanceof Function ||
       value instanceof Array ||
-      value instanceof Object
+      value instanceof Object) &&
+      !contains(
+        [
+          "BigInteger",
+          "Fraction",
+          "Complex",
+          "Real",
+          "ExactReal",
+          "ExactRational",
+          "ExactInteger",
+          "Rectangular"
+        ],
+        !isNil(value) ? value.constructor.name : "",
+      )
     ) {
       morphToShow.fontName = "monospace";
       morphToShow.fontStyle = "monospace";

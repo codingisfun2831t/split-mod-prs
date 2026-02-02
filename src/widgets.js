@@ -726,7 +726,7 @@ ToggleButtonMorph.prototype.render = function (ctx) {
     case "pressed":
       // note: don't invert the 3D-ish edges for 'pressed' state, because
       // it will stay that way, and should not look inverted (or should it?)
-      this.drawOutline(ctx);
+      this.drawOutline(ctx, this.getPressRenderColor().darker(this.contrast));
       this.drawBackground(ctx, this.getPressRenderColor());
       this.drawEdges(
         ctx,

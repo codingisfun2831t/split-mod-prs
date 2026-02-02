@@ -201,7 +201,7 @@ IDE_Morph.prototype.setBrightTheme = function () {
   PushButtonMorph.prototype.outlineGradient = true;
   PushButtonMorph.prototype.color = WHITE;
   PushButtonMorph.prototype.labelColor = BLACK;
-  PushButtonMorph.prototype.outlineColor = new Color(30, 30, 30);
+  PushButtonMorph.prototype.outlineColor = new Color(200, 200, 200);
 
   SpriteMorph.prototype.paletteColor = WHITE;
   SpriteMorph.prototype.paletteTextColor = new Color(87, 94, 117);

@@ -1250,27 +1250,6 @@ SymbolMorph.prototype.renderSymbolFlag = function (ctx, color) {
     ctx,
     this[color.eq(new Color(255, 0, 0)) ? "flagSymbolRed" : "flagSymbol"]
   );
-  return;
-  ctx.lineWidth = l;
-  ctx.strokeStyle = color.toString();
-  ctx.beginPath();
-  ctx.moveTo(l / 2, 0);
-  ctx.lineTo(l / 2, h);
-  ctx.stroke();
-
-  ctx.lineWidth = h / 2;
-  ctx.beginPath();
-  ctx.moveTo(0, h / 4);
-  ctx.ellipse(w / 2, h / 2, w / 24, w / 12, 0, 0, Math.PI);
-  /*ctx.bezierCurveTo(
-        w * 0.8,
-        h / 4,
-        w * 0.1,
-        h * 0.5,
-        w,
-        h * 0.5
-    );*/
-  ctx.stroke();
 };
 
 SymbolMorph.prototype.renderSymbolOctagon = function (ctx, color) {
@@ -1278,20 +1257,6 @@ SymbolMorph.prototype.renderSymbolOctagon = function (ctx, color) {
   var side = this.symbolWidth(),
     vert = (side - side * 0.383) / 2;
   this.drawImage(ctx, this.stopSymbol);
-
-  return;
-  ctx.fillStyle = color.toString();
-  ctx.beginPath();
-  ctx.moveTo(vert, 0);
-  ctx.lineTo(side - vert, 0);
-  ctx.lineTo(side, vert);
-  ctx.lineTo(side, side - vert);
-  ctx.lineTo(side - vert, side);
-  ctx.lineTo(vert, side);
-  ctx.lineTo(0, side - vert);
-  ctx.lineTo(0, vert);
-  ctx.closePath();
-  ctx.fill();
 };
 
 SymbolMorph.prototype.renderSymbolCloud = function (ctx, color) {
@@ -1364,20 +1329,6 @@ SymbolMorph.prototype.renderSymbolTurnRight = function (ctx, color) {
     ctx,
     this[color.eq(BLACK) ? "turnRightImageBlack" : "turnRightImage"]
   );
-  return;
-  ctx.lineWidth = l;
-  ctx.strokeStyle = color.toString();
-  ctx.beginPath();
-  ctx.arc(r, r * 2, r - l / 2, radians(0), radians(-90), false);
-  ctx.stroke();
-
-  ctx.fillStyle = color.toString();
-  ctx.beginPath();
-  ctx.moveTo(w, r);
-  ctx.lineTo(r, 0);
-  ctx.lineTo(r, r * 2);
-  ctx.closePath();
-  ctx.fill();
 };
 
 SymbolMorph.prototype.renderSymbolTurnLeft = function (ctx, color) {
@@ -1389,20 +1340,6 @@ SymbolMorph.prototype.renderSymbolTurnLeft = function (ctx, color) {
     ctx,
     this[color.eq(BLACK) ? "turnLeftImageBlack" : "turnLeftImage"]
   );
-  return;
-  ctx.lineWidth = l;
-  ctx.strokeStyle = color.toString();
-  ctx.beginPath();
-  ctx.arc(r, r * 2, r - l / 2, radians(180), radians(-90), true);
-  ctx.stroke();
-
-  ctx.fillStyle = color.toString();
-  ctx.beginPath();
-  ctx.moveTo(0, r);
-  ctx.lineTo(r, 0);
-  ctx.lineTo(r, r * 2);
-  ctx.closePath();
-  ctx.fill();
 };
 
 SymbolMorph.prototype.renderSymbolTurnAround = function (ctx, color) {
@@ -1883,21 +1820,6 @@ SymbolMorph.prototype.renderSymbolLoop = function (ctx, aColor) {
     ctx,
     this[aColor.eq(BLACK) ? "loopSymbolBlack" : "loopSymbol"]
   );
-  return;
-  ctx.lineWidth = l * 2;
-  ctx.strokeStyle = aColor.toString();
-  ctx.beginPath();
-  ctx.moveTo(0, h - l);
-  ctx.lineTo(w2, h - l);
-  ctx.arc(w2, h2, h2 - l, radians(90), radians(0), true);
-  ctx.stroke();
-  ctx.fillStyle = aColor.toString();
-  ctx.beginPath();
-  ctx.moveTo(w4 * 3 - l, 0);
-  ctx.lineTo(w2 - l, h2);
-  ctx.lineTo(w, h2);
-  ctx.closePath();
-  ctx.fill();
 };
 
 SymbolMorph.prototype.renderSymbolTurnBack = function (ctx, aColor) {
@@ -1951,19 +1873,6 @@ SymbolMorph.prototype.renderSymbolArrowUp = function (ctx, color) {
     n = w / 2,
     l = Math.max(w / 20, 0.5);
   this.drawImage(ctx, this[color.eq(BLACK) ? "arrowImageBlack" : "arrowImage"]);
-  return;
-  ctx.fillStyle = color.toString();
-  ctx.lineWidth = l * 2;
-  ctx.beginPath();
-  ctx.moveTo(l, n);
-  ctx.lineTo(n, l);
-  ctx.lineTo(w - l, n);
-  ctx.lineTo(w * 0.65, n);
-  ctx.lineTo(w * 0.65, h - l);
-  ctx.lineTo(w * 0.35, h - l);
-  ctx.lineTo(w * 0.35, n);
-  ctx.closePath();
-  ctx.fill();
 };
 
 SymbolMorph.prototype.renderSymbolArrowUpOutline = function (ctx, color) {
@@ -1976,19 +1885,6 @@ SymbolMorph.prototype.renderSymbolArrowUpOutline = function (ctx, color) {
     ctx,
     this[color.eq(BLACK) ? "arrowOutImageBlack" : "arrowOutImage"]
   );
-  return;
-  ctx.strokeStyle = color.toString();
-  ctx.lineWidth = l * 2;
-  ctx.beginPath();
-  ctx.moveTo(l, n);
-  ctx.lineTo(n, l);
-  ctx.lineTo(w - l, n);
-  ctx.lineTo(w * 0.65, n);
-  ctx.lineTo(w * 0.65, h - l);
-  ctx.lineTo(w * 0.35, h - l);
-  ctx.lineTo(w * 0.35, n);
-  ctx.closePath();
-  ctx.stroke();
 };
 
 SymbolMorph.prototype.renderSymbolArrowUpThin = function (ctx, color) {

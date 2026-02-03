@@ -83,7 +83,7 @@ EarsMorph.prototype.render = function (ctx) {
   ctx.fillStyle = SpriteMorph.prototype.isHighContrast
     ? this.parent.cachedClrDark
     : this.parent.cachedClr;
-  if (HatBlockMorph.prototype.isCatBlocks) {
+  
     let xOffset = 2,
       yOffset = -5 + this.parent.flatEdge;
     if (prototypeHat) {
@@ -490,7 +490,7 @@ EarsMorph.prototype.render = function (ctx) {
     drawCatMouth();
     ctx.closePath();
     ctx.fill();
-  }
+  
 };
 IDE_Morph.prototype.oldLooksMenuData = IDE_Morph.prototype.looksMenuData;
 IDE_Morph.prototype.looksMenuData = function () {

@@ -1831,6 +1831,8 @@ Process.prototype.doSetSlot = function(name, value) {
         slot = block.inputSlotNamed(name);
         if (slot instanceof InputSlotMorph) {
             slot.setContents(value.toString());
+        } else if (slot instanceof ColorSlotMorph) {
+            slot.setColor(value);
         } else if (slot instanceof BooleanSlotMorph) {
             slot.setContents(value);
         } else if (slot instanceof MultiArgMorph) {

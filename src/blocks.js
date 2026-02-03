@@ -2893,6 +2893,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
   } else {
     // shorten the string, commented out because we now scroll it
     // txt  = value.length > 500 ? value.slice(0, 500) + '...' : value;
+    var isObject;
     txt = value;
     txt =
       !(value instanceof Function || value instanceof Array) &&
@@ -2910,34 +2911,19 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
         !isNil(value) ? value.constructor.name : "",
       ) &&
       value instanceof Object
-        ? ((x) => {
+        ? (((x) => {
             try {
               return JSON.stringify(x);
             } catch (error) {
               return display(x);
             }
-          })(value)
+          })(value), isObject = true)
         : display(txt);
 
     maxHeight = ide.height() / 2;
     morphToShow = new TextMorph(txt, this.fontSize);
     if (
-      (value instanceof Function ||
-      value instanceof Array ||
-      value instanceof Object) &&
-      !contains(
-        [
-          "BigInteger",
-          "Fraction",
-          "Complex",
-          "Real",
-          "ExactReal",
-          "ExactRational",
-          "ExactInteger",
-          "Rectangular"
-        ],
-        !isNil(value) ? value.constructor.name : "",
-      )
+      isObject
     ) {
       morphToShow.fontName = "monospace";
       morphToShow.fontStyle = "monospace";
@@ -3329,6 +3315,7 @@ BlockMorph.prototype.init = function () {
   this.color = new Color(102, 102, 102);
   this.cachedInputs = null;
   this.hoverCursor = "grab";
+  delete this.alpha;
 };
 
 BlockMorph.prototype.scriptTarget = function (noError) {
@@ -6797,6 +6784,7 @@ CommandBlockMorph.prototype.init = function () {
 
   this.partOfCustomCommand = false;
   this.exitTag = null;
+  delete this.alpha; // ugh
 };
 
 // CommandBlockMorph enumerating:
@@ -7739,6 +7727,7 @@ HatBlockMorph.prototype.init = function () {
   this.bounds.setExtent(new Point(120, 36).multiplyBy(this.scale));
   this.fixLayout();
   this.rerender();
+  delete this.alpha; // ugh
 };
 
 // HatBlockMorph enumerating:
@@ -8028,6 +8017,7 @@ ReporterBlockMorph.prototype.init = function (isPredicate) {
   this.rerender();
   this.cachedSlotSpec = null; // don't serialize
   this.isLocalVarTemplate = null; // don't serialize
+  delete this.alpha; // ugh
 };
 
 // ReporterBlockMorph drag & drop:
@@ -11866,7 +11856,7 @@ InputSlotMorph.prototype.inputSlotsMenu = function () {
       let info = SyntaxElementMorph.prototype.labelParts[value[0]];
       if (
         value[0].startsWith("%mult") ||
-        (info && ["input", "boolean"].includes(info.type))
+        (info && ["input", "boolean", "color", "text entry"].includes(info.type))
       ) {
         dict[key] = key;
       }
@@ -14425,7 +14415,7 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     (color) => {
       this.color = color;
       this.rerender();
-      block.fireSlotEditedEvent(this);
+      block?.fireSlotEditedEvent?.(this);
     },
     () => this.color,
   );

@@ -9044,7 +9044,7 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
 };
 
 ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
-  var y, target;
+  var x, y, target;
 
   target = block.closestAttachTarget(this);
   if (!target) {
@@ -9062,8 +9062,8 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   this.feedbackMorph.bounds.setHeight(block.height());
   this.feedbackMorph.color = new Color(0, 0, 0, 0.5);
   // TODO: will add rendering;
-  console.warn(target);
-
+  console.warn(target, SyntaxElementMorph.prototype.labelPadding);
+  x = target.element.left();
   y = target.point.y - target.element.corner - target.element.dentPlus;
   if (target.loc !== "bottom") {
     y = target.point.y - block.height() + block.corner + block.dentPlus;
@@ -9071,15 +9071,19 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   if (target.loc === "bottom") {
     if (target.type === "block") {
       if (target.element.nextBlock()) {
-        y -= target.element.height();
+        y -= target.element.height() + block.corner;
       }
     } else if (target.type === "slot") {
       if (target.element.nestedBlock()) {
-        y -= target.element.height();
+        y += target.element.corner + target.element.dentPlus;
       }
+      if (target.type === "slot") {
+        x += block.labelPadding || 0
+      }
+      //x += this.labelPadding;
     }
   }
-  this.feedbackMorph.setPosition(new Point(target.element.left(), y));
+  this.feedbackMorph.setPosition(new Point(x, y));
 };
 
 ScriptsMorph.prototype.showCommentDropFeedback = function (comment, hand) {

@@ -11586,20 +11586,26 @@ HandMorph.prototype.processMouseScroll = function (event) {
     morph = morph.parent;
   }
   if (morph) {
-    var x = event.deltaX;
-        var y = event.deltaY;
-        if (event.shiftKey && event.deltaX === 0) {
-            // Scroll horizontally (based on vertical scroll delta). This is
-            // needed for some browser/system combinations which do not set
-            // deltaX.
-            x = y;
-            y = 0; // Don't scroll vertically.
-        }
+    var x = 0, y;
+    if (event.type === "DOMMouseScroll") { // for Firefox
+      y = event.detail / -3;
+    } else { // "mousewheel", Safari and Chrome
+      x = event.deltaX,
+      y = event.deltaY;
+    }
 
-        // Multiplier variable, to account for both pixel and line deltaModes.
-        var multiplier = event.deltaMode === 0x1 ? -1/3 : -1/53;
+    if (event.shiftKey && (event.type !== "DOMMouseScroll" ? event.deltaX === 0 : true)) {
+        // Scroll horizontally (based on vertical scroll delta). This is
+        // needed for some browser/system combinations which do not set
+        // deltaX.
+        x = y;
+        y = 0; // Don't scroll vertically.
+    }
+
+    // Multiplier variable, to account for both pixel and line deltaModes.
+    var multiplier = event.type !== "DOMMouseScroll" ? event.deltaMode === 0x1 ? -1/3 : -1/53 : 1;
     morph.mouseScroll(y * multiplier,
-            x * multiplier
+        x * multiplier
     );
   }
 };

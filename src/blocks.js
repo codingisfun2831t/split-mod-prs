@@ -12631,7 +12631,7 @@ InputSlotMorph.prototype.fixLayout = function () {
     this.isReadOnly || this.isStatic ? WHITE : new Color(87, 94, 117);
 
   if (this.choices) {
-    arrow.setSize(12);
+    arrow.setSize(10 * this.scale);
     arrow.show();
   } else {
     arrow.hide();
@@ -12708,10 +12708,11 @@ InputSlotMorph.prototype.fixLayout = function () {
   }
 
   if (arrow.isVisible) {
+    arrow.setCenter(this.center())
     arrow.setPosition(
       new Point(
         this.right() - arrowWidth - this.edge,
-        contents.top() - arrowWidth0 / 8,
+        arrow.top() - arrowWidth0 / 5,
       ),
     );
   }

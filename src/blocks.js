@@ -2626,9 +2626,9 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         );
         adjustMultiWidth = this.corner;
       } else {
-        part.setRight(this.left() + this.width());
+        part.setRight(this.right());
         part.setLeft(this.left() + this.labelPadding);
-        part.bounds.corner.x = this.right() + this.labelPadding;
+        part.bounds.corner.x = part.parent.right();
         //part.setWidth(this.width() - this.labelPadding);
         //adjustMultiWidth = this.corner + this.edge;
       }
@@ -2642,8 +2642,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         .filter((each) => each instanceof CSlotMorph)
         .forEach(
           (slot) =>
-            !(slot instanceof ArrowMorph) &&
-            slot.setLeft(this.left() + this.labelPadding),
+            (!(slot instanceof ArrowMorph) &&
+            slot.setLeft(this.left() + this.labelPadding), slot.bounds.setWidth(part.right() - slot.left()))
         );
     }
     part.fixHolesLayout();

@@ -1651,6 +1651,7 @@ DialogBoxMorph.prototype.inform = function (title, textString, world, pic) {
     MorphicPreferences.isFlat ? null : new Point(1, 1),
     WHITE,
   );
+  txt.color = PushButtonMorph.prototype.labelColor;
 
   if (!this.key) {
     this.key = "inform" + title + textString;
@@ -1684,7 +1685,7 @@ DialogBoxMorph.prototype.askYesNo = function (title, textString, world, pic) {
     MorphicPreferences.isFlat ? null : new Point(1, 1),
     WHITE,
   );
-
+  txt.color = PushButtonMorph.prototype.labelColor;
   if (!this.key) {
     this.key = "decide" + title + textString;
   }
@@ -1813,7 +1814,7 @@ DialogBoxMorph.prototype.promptCode = function (
     text = new TextMorph(defaultString || ""),
     bdy = new AlignmentMorph("column", this.padding),
     size = pic ? Math.max(pic.width, 400) : 400;
-
+  text.color = PushButtonMorph.prototype.labelColor;
   this.getInput = function () {
     return text.text;
   };

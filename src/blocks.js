@@ -14430,21 +14430,21 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
 
   menu.doNotClick = true;
 
-  hSlider.action = (h) => (
+  hSlider.action = (function (h) {
     newColor["set_" + model](
       h / 100,
-      this.color[model]()[1],
-      this.color[model]()[2]
-    ),
-    (this.color = newColor),
-    (hInp.text = String(h)),
-    (hInp.children[0].text = String(h)),
-    (hInp.children[0].children[0].text = String(h)),
-    hInp.rerender(),
-    hSlider.fixLayout(),
-    this.rerender(),
-    block.isCustomBlock && block.fireSlotEditedEvent(this)
-  );
+      myself.color[model]()[1],
+      myself.color[model]()[2]
+    );
+    myself.color = newColor;
+    console.log(this)
+    this.input.setContents(h.toString());
+    console.log(this.input);
+    hInp.rerender();
+    this.fixLayout();
+    myself.rerender();
+    block.isCustomBlock && block.fireSlotEditedEvent(myself)
+  }).bind(hSlider);
   sSlider.action = (s) => (
     newColor["set_" + model](
       this.color[model]()[0],
@@ -14479,6 +14479,7 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
   hSlider.fixLayout();
 
   function createSliderGroup(container, text, slider, input) {
+    slider.input = input;
     input.children[0].reactToKeyStroke = function (evt) {
       setTimeout(() => {
         slider.value = String(input.children[0].children[0].text);
@@ -14493,7 +14494,8 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     container.color = CLEAR;
     container.add(text);
     container.add(slider);
-    container.add(input); // WHY DOESN'T ANYTHING WORK?!?!?!?!?!
+    // container.add(input); // WHY DOESN'T ANYTHING WORK?!?!?!?!?!
+    container.input = input;
     text.setPosition(container.position());
     slider.setLeft(container.left());
     slider.setTop(container.top() + text.rawHeight() + 5);
@@ -14502,14 +14504,6 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     input.contents().minWidth = 50;
     input.setWidth(50);
     input.setRight(container.right());
-  }
-
-  function refreshLabels() {
-    (hText = new StringMorph(model == "rgb" ? "R:" : "H:")),
-      (sText = new StringMorph(model == "rgb" ? "G:" : "S:")),
-      (vText = new StringMorph(
-        model == "rgb" ? "B:" : model == "hsl" ? "L:" : "B:"
-      ));
   }
 
   var hContainer = new Morph(),
@@ -14588,9 +14582,9 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
   switchModelButton.setPosition(buttonContainer.position());
   pickColorButton.setTop(buttonContainer.top());
   pickColorButton.setRight(buttonContainer.right());
-
   menu.addItem(buttonContainer, nop);
   menu.popup(this.world(), this.bottomCenter());
+  this.world().activeMenu = null;
 };
 
 // ColorSlotMorph events:

@@ -2893,6 +2893,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
   } else {
     // shorten the string, commented out because we now scroll it
     // txt  = value.length > 500 ? value.slice(0, 500) + '...' : value;
+    var isObject;
     txt = value;
     txt =
       !(value instanceof Function || value instanceof Array) &&
@@ -2910,34 +2911,19 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
         !isNil(value) ? value.constructor.name : "",
       ) &&
       value instanceof Object
-        ? ((x) => {
+        ? (((x) => {
             try {
               return JSON.stringify(x);
             } catch (error) {
               return display(x);
             }
-          })(value)
+          })(value), isObject = true)
         : display(txt);
 
     maxHeight = ide.height() / 2;
     morphToShow = new TextMorph(txt, this.fontSize);
     if (
-      (value instanceof Function ||
-      value instanceof Array ||
-      value instanceof Object) &&
-      !contains(
-        [
-          "BigInteger",
-          "Fraction",
-          "Complex",
-          "Real",
-          "ExactReal",
-          "ExactRational",
-          "ExactInteger",
-          "Rectangular"
-        ],
-        !isNil(value) ? value.constructor.name : "",
-      )
+      isObject
     ) {
       morphToShow.fontName = "monospace";
       morphToShow.fontStyle = "monospace";
@@ -3329,6 +3315,7 @@ BlockMorph.prototype.init = function () {
   this.color = new Color(102, 102, 102);
   this.cachedInputs = null;
   this.hoverCursor = "grab";
+  delete this.alpha;
 };
 
 BlockMorph.prototype.scriptTarget = function (noError) {
@@ -6797,6 +6784,7 @@ CommandBlockMorph.prototype.init = function () {
 
   this.partOfCustomCommand = false;
   this.exitTag = null;
+  delete this.alpha; // ugh
 };
 
 // CommandBlockMorph enumerating:
@@ -7739,6 +7727,7 @@ HatBlockMorph.prototype.init = function () {
   this.bounds.setExtent(new Point(120, 36).multiplyBy(this.scale));
   this.fixLayout();
   this.rerender();
+  delete this.alpha; // ugh
 };
 
 // HatBlockMorph enumerating:
@@ -8028,6 +8017,7 @@ ReporterBlockMorph.prototype.init = function (isPredicate) {
   this.rerender();
   this.cachedSlotSpec = null; // don't serialize
   this.isLocalVarTemplate = null; // don't serialize
+  delete this.alpha; // ugh
 };
 
 // ReporterBlockMorph drag & drop:
@@ -11870,7 +11860,7 @@ InputSlotMorph.prototype.inputSlotsMenu = function () {
       let info = SyntaxElementMorph.prototype.labelParts[value[0]];
       if (
         value[0].startsWith("%mult") ||
-        (info && ["input", "boolean"].includes(info.type))
+        (info && ["input", "boolean", "color", "text entry"].includes(info.type))
       ) {
         dict[key] = key;
       }
@@ -14422,203 +14412,179 @@ ColorSlotMorph.prototype.setColor = function (clr) {
 // ColorSlotMorph  color sensing:
 
 ColorSlotMorph.prototype.getUserColor = function (model) {
-  var block = this.parentThatIsA(BlockMorph),
-    menu,
-    picker;
+  model = model || "hsv"; // hsv, hsl, or rgb
+  var nextModel,
+    block = this.parentThatIsA(BlockMorph),
+    myself = this;
 
-  picker = new SplitColorPickerMorph(
-    (color) => {
-      this.color = color;
-      this.rerender();
-      block.fireSlotEditedEvent(this);
-    },
-    () => this.color,
-  );
+  var menu = new MenuMorph(),
+    hSlider = new SliderMorph(0, 100, this.color[model]()[0] * 100, 8),
+    sSlider = new SliderMorph(0, 100, this.color[model]()[1] * 100, 8),
+    vSlider = new SliderMorph(0, 100, this.color[model]()[2] * 100, 8),
+    newColor = new Color(
+      this.color.r,
+      this.color.g,
+      this.color.b,
+      this.color.a
+    );
 
-  menu = new MenuMorph();
   menu.doNotClick = true;
-  menu.addItem(picker, nop);
 
-  picker.setColor(new Color(30, 30, 30));
-  // model = model || "hsv"; // hsv, hsl, or rgb
-  // var nextModel,
-  //   block = this.parentThatIsA(BlockMorph),
-  //   myself = this;
+  hSlider.action = (function (h) {
+    newColor["set_" + model](
+      h / 100,
+      myself.color[model]()[1],
+      myself.color[model]()[2]
+    );
+    myself.color = newColor;
+    console.log(this)
+    this.input.setContents(h.toString());
+    console.log(this.input);
+    hInp.rerender();
+    this.fixLayout();
+    myself.rerender();
+    block.isCustomBlock && block.fireSlotEditedEvent(myself)
+  }).bind(hSlider);
+  sSlider.action = (s) => (
+    newColor["set_" + model](
+      this.color[model]()[0],
+      s / 100,
+      this.color[model]()[2]
+    ),
+    (this.color = newColor),
+    (sInp.text = String(s)),
+    (sInp.children[0].text = String(s)),
+    (sInp.children[0].children[0].text = String(s)),
+    sInp.rerender(),
+    this.rerender(),
+    block.isCustomBlock && block.fireSlotEditedEvent(this)
+  );
+  vSlider.action = (v) => (
+    newColor["set_" + model](
+      this.color[model]()[0],
+      this.color[model]()[1],
+      v / 100
+    ),
+    (this.color = newColor),
+    (vInp.text = String(v)),
+    (vInp.children[0].text = String(v)),
+    (vInp.children[0].children[0].text = String(v)),
+    vInp.rerender(),
+    this.rerender(),
+    block.isCustomBlock && block.fireSlotEditedEvent(this)
+  );
+  hSlider.toggleOrientation();
+  sSlider.toggleOrientation();
+  vSlider.toggleOrientation();
+  hSlider.fixLayout();
 
-  // var menu = new MenuMorph(),
-  //   hSlider = new SliderMorph(0, 100, this.color[model]()[0] * 100, 8),
-  //   sSlider = new SliderMorph(0, 100, this.color[model]()[1] * 100, 8),
-  //   vSlider = new SliderMorph(0, 100, this.color[model]()[2] * 100, 8),
-  //   newColor = new Color(
-  //     this.color.r,
-  //     this.color.g,
-  //     this.color.b,
-  //     this.color.a
-  //   );
+  function createSliderGroup(container, text, slider, input) {
+    slider.input = input;
+    input.children[0].reactToKeyStroke = function (evt) {
+      setTimeout(() => {
+        slider.value = String(input.children[0].children[0].text);
+        slider.fixLayout();
+        this.rerender();
+        slider.action();
+        input.children[0].children[0].text = String(slider.value);
+        input.text = String(input.children[0].children[0].text);
+      }, 10); ugh
+    };
+    container.mouseMove = nop;
+    container.color = CLEAR;
+    container.add(text);
+    container.add(slider);
+    // container.add(input); // WHY DOESN'T ANYTHING WORK?!?!?!?!?!
+    container.input = input;
+    text.setPosition(container.position());
+    slider.setLeft(container.left());
+    slider.setTop(container.top() + text.rawHeight() + 5);
+    container.bounds.corner.y = slider.bottom();
+    container.setWidth(slider.width());
+    input.contents().minWidth = 50;
+    input.setWidth(50);
+    input.setRight(container.right());
+  }
 
-  // menu.doNotClick = true;
+  var hContainer = new Morph(),
+    sContainer = new Morph(),
+    vContainer = new Morph(),
+    buttonContainer = new Morph(),
+    hText = new StringMorph(model == "rgb" ? "R:" : "H:"),
+    sText = new StringMorph(model == "rgb" ? "G:" : "S:"),
+    vText = new StringMorph(
+      model == "rgb" ? "B:" : model == "hsl" ? "L:" : "B:"
+    ),
+    hInp = new InputFieldMorph(hSlider.value, true),
+    sInp = new InputFieldMorph(sSlider.value, true),
+    vInp = new InputFieldMorph(vSlider.value, true);
+  createSliderGroup(hContainer, hText, hSlider, hInp);
+  createSliderGroup(sContainer, sText, sSlider, sInp);
+  createSliderGroup(vContainer, vText, vSlider, vInp);
+  menu.addItem(hContainer, nop);
+  menu.addItem(sContainer, nop);
+  menu.addItem(vContainer, nop);
 
-  // hSlider.action = (h) => (
-  //   newColor["set_" + model](
-  //     h / 100,
-  //     this.color[model]()[1],
-  //     this.color[model]()[2]
-  //   ),
-  //   (this.color = newColor),
-  //   (hInp.text = String(h)),
-  //   (hInp.children[0].text = String(h)),
-  //   (hInp.children[0].children[0].text = String(h)),
-  //   hInp.rerender(),
-  //   hSlider.fixLayout(),
-  //   this.rerender(),
-  //   block.isCustomBlock && block.fireSlotEditedEvent(this)
-  // );
-  // sSlider.action = (s) => (
-  //   newColor["set_" + model](
-  //     this.color[model]()[0],
-  //     s / 100,
-  //     this.color[model]()[2]
-  //   ),
-  //   (this.color = newColor),
-  //   (sInp.text = String(s)),
-  //   (sInp.children[0].text = String(s)),
-  //   (sInp.children[0].children[0].text = String(s)),
-  //   sInp.rerender(),
-  //   this.rerender(),
-  //   block.isCustomBlock && block.fireSlotEditedEvent(this)
-  // );
-  // vSlider.action = (v) => (
-  //   newColor["set_" + model](
-  //     this.color[model]()[0],
-  //     this.color[model]()[1],
-  //     v / 100
-  //   ),
-  //   (this.color = newColor),
-  //   (vInp.text = String(v)),
-  //   (vInp.children[0].text = String(v)),
-  //   (vInp.children[0].children[0].text = String(v)),
-  //   vInp.rerender(),
-  //   this.rerender(),
-  //   block.isCustomBlock && block.fireSlotEditedEvent(this)
-  // );
-  // hSlider.toggleOrientation();
-  // sSlider.toggleOrientation();
-  // vSlider.toggleOrientation();
-  // hSlider.fixLayout();
+  nextModel = model == "hsv" ? "hsl" : model == "hsl" ? "rgb" : "hsv";
 
-  // function createSliderGroup(container, text, slider, input) {
-  //   input.children[0].reactToKeyStroke = function (evt) {
-  //     setTimeout(() => {
-  //       slider.value = String(input.children[0].children[0].text);
-  //       slider.fixLayout();
-  //       this.rerender();
-  //       slider.action();
-  //       input.children[0].children[0].text = String(slider.value);
-  //       input.text = String(input.children[0].children[0].text);
-  //     }, 10); // ugh
-  //   };
-  //   container.mouseMove = nop;
-  //   container.color = CLEAR;
-  //   container.add(text);
-  //   container.add(slider);
-  //   // container.add(input); WHY DOESN'T ANYTHING WORK?!?!?!?!?!
-  //   text.setPosition(container.position());
-  //   slider.setLeft(container.left());
-  //   slider.setTop(container.top() + text.rawHeight() + 5);
-  //   container.bounds.corner.y = slider.bottom();
-  //   container.setWidth(slider.width());
-  //   input.contents().minWidth = 50;
-  //   input.setWidth(50);
-  //   input.setRight(container.right());
-  // }
+  function getScreenColor() {
+    var myself = this,
+      world = this.world(),
+      hand = world.hand,
+      posInDocument = getDocumentPositionOf(world.worldCanvas),
+      mouseMoveBak = hand.processMouseMove,
+      mouseDownBak = hand.processMouseDown,
+      mouseUpBak = hand.processMouseUp,
+      ctx;
+    // cache the world surface property (its full image)
+    // to prevent memory issues from constantly generating
+    // huge canvasses and and reading back pixel data only once
+    // note: this optimization makes it hard / impossible for the
+    // user to "catch" and sample the color of moving sprites
+    // but without it Chrome crashes as of Fall 2023
+    ctx = Morph.prototype.fullImage
+      .call(world)
+      .getContext("2d", { willReadFrequently: true });
 
-  // function refreshLabels() {
-  //   (hText = new StringMorph(model == "rgb" ? "R:" : "H:")),
-  //     (sText = new StringMorph(model == "rgb" ? "G:" : "S:")),
-  //     (vText = new StringMorph(
-  //       model == "rgb" ? "B:" : model == "hsl" ? "L:" : "B:"
-  //     ));
-  // }
+    hand.processMouseMove = function (event) {
+      var pos = hand.position(),
+        dta = ctx.getImageData(pos.x, pos.y, 1, 1).data;
+      hand.setPosition(
+        new Point(event.pageX - posInDocument.x, event.pageY - posInDocument.y)
+      );
+      myself.setColor(new Color(dta[0], dta[1], dta[2]));
+    };
 
-  // var hContainer = new Morph(),
-  //   sContainer = new Morph(),
-  //   vContainer = new Morph(),
-  //   buttonContainer = new Morph(),
-  //   hText = new StringMorph(model == "rgb" ? "R:" : "H:"),
-  //   sText = new StringMorph(model == "rgb" ? "G:" : "S:"),
-  //   vText = new StringMorph(
-  //     model == "rgb" ? "B:" : model == "hsl" ? "L:" : "B:"
-  //   ),
-  //   hInp = new InputFieldMorph(hSlider.value, true),
-  //   sInp = new InputFieldMorph(sSlider.value, true),
-  //   vInp = new InputFieldMorph(vSlider.value, true);
-  // createSliderGroup(hContainer, hText, hSlider, hInp);
-  // createSliderGroup(sContainer, sText, sSlider, sInp);
-  // createSliderGroup(vContainer, vText, vSlider, vInp);
-  // menu.addItem(hContainer, nop);
-  // menu.addItem(sContainer, nop);
-  // menu.addItem(vContainer, nop);
+    hand.processMouseDown = nop;
+    hand.processMouseUp = function () {
+      hand.processMouseMove = mouseMoveBak;
+      hand.processMouseDown = mouseDownBak;
+      hand.processMouseUp = mouseUpBak;
+    };
+  }
 
-  // nextModel = model == "hsv" ? "hsl" : model == "hsl" ? "rgb" : "hsv";
-
-  // function getScreenColor() {
-  //   var myself = this,
-  //     world = this.world(),
-  //     hand = world.hand,
-  //     posInDocument = getDocumentPositionOf(world.worldCanvas),
-  //     mouseMoveBak = hand.processMouseMove,
-  //     mouseDownBak = hand.processMouseDown,
-  //     mouseUpBak = hand.processMouseUp,
-  //     ctx;
-  //   // cache the world surface property (its full image)
-  //   // to prevent memory issues from constantly generating
-  //   // huge canvasses and and reading back pixel data only once
-  //   // note: this optimization makes it hard / impossible for the
-  //   // user to "catch" and sample the color of moving sprites
-  //   // but without it Chrome crashes as of Fall 2023
-  //   ctx = Morph.prototype.fullImage
-  //     .call(world)
-  //     .getContext("2d", { willReadFrequently: true });
-
-  //   hand.processMouseMove = function (event) {
-  //     var pos = hand.position(),
-  //       dta = ctx.getImageData(pos.x, pos.y, 1, 1).data;
-  //     hand.setPosition(
-  //       new Point(event.pageX - posInDocument.x, event.pageY - posInDocument.y)
-  //     );
-  //     myself.setColor(new Color(dta[0], dta[1], dta[2]));
-  //   };
-
-  //   hand.processMouseDown = nop;
-  //   hand.processMouseUp = function () {
-  //     hand.processMouseMove = mouseMoveBak;
-  //     hand.processMouseDown = mouseDownBak;
-  //     hand.processMouseUp = mouseUpBak;
-  //   };
-  // }
-
-  // var switchModelButton = new PushButtonMorph(
-  //     this,
-  //     () => ((model = nextModel), menu.destroy(), this.getUserColor(model)),
-  //     new SymbolMorph("arrowRight", 10)
-  //   ),
-  //   pickColorButton = new PushButtonMorph(
-  //     this,
-  //     getScreenColor,
-  //     new SymbolMorph("pipette", 10)
-  //   );
-  // buttonContainer.mouseMove = nop;
-  // buttonContainer.color = CLEAR;
-  // buttonContainer.add(switchModelButton);
-  // buttonContainer.add(pickColorButton);
-  // buttonContainer.setWidth(hContainer.width());
-  // buttonContainer.setHeight(switchModelButton.height());
-  // switchModelButton.setPosition(buttonContainer.position());
-  // pickColorButton.setTop(buttonContainer.top());
-  // pickColorButton.setRight(buttonContainer.right());
-
-  // menu.addItem(buttonContainer, nop);
+  var switchModelButton = new PushButtonMorph(
+      this,
+      () => ((model = nextModel), menu.destroy(), this.getUserColor(model)),
+      new SymbolMorph("arrowRight", 10)
+    ),
+    pickColorButton = new PushButtonMorph(
+      this,
+      getScreenColor,
+      new SymbolMorph("pipette", 10)
+    );
+  buttonContainer.mouseMove = nop;
+  buttonContainer.color = CLEAR;
+  buttonContainer.add(switchModelButton);
+  buttonContainer.add(pickColorButton);
+  buttonContainer.setWidth(hContainer.width());
+  buttonContainer.setHeight(switchModelButton.height());
+  switchModelButton.setPosition(buttonContainer.position());
+  pickColorButton.setTop(buttonContainer.top());
+  pickColorButton.setRight(buttonContainer.right());
+  menu.addItem(buttonContainer, nop);
   menu.popup(this.world(), this.bottomCenter());
+  this.world().activeMenu = null;
 };
 
 // ColorSlotMorph events:

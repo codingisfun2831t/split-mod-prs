@@ -14307,7 +14307,7 @@ TextSlotMorph.prototype.init = function (
       "down",
       0,
       Math.max(Math.floor(this.fontSize / 9), 1),
-      BLACK,
+      new Color(87, 94, 117),
       true,
     );
 
@@ -14947,7 +14947,7 @@ MultiArgMorph.prototype.init = function (
     "left", // direction
     fontHeight(this.fontSize), // size
     Math.max(Math.floor(this.fontSize / 6), 1), // padding
-    arrowColor,
+    WHITE,
     true, // isLbl
   );
   leftArrow.hoverCursor = "pointer";
@@ -14957,7 +14957,7 @@ MultiArgMorph.prototype.init = function (
     "right", // direction
     fontHeight(this.fontSize), // size
     Math.max(Math.floor(this.fontSize / 6), 1), // padding
-    arrowColor,
+    WHITE,
     true, // isLbl
   );
   rightArrow.hoverCursor = "pointer";

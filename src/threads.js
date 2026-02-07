@@ -6790,12 +6790,6 @@ Process.prototype.reportAspect = function (aspect, location) {
     // below themselves, not their own color and not colors in sprites above
     // their own layer.
 
-    if (this.enableHyperOps) {
-        if (location instanceof List && !this.isCoordinate(location)) {
-            return location.map(each => this.reportAspect(aspect, each));
-        }
-    }
-
     var choice = this.inputOption(aspect),
         target = this.inputOption(location),
         options = ['hue', 'saturation', 'brightness', 'transparency'],
@@ -6806,6 +6800,35 @@ Process.prototype.reportAspect = function (aspect, location) {
         world = thisObj.world(),
         point,
         clr;
+
+         if (this.enableHyperOps) {
+        if (location instanceof List && !this.isCoordinate(location)) {
+            if (choice === "sprites") return location.map(each => this.reportAspect(aspect, each));
+
+            var ctx = Morph.prototype.fullImage.call(world)
+                        .getContext('2d');
+
+            return location.map(each => {
+                var data = ctx.getImageData(each.at(1), each.at(2), 1, 1)
+                            .data,
+                    clr = new Color(data[0], data[1], data[2]);
+                
+                if (choice === 'color') {
+                    return clr.copy();
+                }
+                if (choice === 'r-g-b-a') {
+                    return new List([clr.r, clr.g, clr.b, Math.round(clr.a * 255)]);
+                }
+                if (idx < 0 || idx > 3) {
+                    return;
+                }
+                if (idx === 3) {
+                    return (1 - clr.a) * 100;
+                }
+                return clr[SpriteMorph.prototype.penColorModel]()[idx] * 100;
+            });
+        }
+    }
 
     if (target === 'myself') {
         if (choice === 'sprites') {

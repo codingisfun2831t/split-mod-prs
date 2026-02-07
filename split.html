@@ -58,7 +58,7 @@
                     };
 
                 if ('serviceWorker' in navigator) {
-                    //navigator.serviceWorker.register('sw.js');
+                    navigator.serviceWorker.register('sw.js');
                 }
                 world = new WorldMorph(document.getElementById('world'));
                 // store the ide in a varibale so we can change the palette mode later

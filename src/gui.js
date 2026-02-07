@@ -3129,6 +3129,16 @@ IDE_Morph.prototype.droppedBinary = function (anArrayBuffer, name) {
     suffix = name.substring(name.length - 3);
 
   if (suffix.toLowerCase() !== "ypr") {
+    if (suffix.toLowerCase() === "sb3") {
+      JSZip.loadAsync(anArrayBuffer).then((zip) =>
+          this.nextSteps([
+              async () => {
+                  const project = await loadScratchProject(zip, name.split(".")[0]);
+                  myself.openProject(project);
+              }
+          ])
+      );
+  }
     return;
   }
 

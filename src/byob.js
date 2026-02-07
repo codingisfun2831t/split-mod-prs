@@ -184,6 +184,9 @@ function CustomBlockDefinition(spec, receiver) {
 
 	// transient - for "wishes"
  	this.storedSemanticSpec = null;
+
+    // for scratch blocks - null otherwise
+    this.scratchBlockID = null;
 }
 
 // CustomBlockDefinition instantiating blocks

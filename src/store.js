@@ -1072,6 +1072,7 @@ SnapSerializer.prototype.loadCustomBlocks = function (
         definition.isHelper = (child.attributes.helper === 'true') || false;
         definition.spaceAbove = (child.attributes.space === 'true') || false;
         definition.semantics = child.attributes.semantics || null;
+        definition.scratchBlockID = child.attributes.scrblkid || null;
         definition.isGlobal = (isGlobal === true);
         if (isDispatch) {
             object.inheritedMethodsCache.push(definition);
@@ -2568,7 +2569,7 @@ CustomBlockDefinition.prototype.toXML = function (serializer) {
     }
 
     return serializer.format(
-        '<block-definition s="@" type="@" category="@"%%%%%>' +
+        '<block-definition s="@" type="@" category="@"%%%%%%>' +
             '%' +
             (this.variableNames.length ? '<variables>%</variables>' : '@') +
             '<header>@</header>' +
@@ -2589,6 +2590,9 @@ CustomBlockDefinition.prototype.toXML = function (serializer) {
         this.spaceAbove ? ' space="true"' : '',
         this.type === 'hat' && this.semantics === 'rule' ?
             ' semantics="rule"' : '',
+        this.scratchBlockID ?
+            ' scrblkid="' + this.scratchBlockID + '"'
+            : '',
         this.comment ? this.comment.toXML(serializer) : '',
         (this.variableNames.length ?
                 serializer.store(new List(this.variableNames)) : ''),

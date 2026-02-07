@@ -789,15 +789,6 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       animation: true,
       code: "back",
     },
-    goBackNew: {
-      only: SpriteMorph,
-      type: "command",
-      category: "looks",
-      spec: "go %layers %n layers",
-      defaults: [["back"], 1],
-      animation: true,
-      code: "back",
-    },
 
     // Looks - Debugging primitives for development mode
     doScreenshot: {
@@ -3889,7 +3880,8 @@ SpriteMorph.prototype.blockTemplates = function (
     varNames,
     inheritedVars = this.inheritedVariableNames(),
     wrld = this.world(),
-    devMode = wrld && wrld.isDevMode;
+    devMode = wrld && wrld.isDevMode,
+    stage = this.parentThatIsA(StageMorph)
 
   function block(selector, isGhosted) {
     if (StageMorph.prototype.hiddenPrimitives[selector] && !all) {
@@ -3902,6 +3894,26 @@ SpriteMorph.prototype.blockTemplates = function (
       newBlock.ghost();
     }
     return newBlock;
+  }
+
+
+  function hasScratchBlock(id) {
+    if (!stage) return false;
+
+    var found = false;
+    stage.globalBlocks.forEach((def) => {
+      if (def.scratchBlockID === id) found =  true;
+    });
+    
+    return found;
+  }
+
+
+  function scratchBlock(id) {
+    if (!stage) return;
+    stage.globalBlocks.forEach((def) => {
+      if (def.scratchBlockID === id) blocks.push(def.templateInstance());
+    });
   }
 
   function variableBlock(varName, isLocal) {
@@ -3976,8 +3988,8 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push("-");
     blocks.push(block("doGotoObject"));
     blocks.push(block("gotoXY"));
+    scratchBlock("glideToObject");
     blocks.push(block("doGlide"));
-    //blocks.push(block('doGlideSprite'));
     blocks.push("-");
     blocks.push(block("setHeading"));
     blocks.push(block("doFaceTowards"));
@@ -3988,6 +4000,8 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("setYPosition"));
     blocks.push("-");
     blocks.push(block("bounceOffEdge"));
+    blocks.push("-");
+    scratchBlock("rotationStyle");
     blocks.push("-");
     blocks.push(block("getPosition"));
     blocks.push(watcherToggle("xPosition"));
@@ -4004,8 +4018,12 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push("-");
     blocks.push(block("doSwitchToCostume"));
     blocks.push(block("doWearNextCostume"));
-    blocks.push(watcherToggle("getCostumeIdx"));
-    blocks.push(block("getCostumeIdx", this.inheritsAttribute("costume #")));
+    scratchBlock("switchBackdrop");
+    scratchBlock("nextBackdrop");
+    if (!hasScratchBlock("costumeProp")) {
+      blocks.push(watcherToggle("getCostumeIdx"));
+      blocks.push(block("getCostumeIdx", this.inheritsAttribute("costume #")));
+    }
     blocks.push("-");
     blocks.push(block("changeScale"));
     blocks.push(block("setScale"));
@@ -4023,7 +4041,12 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("reportShown", this.inheritsAttribute("shown?")));
     blocks.push("-");
     blocks.push(block("goToLayer"));
-    blocks.push(block("goBackNew"));
+    if (!hasScratchBlock("goBackNew")) {
+      blocks.push(block("goBack"));
+    }
+    scratchBlock("goBackNew");
+    scratchBlock("costumeProp");
+    scratchBlock("backdropProp");
     blocks.push("-");
     blocks.push(block("reportNewCostume"));
     blocks.push(block("reportGetImageAttribute"));
@@ -4111,6 +4134,7 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("receiveKey"));
     blocks.push(block("receiveInteraction"));
     blocks.push(block("receiveConditionEvent"));
+    scratchBlock("backdropSwitch");
     blocks.push("-");
     blocks.push(block("receiveMessage"));
     blocks.push(block("doBroadcast"));
@@ -4198,6 +4222,8 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("reportMouseY"));
     blocks.push(block("reportMousePosition"));
     blocks.push("-");
+    scratchBlock("dragMode");
+    blocks.push("-");
     blocks.push(watcherToggle("getTimer"));
     blocks.push(block("getTimer"));
     blocks.push(block("doResetTimer"));
@@ -4256,6 +4282,7 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(block("reportJoinWords"));
     blocks.push(block("reportLetter"));
     blocks.push(block("reportTextAttribute"));
+    scratchBlock("contains");
     blocks.push(block("reportTextSplit"));
     blocks.push("-");
     blocks.push(block("reportModulus"));
@@ -4513,6 +4540,8 @@ SpriteMorph.prototype.customBlockTemplatesForCategory = function (
     inheritedBlocks;
 
   function addCustomBlock(definition) {
+    if (definition.scratchBlockID) return;
+
     if (
       (!definition.isHelper || includeHidden) &&
       (definition.category === category)
@@ -6856,24 +6885,6 @@ SpriteMorph.prototype.goBack = function (layers) {
     newLayer = +layers,
     targetLayer;
 
-  if (!this.parent) {
-    return null;
-  }
-  layer = this.parent.children.indexOf(this);
-  this.parent.removeChild(this);
-  targetLayer = Math.max(layer - newLayer, 0);
-  this.parent.children.splice(targetLayer, null, this);
-  this.parent.changed();
-};
-SpriteMorph.prototype.goBackNew = function (l, layers) {
-  var layer,
-    newLayer = +layers,
-    targetLayer;
-  if (Process.prototype.inputOption(l) == "forward") {
-    newLayer *= -1;
-  } else if (Process.prototype.inputOption(l) != "forward") {
-    return;
-  }
   if (!this.parent) {
     return null;
   }
@@ -11525,7 +11536,8 @@ StageMorph.prototype.blockTemplates = function (
   var blocks = [],
     myself = this,
     varNames,
-    txt;
+    txt,
+    stage = this.parentThatIsA(StageMorph)
 
   function block(selector) {
     if (myself.hiddenPrimitives[selector] && !all) {
@@ -11535,6 +11547,24 @@ StageMorph.prototype.blockTemplates = function (
     newBlock.isDraggable = false;
     newBlock.isTemplate = true;
     return newBlock;
+  }
+
+  function hasScratchBlock(id) {
+    if (!stage) return false;
+
+    var found = false;
+    stage.globalBlocks.forEach((def) => {
+      if (def.scratchBlockID === id) found =  true;
+    });
+
+    return found;
+  }
+
+  function scratchBlock(id) {
+    if (!stage) return;
+    stage.globalBlocks.forEach((def) => {
+      if (def.scratchBlockID === id) blocks.push(def.templateInstance());
+    });
   }
 
   function variableBlock(varName, isLocal) {
@@ -11605,10 +11635,21 @@ StageMorph.prototype.blockTemplates = function (
     txt.hideWithCategory = true; // hide txt when category names are hidden
     blocks.push(txt);
   } else if (category === "looks") {
-    blocks.push(block("doSwitchToCostume"));
-    blocks.push(block("doWearNextCostume"));
-    blocks.push(watcherToggle("getCostumeIdx"));
-    blocks.push(block("getCostumeIdx"));
+    if (!hasScratchBlock("switchBackdrop")) {
+      blocks.push(block("doSwitchToCostume"));
+    }
+    scratchBlock("switchBackdrop");
+
+    if (!hasScratchBlock("nextBackdrop")) {
+      blocks.push(block("doWearNextCostume"));
+    }
+    scratchBlock("nextBackdrop");
+
+    if (!hasScratchBlock("backdropProp")) {
+      blocks.push(watcherToggle("getCostumeIdx"));
+      blocks.push(block("getCostumeIdx"));
+    }
+
     blocks.push("-");
     blocks.push(block("doSayFor"));
     blocks.push(block("bubble"));
@@ -11622,6 +11663,8 @@ StageMorph.prototype.blockTemplates = function (
     blocks.push(block("setEffect"));
     blocks.push(block("clearEffects"));
     blocks.push(block("getEffect"));
+    if (!hasScratchBlock("backdropProp")) blocks.push("-");
+    scratchBlock("backdropProp");
     /*blocks.push("-");
     blocks.push(block("show"));
     blocks.push(block("hide"));
@@ -11698,6 +11741,7 @@ StageMorph.prototype.blockTemplates = function (
     blocks.push(block("receiveKey"));
     blocks.push(block("receiveInteraction"));
     blocks.push(block("receiveConditionEvent"));
+    scratchBlock("backdropSwitch");
     blocks.push("-");
     blocks.push(block("receiveMessage"));
     blocks.push(block("doBroadcast"));
@@ -11776,12 +11820,12 @@ StageMorph.prototype.blockTemplates = function (
     //blocks.push(block('getLastAnswer'));
     blocks.push("-");
     blocks.push(block("reportMousePosition"));
+    blocks.push(watcherToggle("reportMouseDown"));
+    blocks.push(block("reportMouseDown"));
     blocks.push(watcherToggle("reportMouseX"));
     blocks.push(block("reportMouseX"));
     blocks.push(watcherToggle("reportMouseY"));
     blocks.push(block("reportMouseY"));
-    blocks.push(watcherToggle("reportMouseDown"));
-    blocks.push(block("reportMouseDown"));
     blocks.push("-");
     blocks.push(block("reportKeyPressed"));
     blocks.push("-");
@@ -11854,6 +11898,7 @@ StageMorph.prototype.blockTemplates = function (
     blocks.push(block("reportTextSplit"));
     blocks.push(block("reportLetter"));
     blocks.push(block("reportTextAttribute"));
+    scratchBlock("contains");
     blocks.push("-");
     blocks.push(block("reportUnicode"));
     blocks.push(block("reportUnicodeAsLetter"));

@@ -12120,7 +12120,11 @@ WorldMorph.prototype.schedule = function (callback, timeout) {
 
 // WorldMorph global pixel access:
 
-WorldMorph.prototype.getGlobalPixelColor = function (point) {
+WorldMorph.prototype.getGlobalPixelColor = function (point, noRerender) {
+  if (noRerender) {
+    var dta = this.worldCanvas.getContext("2d").getImageData(point.x, point.y, 1, 1).data;
+    return new Color(dta[0], dta[1], dta[2]);
+  }
   // answer the color at the given point.
   // first, create a new temporary canvas representing the fullImage
   // and sample that one instead of the actual world canvas

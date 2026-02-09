@@ -4155,7 +4155,7 @@ IDE_Morph.prototype.snapMenu = function () {
   });
   menu.addItem("Split! Forum Topic", () =>
     window.open(
-      "https://forum.snap.berkeley.edu/t/split-snap-but-scratch/20564",
+      "https://forum.snap.berkeley.edu/t/split-snap-but-scratch-part-4/21274",
       "SplitWebsite",
     ),
   );
@@ -5583,6 +5583,8 @@ IDE_Morph.prototype.aboutSnap = function () {
     "Split! " +
     SplitVersion +
     "\na Snap! mod in the style of Scratch\n\n" +
+    "Copyright \u24B8 2025-2026 by d016 and codingisfun2831t\n\n" +
+    "Based off of Snap 11.0.8\n" +
     "Copyright \u24B8 2008-2025 Jens M\u00F6nig and " +
     "Brian Harvey\n" +
     "jens@moenig.org, bh@cs.berkeley.edu\n\n" +
@@ -5617,7 +5619,7 @@ IDE_Morph.prototype.aboutSnap = function () {
     "\ntethrarxitet: Personal Libraries mod" +
     "\nowlssss/TheOwlCoder: Vertical Categories and Cat blocks" +
     "\njoecooldoo/joenulldoo: Auto-default Single Palette" +
-    "\ncodingisfun2831t: Several UI updates" +
+    "\ncodingisfun2831t: Many UI updates" +
     "\nmark4sisb: Split! logo" +
     "\n\nNathan Dinsmore: Saving/Loading, Snap-Logo Design, " +
     "\ncountless bugfixes and optimizations" +
@@ -5693,6 +5695,7 @@ IDE_Morph.prototype.aboutSnap = function () {
       ),
       scroller,
       maxHeight = world.height() - dlg.titleFontSize * 10;
+      tm.color = IDE_Morph.prototype.isBright ? BLACK : WHITE;
     if (tm.height() > maxHeight) {
       scroller = new ScrollFrameMorph();
       scroller.acceptsDrops = false;

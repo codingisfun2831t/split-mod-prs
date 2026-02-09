@@ -3,9 +3,12 @@
 A mod of [Snap!](http://www.github.com/jmoenig/snap) that looks more like Scratch.
 
 ## License
+Copyright (C) 2025-2026 by @e016 and @codingisfun2831t
+
+Based off of Snap!
 Copyright (C) 2008-2025 by Jens Mönig and Brian Harvey
 
-Snap! is free software: you can redistribute it and/or modify
+Split! is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of
 the License, or (at your option) any later version.

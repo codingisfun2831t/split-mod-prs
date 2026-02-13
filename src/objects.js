@@ -1548,7 +1548,7 @@ SpriteMorph.prototype.primitiveBlocks = function () {
       only: SpriteMorph,
       type: "predicate",
       category: "sensing",
-      spec: "touching %col ?",
+      spec: "touching color %col ?",
       defaults: [["mouse-pointer"]],
       code: "touch",
     },
@@ -4064,8 +4064,8 @@ SpriteMorph.prototype.blockTemplates = function (
       blocks.push(block("doScreenshot"));
     }
   } else if (category === "sound") {
-    blocks.push(block("playSound"));
     blocks.push(block("doPlaySoundUntilDone"));
+    blocks.push(block("playSound"));
     blocks.push(block("doStopAllSounds"));
     blocks.push("-");
     blocks.push(block("doPlaySoundAtRate"));
@@ -4227,7 +4227,6 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push(watcherToggle("getTimer"));
     blocks.push(block("getTimer"));
     blocks.push(block("doResetTimer"));
-    blocks.push(block("reportDate"));
     blocks.push("-");
     blocks.push(block("reportAttributeOf"));
 
@@ -4236,6 +4235,9 @@ SpriteMorph.prototype.blockTemplates = function (
     }
 
     blocks.push(block("reportObject"));
+    blocks.push("-");
+    blocks.push(block("reportDate"));
+    scratchBlock("dayssince2000");
     blocks.push("-");
     blocks.push(block("reportURL"));
     blocks.push(block("reportAudio"));
@@ -4270,9 +4272,9 @@ SpriteMorph.prototype.blockTemplates = function (
     blocks.push("-");
     blocks.push(block("reportRandom"));
     blocks.push("-");
+    blocks.push(block("reportVariadicGreaterThan"));
     blocks.push(block("reportVariadicLessThan"));
     blocks.push(block("reportVariadicEquals"));
-    blocks.push(block("reportVariadicGreaterThan"));
     blocks.push("-");
     blocks.push(block("reportVariadicAnd"));
     blocks.push(block("reportVariadicOr"));
@@ -11682,8 +11684,8 @@ StageMorph.prototype.blockTemplates = function (
       blocks.push(block("doScreenshot"));
     }
   } else if (category === "sound") {
-    blocks.push(block("playSound"));
     blocks.push(block("doPlaySoundUntilDone"));
+    blocks.push(block("playSound"));
     blocks.push(block("doStopAllSounds"));
     blocks.push("-");
     blocks.push(block("doPlaySoundAtRate"));
@@ -11834,7 +11836,6 @@ StageMorph.prototype.blockTemplates = function (
     blocks.push(block("doResetTimer"));
     blocks.push(watcherToggle("getTimer"));
     blocks.push(block("getTimer"));
-    blocks.push(block("reportDate"));
     blocks.push("-");
     blocks.push(block("reportAttributeOf"));
 
@@ -11843,6 +11844,9 @@ StageMorph.prototype.blockTemplates = function (
     }
 
     blocks.push(block("reportObject"));
+    blocks.push("-");
+    blocks.push(block("reportDate"));
+    scratchBlock("dayssince2000");
     blocks.push("-");
     blocks.push(block("reportURL"));
     blocks.push(block("reportAudio"));
@@ -11885,9 +11889,9 @@ StageMorph.prototype.blockTemplates = function (
     blocks.push(block("reportAtan2"));
     blocks.push(block("reportRandom"));
     blocks.push("-");
+    blocks.push(block("reportVariadicGreaterThan"));
     blocks.push(block("reportVariadicLessThan"));
     blocks.push(block("reportVariadicEquals"));
-    blocks.push(block("reportVariadicGreaterThan"));
     blocks.push("-");
     blocks.push(block("reportVariadicAnd"));
     blocks.push(block("reportVariadicOr"));

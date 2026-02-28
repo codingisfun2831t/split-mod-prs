@@ -7195,7 +7195,7 @@ CommandBlockMorph.prototype.extractAndCopyThis = function () {
   }
 };
 
-CommandBlockMorph.prototype.duplicate = function () {
+BlockMorph.prototype.duplicate = function () {
   var cpy = this.fullCopy(),
     ide = this.parentThatIsA(IDE_Morph),
     blockEditor = this.parentThatIsA(BlockEditorMorph);

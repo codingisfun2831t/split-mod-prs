@@ -1820,7 +1820,7 @@ DialogBoxMorph.prototype.promptCode = function (
   };
 
   function remarkText(string) {
-    return new TextMorph(
+    var text = new TextMorph(
       localize(string),
       10,
       null, // style
@@ -1832,6 +1832,8 @@ DialogBoxMorph.prototype.promptCode = function (
       MorphicPreferences.isFlat ? null : new Point(1, 1),
       WHITE, // shadowColor
     );
+    text.color = PushButtonMorph.prototype.labelColor;
+    return text;
   }
 
   frame.padding = 6;
@@ -1854,6 +1856,7 @@ DialogBoxMorph.prototype.promptCode = function (
   frame.contrast = InputFieldMorph.prototype.contrast;
   frame.render = InputFieldMorph.prototype.render;
   frame.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
+  frame.setColor(IDE_Morph.prototype.isBright ? frame.color : new Color(20, 20, 20));
 
   frame.addContents(text);
   text.fixLayout();

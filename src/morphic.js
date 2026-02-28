@@ -8502,7 +8502,7 @@ StringMorph.prototype.render = function (ctx) {
   ctx.textBaseline = "bottom";
 
   // first draw the shadow, if any
-  if (shadowColor) {
+  if (shadowColor && !shadowOffset.eq(ZERO)) {
     x = Math.max(shadowOffset.x, 0);
     y = Math.max(shadowOffset.y, 0);
     ctx.fillStyle = shadowColor.toString();

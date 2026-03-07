@@ -7967,7 +7967,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       MorphicPreferences.menuFontSize * 0.75,
       WHITE,
     );
-  menu.bgColor = this.accentColor;
+  menu.bgColor = this.getControlBarColor();
   empty.render = nop;
   const setAccent = () => {
     DialogBoxMorph.prototype.titleBarColor = this.accentColor;
@@ -7976,12 +7976,18 @@ IDE_Morph.prototype.accentColorMenu = function () {
     PushButtonMorph.prototype.highlightColor =
       PushButtonMorph.prototype.pressColor.lighter(50);
   };
+  function colorSwatch (color) {
+    var morph = new Morph();
+    morph.color = color;
+    morph.setExtent(new Point(30, 30));
+    return morph;
+  };
   menu.addPreference = function (label, toggle, test, onHint, offHint, hide) {
     if (!hide || shiftClicked) {
       menu.addItem(
         [test ? on : off, localize(label)],
         toggle,
-        test ? onHint : offHint,
+        test ? onHint : (isNil(offHint) ? onHint : offHint),
         hide ? new Color(255, 100, 100) : null,
       );
     }
@@ -7995,6 +8001,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[0]),
+    colorSwatch(colors[0])
   );
   menu.addPreference(
     "Orange",
@@ -8005,6 +8012,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[3]),
+    colorSwatch(colors[3])
   );
   menu.addPreference(
     "Yellow",
@@ -8015,6 +8023,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[5]),
+    colorSwatch(colors[5])
   );
   menu.addPreference(
     "Lime",
@@ -8025,6 +8034,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[8]),
+    colorSwatch(colors[8])
   );
   menu.addPreference(
     "Green",
@@ -8035,6 +8045,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[4]),
+    colorSwatch(colors[4])
   );
   menu.addPreference(
     "Cyan",
@@ -8045,6 +8056,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[7]),
+    colorSwatch(colors[7])
   );
   menu.addPreference(
     "Indigo",
@@ -8055,6 +8067,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[6]),
+    colorSwatch(colors[6])
   );
   menu.addPreference(
     "Purple",
@@ -8065,6 +8078,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[1]),
+    colorSwatch(colors[1])
   );
   menu.addPreference(
     "Blue",
@@ -8075,6 +8089,7 @@ IDE_Morph.prototype.accentColorMenu = function () {
       this.refreshIDE()
     ),
     this.accentColor.eq(colors[2]),
+    colorSwatch(colors[2])
   );
   return menu;
 };

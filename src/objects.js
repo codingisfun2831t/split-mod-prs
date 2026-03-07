@@ -3937,7 +3937,7 @@ SpriteMorph.prototype.blockTemplates = function (
       function () {
         myself.toggleWatcher(
           selector,
-          localize(info.spec),
+          selector == "getPenDown" ? localize("pen down?") : localize(info.spec),
           myself.blockColor[info.category]
         );
       },

@@ -991,7 +991,7 @@ TabMorph.prototype.createLabelString = function (string) {
     localize(string),
     this.fontSize,
     this.fontStyle,
-    true, // !(this.labelString instanceof Array), //true,
+    500, // !(this.labelString instanceof Array), //true,
     false,
     false,
     shading ? this.labelShadowOffset : null,

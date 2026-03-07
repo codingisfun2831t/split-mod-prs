@@ -8391,6 +8391,7 @@ StringMorph.prototype.init = function (
   this.fontName = fontName || MorphicPreferences.globalFontFamily;
   this.fontStyle = fontStyle || "sans-serif";
   this.isBold = bold || false;
+  this.fontWeight = Boolean(bold) === bold ? null : bold;
   this.isItalic = italic || false;
   this.isEditable = false;
   this.enableLinks = false; // set to "true" if I can contain clickable URLs
@@ -8441,7 +8442,9 @@ StringMorph.prototype.password = function (letter, length) {
 StringMorph.prototype.font = function () {
   // answer a font string, e.g. 'bold italic 12px sans-serif'
   var font = "";
-  if (this.isBold) {
+  if (this.fontWeight) {
+    font = font + String(this.fontWeight) + " "
+  } else if (this.isBold) {
     font = font + "bold ";
   }
   if (this.isItalic) {
@@ -9094,6 +9097,7 @@ TextMorph.prototype.init = function (
   this.fontName = fontName || MorphicPreferences.globalFontFamily;
   this.fontStyle = fontStyle || "sans-serif";
   this.isBold = bold || false;
+  this.fontWeight = Boolean(bold) === bold ? null : bold;
   this.isItalic = italic || false;
   this.alignment = alignment || "left";
   this.shadowOffset = shadowOffset || ZERO;

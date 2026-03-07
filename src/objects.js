@@ -15572,7 +15572,7 @@ WatcherMorph.prototype.updateLabel = function () {
     return;
   }
   if (obj.version !== this.version) {
-    this.objName = obj.name ? obj.name + " " : " ";
+    this.objName = obj.name ? obj.name + ": " : " ";
     if (this.labelMorph) {
       this.labelMorph.destroy();
       this.labelMorph = null;

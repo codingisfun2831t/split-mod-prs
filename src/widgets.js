@@ -1906,7 +1906,7 @@ DialogBoxMorph.prototype.promptVector = function (
     bdy = new AlignmentMorph("column", this.padding);
 
   function labelText(string) {
-    return new TextMorph(
+    var t = new TextMorph(
       localize(string),
       10,
       null, // style
@@ -1918,6 +1918,8 @@ DialogBoxMorph.prototype.promptVector = function (
       MorphicPreferences.isFlat ? null : new Point(1, 1),
       WHITE, // shadowColor
     );
+    t.color = PushButtonMorph.prototype.labelColor;
+    return t
   }
 
   inp.alignment = "left";

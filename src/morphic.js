@@ -9255,7 +9255,7 @@ TextMorph.prototype.render = function (ctx) {
   }
 
   // draw the shadow, if any
-  if (shadowColor) {
+  if (shadowColor && !this.shadowOffset.eq(ZERO)) {
     offx = Math.max(this.shadowOffset.x, 0);
     offy = Math.max(this.shadowOffset.y, 0);
     ctx.fillStyle = shadowColor.toString();

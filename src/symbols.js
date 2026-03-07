@@ -160,6 +160,7 @@ SymbolMorph.prototype.names = [
   "penIcon",
   "penSeperator",
   "commentClose",
+  "ttsIcon"
 ];
 
 // SymbolMorph instance creation:
@@ -549,6 +550,9 @@ SymbolMorph.prototype.renderShape = function (ctx, aColor) {
     case "commentClose":
       this.renderSymbolCommentClose(ctx);
       break;
+    case "ttsIcon":
+      this.renderSymbolTtsIcon(ctx);
+      break;
     default:
       throw new Error('unknown symbol name: "' + this.name + '"');
   }
@@ -704,6 +708,8 @@ SymbolMorph.prototype.paint = new Image();
 SymbolMorph.prototype.paint.src = "src/paintbucket.svg";
 SymbolMorph.prototype.penIconSymbol = new Image();
 SymbolMorph.prototype.penIconSymbol.src = "src/pen-icon.svg";
+SymbolMorph.prototype.ttsIconSymbol = new Image();
+SymbolMorph.prototype.ttsIconSymbol.src = "src/tts-icon.svg";
 SymbolMorph.prototype.paintBlack = new Image();
 SymbolMorph.prototype.paintBlack.src = "src/paintbucket-black.svg";
 SymbolMorph.prototype.pipette = new Image();
@@ -2763,6 +2769,10 @@ SymbolMorph.prototype.renderSymbolNewSprite = function (ctx) {
 
 SymbolMorph.prototype.renderSymbolPenIcon = function (ctx) {
   this.drawImage(ctx, this.penIconSymbol);
+};
+
+SymbolMorph.prototype.renderSymbolTtsIcon = function (ctx) {
+  this.drawImage(ctx, this.ttsIconSymbol);
 };
 
 SymbolMorph.prototype.renderSymbolPenSeperator = function (ctx) {

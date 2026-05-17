@@ -1775,8 +1775,7 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
                 localize(label)
             ],
             toggle,
-            test ? onHint : offHint,
-            WHITE
+            test ? onHint : offHint
         );
     }
 
@@ -1871,6 +1870,14 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
                 () => hat.editSelector(),
                 "overload a primitive"
             );
+
+            //if (shiftClicked) {
+                menu.addItem(
+                    "scratch block selector...",
+                    () => hat.editScratchBlock(),
+                    "place this block customly in the palette, for scratch custom blocks"
+                );
+            // }
         }
         if (this instanceof CustomHatBlockMorph) {
             addOption(
@@ -2064,8 +2071,7 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         );
     }
     menu.addItem("edit...", 'edit',
-                undefined,
-                WHITE); // works also for prototypes
+                undefined); // works also for prototypes
     return menu;
 };
 
@@ -3681,7 +3687,7 @@ BlockEditorMorph.prototype.refreshAllBlockInstances = function (oldSpec) {
 };
 
 BlockEditorMorph.prototype.updateDefinition = function () {
-    var head, ide,
+    var head, ide = this.target.parentThatIsA(IDE_Morph),
         oldSpec = this.definition.blockSpec(),
         pos = this.body.contents.position(),
         count = 1,
@@ -3726,6 +3732,11 @@ BlockEditorMorph.prototype.updateDefinition = function () {
         if (head.blockSelector && this.definition.isGlobal) {
             this.definition.selector = head.blockSelector;
         }
+        if (head.scratchBlockID && this.definition.isGlobal) {
+            let old = this.definition.scratchBlockID;
+            this.definition.scratchBlockID = head.scratchBlockID;
+            if (old != head.scratchBlockID) ide.refreshIDE();
+        }
         if (head.comment) {
             this.definition.comment = head.comment.fullCopy();
             this.definition.comment.block = true; // serialize in short form
@@ -3767,7 +3778,6 @@ BlockEditorMorph.prototype.updateDefinition = function () {
     }
 
     this.refreshAllBlockInstances(oldSpec);
-    ide = this.target.parentThatIsA(IDE_Morph);
     ide.flushPaletteCache();
     ide.categories.refreshEmpty();
     ide.refreshPalette();
@@ -3951,6 +3961,8 @@ PrototypeHatBlockMorph.prototype.init = function (definition) {
     this.isHelper = definition ? definition.isHelper : false;
     this.blockSelector = definition && definition.isGlobal ?
         definition.selector : null;
+    this.scratchBlockID = definition && definition.isGlobal ?
+        definition.scratchBlockID : null;
 
     // init inherited stuff
     HatBlockMorph.uber.init.call(this);
@@ -4054,6 +4066,22 @@ PrototypeHatBlockMorph.prototype.editSelector = function () {
         this.world(),
         block.doWithAlpha(1, () => block.fullImage()),
         this.selectorMenu
+    );
+};
+
+PrototypeHatBlockMorph.prototype.editScratchBlock = function () {
+    var block = this.definition.blockInstance();
+    block.addShadow(new Point(3, 3));
+
+    new DialogBoxMorph(
+        this,
+        str => this.scratchBlockID = str,
+        this
+    ).prompt(
+        "Scratch Block",
+        this.scratchBlockID || '',
+        this.world(),
+        block.doWithAlpha(1, () => block.fullImage())
     );
 };
 

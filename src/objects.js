@@ -10114,6 +10114,15 @@ SpriteMorph.prototype.booleanMorph = function (bool) {
 };
 
 SpriteMorph.prototype.colorSwatch = function (color, size) {
+  let ide = this.parentThatIsA(IDE_Morph) || world.childThatIsA(IDE_Morph);
+  async function writeClipboardText(text, ide) {
+    try {
+      await navigator.clipboard.writeText(text);
+      ide.showMessage("copied to clipboard", 1, true);
+    } catch (error) {
+      ide.showMessage(error.message, 2, true);
+    }
+  };
   var swatch = new Morph();
   swatch.color = color;
 
@@ -10138,6 +10147,11 @@ SpriteMorph.prototype.colorSwatch = function (color, size) {
   };
 
   swatch.setExtent(new Point(size, size));
+  swatch.userMenu = function () {
+    var menu = new MenuMorph(this);
+    menu.addItem("copy", () => writeClipboardText(color, ide));
+    return menu;
+  };
   return swatch;
 };
 

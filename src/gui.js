@@ -254,7 +254,16 @@ IDE_Morph.prototype.scriptsTexture = function () {
     this.frameColor[this.isBright ? "darker" : "lighter"](20).toString();
   for (y = 0; y < 100 * scale; y += 20 * scale) {
     for (x = 0; x < 100 * scale; x += 20 * scale) {
-      ctx.fillRect(x, y, 2 * scale, 2 * scale);
+      ctx.save();
+      ctx.translate(scale * 4, scale * 4);
+      ctx.beginPath();
+      ctx.moveTo(x - scale, y);
+      ctx.lineTo(x, y + scale);
+      ctx.lineTo(x + scale, y);
+      ctx.lineTo(x, y - scale);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
   }
   return pic;

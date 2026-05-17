@@ -157,12 +157,17 @@ SymbolMorph.prototype.names = [
   "speakers",
   "extension",
   "newSprite",
+  "commentClose",
   "penIcon",
   "blockSeperator",
-  "commentClose",
   "ttsIcon",
   "translateIcon",
 ];
+SymbolMorph.prototype.extensionSymbolNames = [
+  "penIcon",
+  "ttsIcon",
+  "translateIcon",
+]
 
 // SymbolMorph instance creation:
 

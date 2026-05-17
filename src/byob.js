@@ -2914,6 +2914,7 @@ BlockDialogMorph.prototype.openForChange = function (
     this.categories.refresh();
     this.types.children.forEach(each => {
         each.setColor(clr);
+        each.colors = SpriteMorph.prototype.blockColorsFor(category);
         each.refresh();
     });
 
@@ -3967,6 +3968,7 @@ PrototypeHatBlockMorph.prototype.init = function (definition) {
     // init inherited stuff
     HatBlockMorph.uber.init.call(this);
     this.color = SpriteMorph.prototype.blockColor['events'];
+    this.colors = SpriteMorph.prototype.blockColors['events'];
     this.category = 'events';
     this.add(proto);
     if (definition.variableNames.length) {

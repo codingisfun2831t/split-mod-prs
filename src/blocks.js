@@ -1048,12 +1048,12 @@ SyntaxElementMorph.prototype.labelParts = {
   $clockwise: {
     type: "symbol",
     name: "turnRight",
-    scale: 1.3,
+    scale: 1.4,
   },
   $counterclockwise: {
     type: "symbol",
     name: "turnLeft",
-    scale: 1.3,
+    scale: 1.4,
   },
   $greenflag: {
     type: "symbol",
@@ -1842,7 +1842,9 @@ SyntaxElementMorph.prototype.dark = function (base) {
   }
   let isZebra = this.isZebra;
   let color = this.colors?.tertiary || base.darker(this.contrast);
-  return isZebra ? color.lighter(this.zebraContrast).toString() : color.toString();
+  return isZebra
+    ? color.lighter(this.zebraContrast).toString()
+    : color.toString();
 };
 
 SyntaxElementMorph.prototype.secondary = function (base) {
@@ -1850,8 +1852,10 @@ SyntaxElementMorph.prototype.secondary = function (base) {
     base = this.color;
   }
   let isZebra = this.isZebra;
-  let color = this.colors?.secondary || base.darker(this.contrast).darker(10);
-  return isZebra ? color.lighter(this.zebraContrast).toString() : color.toString();
+  let color = this.colors?.secondary || base.darker(this.contrast).lighter(5);
+  return isZebra
+    ? color.lighter(this.zebraContrast).toString()
+    : color.toString();
 };
 
 // SyntaxElementMorph color changing:
@@ -2206,7 +2210,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
     if (!contains(SymbolMorph.prototype.names, tokens[0])) {
       part = new StringMorph(tokens[0]);
       part.isBold = true;
-      
+
       part.fontName = this.labelFontName;
       part.fontStyle = this.labelFontStyle;
       part.fontSize = this.fontSize * (+tokens[1] || 1);
@@ -2470,13 +2474,18 @@ SyntaxElementMorph.prototype.fixLayout = function () {
           if (part.slotSpec === "%c" || part.slotSpec === "%loop") {
             x += part.width();
           } else if (part.isVisible) {
-            x += part.fullBounds().width() + space;
+            let getPartSpace = (i) =>
+              line[i] instanceof SymbolMorph ||
+              (line[i + 1] || {}) instanceof SymbolMorph
+                ? space / 2
+                : 0;
+            x += part.fullBounds().width() + space + getPartSpace(partIndex);
           }
         }
         maxX = Math.max(maxX, x);
         lineHeight = Math.max(
           lineHeight,
-          part instanceof StringMorph ? part.rawHeight() : part.height(),
+          (part instanceof SymbolMorph) && SymbolMorph.prototype.extensionSymbolNames.includes(part.name) ? part.height() * (isReporter ? 1 : 1.25) : part instanceof StringMorph ? part.rawHeight() : part.height(),
         );
       }
       var i = this instanceof CommandBlockMorph ? -2 : 0,
@@ -2505,7 +2514,10 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         new Point(
           0,
           Math.floor((lineHeight - part.height()) / 2) -
-            (part instanceof BlockLabelMorph ? 0.2 * this.scale : 0),
+            ((part instanceof SymbolMorph) && 
+            SymbolMorph.prototype.extensionSymbolNames.includes(part.name)
+            ? this.scale * (isReporter ? 0 : -2)
+            : (part instanceof BlockLabelMorph ? 0.2 * this.scale : 0)),
         ),
       );
     });
@@ -2520,9 +2532,9 @@ SyntaxElementMorph.prototype.fixLayout = function () {
       bottomCorrection = -this.bottomPadding;
       if (rightMost.slotSpec.includes("%cs")) {
         if (rightMost.inputs().length) {
-          bottomCorrection -= this.bottomPadding;
+          bottomCorrection -= this.bottomPadding / 2;
         } else {
-          bottomCorrection += this.bottomPadding / 4;
+          bottomCorrection += this.bottomPadding / 2;
         }
       }
     }
@@ -2659,9 +2671,11 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         .inputs()
         .filter((each) => each instanceof CSlotMorph)
         .forEach(
-          (slot) =>
-            (!(slot instanceof ArrowMorph) &&
-            slot.setLeft(this.left() + this.labelPadding), slot.bounds.setWidth(part.right() - slot.left()))
+          (slot) => (
+            !(slot instanceof ArrowMorph) &&
+              slot.setLeft(this.left() + this.labelPadding),
+            slot.bounds.setWidth(part.right() - slot.left())
+          ),
         );
     }
     part.fixHolesLayout();
@@ -2924,7 +2938,7 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
           "ExactReal",
           "ExactRational",
           "ExactInteger",
-          "Rectangular"
+          "Rectangular",
         ],
         !isNil(value) ? value.constructor.name : "",
       ) &&
@@ -2935,14 +2949,13 @@ SyntaxElementMorph.prototype.showBubble = function (value, exportPic, target) {
             } catch (error) {
               return display(x);
             }
-          })(value), isObject = true)
+          })(value),
+          (isObject = true))
         : display(txt);
 
     maxHeight = ide.height() / 2;
     morphToShow = new TextMorph(txt, this.fontSize);
-    if (
-      isObject
-    ) {
+    if (isObject) {
       morphToShow.fontName = "monospace";
       morphToShow.fontStyle = "monospace";
     }
@@ -5746,7 +5759,13 @@ BlockMorph.prototype.render = function (ctx) {
     this.drawMethodIcon(ctx);
   }
 };
-SyntaxElementMorph.prototype.drawRoundedDent = function (ctx, inset, x, y, reverse) {
+SyntaxElementMorph.prototype.drawRoundedDent = function (
+  ctx,
+  inset,
+  x,
+  y,
+  reverse,
+) {
   var w = this.dent * 1.75 + this.corner / 2,
     h = this.corner + this.dentPlus + inset,
     offset = this.inset + this.corner / 2,
@@ -5963,7 +5982,7 @@ BlockMorph.prototype.highlightImage = function (color, border) {
   return out;
 };
 BlockMorph.prototype.snapHighlight = function () {
-var fb, img, hi, ctx, out;
+  var fb, img, hi, ctx, out;
   fb = this.fullBounds().extent();
   this.doWithAlpha(1, () => {
     let c = newCanvas(fb);
@@ -5987,7 +6006,7 @@ var fb, img, hi, ctx, out;
   ctx.fillRect(0, 0, out.width, out.height);
 
   return out;
-}
+};
 
 BlockMorph.prototype.highlightImageBlurred = function (color, blur) {
   var fb, img, hi, ctx;
@@ -7394,11 +7413,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
       h = this.corner + this.dentPlus + inset / 2,
       offset = this.inset + this.corner / 2,
       c = this.dentCorner;
-    this.drawRoundedDent(ctx, 
-      inset, 
-      0, 
-      0
-    )
+    this.drawRoundedDent(ctx, inset, 0, 0);
   }
 
   ctx.lineTo(this.width() - this.corner, inset); // after dent
@@ -7446,12 +7461,7 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
         false,
       );
     } else {
-      this.drawRoundedDent(ctx, 
-      inset, 
-      0, 
-      bottom - this.dentPlus * 1.5,
-      true
-    )
+      this.drawRoundedDent(ctx, inset, 0, bottom - this.dentPlus * 1.5, true);
     }
     ctx.lineTo(this.corner + this.inset, bottom - inset - this.dentPlus);
   }
@@ -7789,7 +7799,7 @@ HatBlockMorph.prototype.isRuleHat = function () {
 HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
   var indent = this.corner * 2 + this.inset,
     bottom = this.height() - this.corner,
-    bottomCorner = this.height() - this.corner - this.dentPlus * 2,
+    bottomCorner = this.height() - this.corner - this.dentPlus * 2 + this.flatEdge / 2,
     radius = Math.max(this.corner - inset, 0),
     s = this.hatWidth,
     h = this.hatHeight,
@@ -7846,11 +7856,11 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
   );
 
   if (!this.isStop()) {
-      var w = this.dent * 1.75 + this.corner / 2,
-        h = this.corner + this.dentPlus,
-        offset = this.inset + this.corner / 2,
-        c = this.dentCorner;
-      this.drawRoundedDent(ctx, inset, 0, bottomCorner + inset, true);
+    var w = this.dent * 1.75 + this.corner / 2,
+      h = this.corner + this.dentPlus,
+      offset = this.inset + this.corner / 2,
+      c = this.dentCorner;
+    this.drawRoundedDent(ctx, inset, 0, bottomCorner + inset, true);
   }
 
   // bottom left:
@@ -8609,9 +8619,8 @@ RingMorph.prototype.render = function (ctx) {
   this.cachedClrBright = this.bright();
   this.cachedClrDark = this.dark();
   this.lineWidth = this.flatEdge;
-  
+
   if (MorphicPreferences.isFlat) {
-    
     // draw the inner filled shaped
     // draw the outline
     ctx.fillStyle = this.cachedClr;
@@ -9045,7 +9054,7 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   let feedback = block.snapHighlight();
   this.feedbackMorph.setExtent(block.fullBounds().extent());
   this.feedbackMorph.render = function (ctx) {
-    ctx.globalAlpha = 0.5;
+    ctx.globalAlpha = 0.2;
     ctx.drawImage(feedback, 0, 0);
   };
 
@@ -9064,11 +9073,12 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
         y += target.element.corner + target.element.dentPlus;
       }
       if (target.type === "slot") {
-        x += block.labelPadding || 0
+        x += block.labelPadding || 0;
       }
       //x += this.labelPadding;
     }
   }
+  y -= block.flatEdge;
   this.feedbackMorph.setPosition(new Point(x, y));
 };
 
@@ -10981,7 +10991,7 @@ CSlotMorph.prototype.fixLayout = function () {
       this.corner * 4 + this.inset * 2 + this.dent + this.cSlotPadding * 2,
     );
     if (this.parent) {
-      this.bounds.corner.x = this.parent.right()
+      this.bounds.corner.x = this.parent.right();
     }
   }
 
@@ -11054,20 +11064,20 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
   ctx.lineTo(this.width() + ox - inset, oy);
 
   // top right:
-  ctx.arc(
-    this.width() - this.corner + ox,
-    oy,
-    radius,
-    radians(0),
-    radians(90)
-  );
+  ctx.arc(this.width() - this.corner + ox, oy, radius, radians(0), radians(90));
   // jigsaw shape:
-    var w = this.dent * 1.75 + this.corner / 2,
-      h = this.corner + this.dentPlus,
-      offset = this.inset * 1 + this.dent / 1.6 + ox,
-      c = this.dentCorner;
-    this.drawRoundedDent(ctx, inset, inset + this.corner * 2 + ox, this.corner + oy - inset * 2, true);
-  
+  var w = this.dent * 1.75 + this.corner / 2,
+    h = this.corner + this.dentPlus,
+    offset = this.inset * 1 + this.dent / 1.6 + ox,
+    c = this.dentCorner;
+  this.drawRoundedDent(
+    ctx,
+    inset,
+    inset + this.corner * 2 + ox,
+    this.corner + oy - inset * 2,
+    true,
+  );
+
   ctx.arc(
     this.inset + this.corner + ox,
     this.corner * 2 + oy,
@@ -11097,7 +11107,12 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     if (block.bottomBlock().isStop()) flatEdge = false;
   }
   if (flatEdge) {
-    this.drawRoundedDent(ctx, inset, inset + this.corner * 2 + ox, this.height() - this.corner + oy - this.dentPlus)
+    this.drawRoundedDent(
+      ctx,
+      inset,
+      inset + this.corner * 2 + ox,
+      this.height() - this.corner + oy - this.dentPlus,
+    );
     ctx.lineTo(
       this.width() - this.corner + ox,
       this.height() - this.corner + oy + inset - this.dentPlus,
@@ -11795,7 +11810,8 @@ InputSlotMorph.prototype.inputSlotsMenu = function () {
       let info = SyntaxElementMorph.prototype.labelParts[value[0]];
       if (
         value[0].startsWith("%mult") ||
-        (info && ["input", "boolean", "color", "text entry"].includes(info.type))
+        (info &&
+          ["input", "boolean", "color", "text entry"].includes(info.type))
       ) {
         dict[key] = key;
       }
@@ -12637,7 +12653,7 @@ InputSlotMorph.prototype.fixLayout = function () {
   }
 
   if (arrow.isVisible) {
-    arrow.setCenter(this.center())
+    arrow.setCenter(this.center());
     arrow.setPosition(
       new Point(
         this.right() - arrowWidth - this.edge,
@@ -13796,7 +13812,11 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
   }
 
   ctx.fill();
-  if (this.parentThatIsA(BlockMorph)?.alpha < 0.6 || !this.isEmptySlot() || progress > 0) {
+  if (
+    this.parentThatIsA(BlockMorph)?.alpha < 0.6 ||
+    !this.isEmptySlot() ||
+    progress > 0
+  ) {
     var e = this.flatEdge / 2;
     ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
     ctx.lineWidth = this.flatEdge;
@@ -14371,31 +14391,31 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
       this.color.r,
       this.color.g,
       this.color.b,
-      this.color.a
+      this.color.a,
     );
 
   menu.doNotClick = true;
 
-  hSlider.action = (function (h) {
+  hSlider.action = function (h) {
     newColor["set_" + model](
       h / 100,
       myself.color[model]()[1],
-      myself.color[model]()[2]
+      myself.color[model]()[2],
     );
     myself.color = newColor;
-    console.log(this)
+    console.log(this);
     this.input.setContents(h.toString());
     console.log(this.input);
     hInp.rerender();
     this.fixLayout();
     myself.rerender();
-    block.isCustomBlock && block.fireSlotEditedEvent(myself)
-  }).bind(hSlider);
+    block.isCustomBlock && block.fireSlotEditedEvent(myself);
+  }.bind(hSlider);
   sSlider.action = (s) => (
     newColor["set_" + model](
       this.color[model]()[0],
       s / 100,
-      this.color[model]()[2]
+      this.color[model]()[2],
     ),
     (this.color = newColor),
     (sInp.text = String(s)),
@@ -14409,7 +14429,7 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     newColor["set_" + model](
       this.color[model]()[0],
       this.color[model]()[1],
-      v / 100
+      v / 100,
     ),
     (this.color = newColor),
     (vInp.text = String(v)),
@@ -14434,7 +14454,8 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
         slider.action();
         input.children[0].children[0].text = String(slider.value);
         input.text = String(input.children[0].children[0].text);
-      }, 10); ugh
+      }, 10);
+      ugh;
     };
     container.mouseMove = nop;
     container.color = CLEAR;
@@ -14459,7 +14480,7 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
     hText = new StringMorph(model == "rgb" ? "R:" : "H:"),
     sText = new StringMorph(model == "rgb" ? "G:" : "S:"),
     vText = new StringMorph(
-      model == "rgb" ? "B:" : model == "hsl" ? "L:" : "B:"
+      model == "rgb" ? "B:" : model == "hsl" ? "L:" : "B:",
     ),
     hInp = new InputFieldMorph(hSlider.value, true),
     sInp = new InputFieldMorph(sSlider.value, true),
@@ -14496,7 +14517,7 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
       var pos = hand.position(),
         dta = ctx.getImageData(pos.x, pos.y, 1, 1).data;
       hand.setPosition(
-        new Point(event.pageX - posInDocument.x, event.pageY - posInDocument.y)
+        new Point(event.pageX - posInDocument.x, event.pageY - posInDocument.y),
       );
       myself.setColor(new Color(dta[0], dta[1], dta[2]));
     };
@@ -14512,12 +14533,12 @@ ColorSlotMorph.prototype.getUserColor = function (model) {
   var switchModelButton = new PushButtonMorph(
       this,
       () => ((model = nextModel), menu.destroy(), this.getUserColor(model)),
-      new SymbolMorph("arrowRight", 10)
+      new SymbolMorph("arrowRight", 10),
     ),
     pickColorButton = new PushButtonMorph(
       this,
       getScreenColor,
-      new SymbolMorph("pipette", 10)
+      new SymbolMorph("pipette", 10),
     );
   buttonContainer.mouseMove = nop;
   buttonContainer.color = CLEAR;
@@ -14702,27 +14723,19 @@ ReporterBubbleMorph.prototype.outlinePath = function (ctx, radius, inset) {
     ctx.lineTo(this.width() / 2 - offset, offset);
   }
   // top right:
-  ctx.arc(w - offset, offset + radius, radius, radians(-90), radians(-0), false);
-  // bottom right:
   ctx.arc(
     w - offset,
-    h - offset,
+    offset + radius,
     radius,
-    radians(0),
-    radians(90),
+    radians(-90),
+    radians(-0),
     false,
   );
-  
-  
+  // bottom right:
+  ctx.arc(w - offset, h - offset, radius, radians(0), radians(90), false);
+
   // bottom left:
-  ctx.arc(
-    offset,
-    h - offset,
-    radius,
-    radians(90),
-    radians(180),
-    false,
-  );
+  ctx.arc(offset, h - offset, radius, radians(90), radians(180), false);
   if (this.isThought === true) {
     // use anything but "true" to draw nothing
     // close large bubble:
@@ -14759,10 +14772,13 @@ ReporterBubbleMorph.prototype.fixLayout = function () {
   // position my contents
   this.contentsMorph.setPosition(
     this.position().add(
-      new Point(this.padding || this.edge, this.border + this.edge + this.padding + 1)
-    )
+      new Point(
+        this.padding || this.edge,
+        this.border + this.edge + this.padding + 1,
+      ),
+    ),
   );
-}
+};
 
 ReporterBubbleMorph.prototype.popUp = function (world, pos, isClickable) {
   this.fixLayout();

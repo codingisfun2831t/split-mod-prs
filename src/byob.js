@@ -1775,8 +1775,7 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
                 localize(label)
             ],
             toggle,
-            test ? onHint : offHint,
-            WHITE
+            test ? onHint : offHint
         );
     }
 
@@ -2064,8 +2063,7 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         );
     }
     menu.addItem("edit...", 'edit',
-                undefined,
-                WHITE); // works also for prototypes
+                undefined); // works also for prototypes
     return menu;
 };
 

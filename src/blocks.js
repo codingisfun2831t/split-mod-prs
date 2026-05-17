@@ -270,7 +270,7 @@ SyntaxElementMorph.prototype.setScale = function (num) {
   this.corner = 3 * scale;
   this.rounding = 9 * scale;
   this.edge = scale;
-  this.flatEdge = scale * 0.65;
+  this.flatEdge = scale * 0.7;
   this.jag = 10 * scale;
   this.dentPlus = 1.5 * scale;
   this.dentCorner = 3.5 * scale;
@@ -284,7 +284,7 @@ SyntaxElementMorph.prototype.setScale = function (num) {
   this.cSlotPadding = 4 * scale;
   this.typeInPadding = 3 * scale;
   this.labelPadding = 4 * scale;
-  this.labelFontName = "Helvetica, Arial"; //'Verdana';
+  this.labelFontName = '"Helvetica Neue", "Segoe UI", Helvetica, sans-serif'; //'Verdana';
   this.labelFontStyle = "sans-serif";
   this.fontSize = 9.5 * scale; //10 * scale;
   this.embossing = new Point(
@@ -1836,8 +1836,22 @@ SyntaxElementMorph.prototype.bright = function () {
   return this.color.lighter(this.contrast).toString();
 };
 
-SyntaxElementMorph.prototype.dark = function () {
-  return this.color.darker(this.contrast).toString();
+SyntaxElementMorph.prototype.dark = function (base) {
+  if (!base) {
+    base = this.color;
+  }
+  let isZebra = this.isZebra;
+  let color = this.colors?.tertiary || base.darker(this.contrast);
+  return isZebra ? color.lighter(this.zebraContrast).toString() : color.toString();
+};
+
+SyntaxElementMorph.prototype.secondary = function (base) {
+  if (!base) {
+    base = this.color;
+  }
+  let isZebra = this.isZebra;
+  let color = this.colors?.secondary || base.darker(this.contrast).darker(10);
+  return isZebra ? color.lighter(this.zebraContrast).toString() : color.toString();
 };
 
 // SyntaxElementMorph color changing:
@@ -1922,6 +1936,9 @@ SyntaxElementMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
   this.children.forEach((morph) => {
     if (morph instanceof SyntaxElementMorph) {
       morph.fixBlockColor(nearestBlock, isForced);
+    }
+    if (this.colors) {
+      morph.colors = Object.assign({}, this.colors);
     }
   });
 };
@@ -2189,6 +2206,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
     if (!contains(SymbolMorph.prototype.names, tokens[0])) {
       part = new StringMorph(tokens[0]);
       part.isBold = true;
+      
       part.fontName = this.labelFontName;
       part.fontStyle = this.labelFontStyle;
       part.fontSize = this.fontSize * (+tokens[1] || 1);
@@ -3071,6 +3089,8 @@ function BlockLabelMorph(
     color,
     fontName,
   );
+  this.fontWeight = 500;
+  this.fixLayout();
 }
 
 BlockLabelMorph.prototype.getRenderColor = function () {
@@ -5688,19 +5708,22 @@ BlockMorph.prototype.render = function (ctx) {
   this.cachedClrDark = this.dark();
 
   if (MorphicPreferences.isFlat) {
-    // draw the outline
+    /*// draw the outline
     ctx.fillStyle = this.cachedClrDark;
     ctx.beginPath();
     this.outlinePath(ctx, 0);
     ctx.closePath();
-    ctx.fill();
+    ctx.fill();*/
+    ctx.strokeStyle = this.cachedClrDark;
+    ctx.lineWidth = this.flatEdge;
 
     // draw the inner filled shaped
     ctx.fillStyle = this.cachedClr;
     ctx.beginPath();
-    this.outlinePath(ctx, this.flatEdge);
+    this.outlinePath(ctx, this.flatEdge / 2);
     ctx.closePath();
     ctx.fill();
+    ctx.stroke();
   } else {
     // draw the flat shape
     ctx.fillStyle = this.cachedClr;
@@ -5723,7 +5746,7 @@ BlockMorph.prototype.render = function (ctx) {
     this.drawMethodIcon(ctx);
   }
 };
-BlockMorph.prototype.drawRoundedDent = function (ctx, inset, x, y) {
+SyntaxElementMorph.prototype.drawRoundedDent = function (ctx, inset, x, y, reverse) {
   var w = this.dent * 1.75 + this.corner / 2,
     h = this.corner + this.dentPlus + inset,
     offset = this.inset + this.corner / 2,
@@ -5731,6 +5754,10 @@ BlockMorph.prototype.drawRoundedDent = function (ctx, inset, x, y) {
   if (!isNil(x)) {
     ctx.save();
     ctx.translate(x || 0, y || 0);
+  }
+  if (reverse) {
+    ctx.translate(w + offset * 2, 0);
+    ctx.scale(-1, 1);
   }
   ctx.lineTo(0 + offset, -h + h + inset);
   ctx.bezierCurveTo(
@@ -5935,6 +5962,32 @@ BlockMorph.prototype.highlightImage = function (color, border) {
 
   return out;
 };
+BlockMorph.prototype.snapHighlight = function () {
+var fb, img, hi, ctx, out;
+  fb = this.fullBounds().extent();
+  this.doWithAlpha(1, () => {
+    let c = newCanvas(fb);
+    this.render(c.getContext("2d"));
+    img = c;
+  });
+
+  hi = newCanvas(fb);
+  ctx = hi.getContext("2d");
+
+  ctx.drawImage(img, 0, 0);
+
+  //ctx.globalCompositeOperation = "destination-out";
+  ctx.drawImage(img, 0, 0);
+
+  out = newCanvas(fb);
+  ctx = out.getContext("2d");
+  ctx.drawImage(hi, 0, 0);
+  ctx.globalCompositeOperation = "source-atop";
+  ctx.fillStyle = BLACK.toString();
+  ctx.fillRect(0, 0, out.width, out.height);
+
+  return out;
+}
 
 BlockMorph.prototype.highlightImageBlurred = function (color, blur) {
   var fb, img, hi, ctx;
@@ -5993,6 +6046,7 @@ BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
     return;
   }
   if (!this.zebraContrast && isForced) {
+    this.isZebra = false;
     return this.forceNormalColoring();
   }
 
@@ -6036,8 +6090,10 @@ BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
 };
 
 BlockMorph.prototype.forceNormalColoring = function () {
+  this.isZebra = false;
   var clr = SpriteMorph.prototype.blockColorFor(this.category);
   this.setColor(clr);
+  this.colors = SpriteMorph.prototype.blockColorsFor(this.category);
   this.setLabelColor(
     WHITE,
     clr.darker(this.labelContrast),
@@ -6062,6 +6118,7 @@ BlockMorph.prototype.alternateBlockColor = function () {
   } else {
     this.setColor(clr, this.hasLabels()); // silently
   }
+  this.isZebra = !this.isZebra;
   this.fixLabelColor();
   this.fixChildrensBlockColor(true); // has issues if not forced
 };
@@ -7337,24 +7394,11 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
       h = this.corner + this.dentPlus + inset / 2,
       offset = this.inset + this.corner / 2,
       c = this.dentCorner;
-    ctx.lineTo(0 + offset, -h + h + inset);
-    ctx.bezierCurveTo(
-      c + offset,
-      -h + h + inset,
-      c + offset,
-      -0 + h + inset,
-      c * 2 + offset,
-      -0 + h + inset / 4,
-    );
-    ctx.lineTo(w - c * 2 + offset, h + inset / 4);
-    ctx.bezierCurveTo(
-      w - c + offset,
-      0 + h + inset,
-      w - c + offset,
-      -h + h + inset,
-      w + offset,
-      -h + h + inset,
-    );
+    this.drawRoundedDent(ctx, 
+      inset, 
+      0, 
+      0
+    )
   }
 
   ctx.lineTo(this.width() - this.corner, inset); // after dent
@@ -7402,28 +7446,12 @@ CommandBlockMorph.prototype.outlinePath = function (ctx, inset) {
         false,
       );
     } else {
-      ctx.save();
-      ctx.translate(0, bottom - this.dentPlus);
-      h -= inset;
-      ctx.lineTo(0 + offset, -h + h - inset);
-      ctx.bezierCurveTo(
-        c + offset,
-        -h + h - inset,
-        c + offset,
-        -0 + h - inset,
-        c * 2 + offset,
-        -0 + h - inset / 4,
-      );
-      ctx.lineTo(w - c * 2 + offset, h - inset / 4);
-      ctx.bezierCurveTo(
-        w - c + offset,
-        0 + h - inset,
-        w - c + offset,
-        -h + h - inset,
-        w + offset,
-        -h + h - inset,
-      );
-      ctx.restore();
+      this.drawRoundedDent(ctx, 
+      inset, 
+      0, 
+      bottom - this.dentPlus * 1.5,
+      true
+    )
     }
     ctx.lineTo(this.corner + this.inset, bottom - inset - this.dentPlus);
   }
@@ -7761,7 +7789,7 @@ HatBlockMorph.prototype.isRuleHat = function () {
 HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
   var indent = this.corner * 2 + this.inset,
     bottom = this.height() - this.corner,
-    bottomCorner = this.height() - this.corner * 2,
+    bottomCorner = this.height() - this.corner - this.dentPlus * 2,
     radius = Math.max(this.corner - inset, 0),
     s = this.hatWidth,
     h = this.hatHeight,
@@ -7780,17 +7808,8 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
     r / 1.4,
     0,
     radians(-sa - 90),
-    radians(-90),
-    0,
-  );
-  ctx.ellipse(
-    s / 2,
-    r / 1.4 + inset + 4 * this.scale,
-    r,
-    r / 1.4,
-    0,
-    radians(-sa - 90),
     radians(sa - 90),
+    0,
   );
   /*ctx.bezierCurveTo(
         s,
@@ -7819,7 +7838,7 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
   // bottom right:
   ctx.arc(
     this.width() - this.corner,
-    bottomCorner - this.dentPlus,
+    bottomCorner + inset * 2 - radius,
     radius,
     radians(0),
     radians(90),
@@ -7827,54 +7846,22 @@ HatBlockMorph.prototype.outlinePath = function (ctx, inset) {
   );
 
   if (!this.isStop()) {
-    if (false) {
-      ctx.lineTo(this.width() - this.corner, bottom - inset - this.dentPlus);
-      ctx.lineTo(
-        this.corner * 3 + this.inset + this.dent,
-        bottom - inset - this.dentPlus,
-      );
-      ctx.lineTo(indent + this.dent, bottom + this.corner - inset);
-      ctx.lineTo(indent, bottom + this.corner - inset);
-      ctx.lineTo(this.corner + this.inset, bottom - inset - this.dentPlus);
-    } else {
       var w = this.dent * 1.75 + this.corner / 2,
         h = this.corner + this.dentPlus,
         offset = this.inset + this.corner / 2,
         c = this.dentCorner;
-      ctx.save();
-      ctx.translate(0, bottom - inset - this.dentPlus * 1);
-      ctx.lineTo(0 + offset, -h + h);
-      ctx.bezierCurveTo(
-        c + offset,
-        -h + h,
-        c + offset,
-        -0 + h,
-        c * 2 + offset,
-        -0 + h,
-      );
-      ctx.lineTo(w - c * 2 + offset, h);
-      ctx.bezierCurveTo(
-        w - c + offset,
-        0 + h,
-        w - c + offset,
-        -h + h,
-        w + offset,
-        -h + h,
-      );
-      ctx.restore();
-    }
+      this.drawRoundedDent(ctx, inset, 0, bottomCorner + inset, true);
   }
 
   // bottom left:
   ctx.arc(
     this.corner,
-    bottomCorner - this.dentPlus,
+    bottomCorner + inset * 2 - radius,
     radius,
     radians(90),
     radians(180),
     false,
   );
-  ctx.lineTo(0 + inset, h + this.corner);
 };
 
 HatBlockMorph.prototype.drawLeftEdge = function (ctx) {
@@ -8621,35 +8608,25 @@ RingMorph.prototype.render = function (ctx) {
   this.cachedClr = this.color.toString();
   this.cachedClrBright = this.bright();
   this.cachedClrDark = this.dark();
-
+  this.lineWidth = this.flatEdge;
+  
   if (MorphicPreferences.isFlat) {
-    // draw the outer filled shape
-    // draw the outline
-    ctx.fillStyle = this.cachedClrDark;
-    ctx.beginPath();
-    this.outlinePath(ctx, 0);
-
-    // render the hole:
-    slot.outlinePath(ctx, slot.position().subtract(pos));
-
-    // ctx.closePath();
-    ctx.clip("evenodd");
-    ctx.fillRect(0, 0, this.width(), this.height());
-
+    
     // draw the inner filled shaped
     // draw the outline
     ctx.fillStyle = this.cachedClr;
     ctx.strokeStyle = this.cachedClrDark;
+    ctx.lineWidth = this.flatEdge * 2;
     ctx.beginPath();
     this.outlinePath(ctx, this.flatEdge);
 
     // render the hole:
     slot.outlinePath(ctx, slot.position().subtract(pos));
+    ctx.stroke();
 
-    // ctx.closePath();
+    ctx.closePath();
     ctx.clip("evenodd");
     ctx.fillRect(0, 0, this.width(), this.height());
-    ctx.stroke();
   } else {
     // draw the flat shape
     // draw the outline
@@ -8990,6 +8967,7 @@ ScriptsMorph.prototype.step = function () {
     this.feedbackMorph.destroy();
     this.feedbackMorph.parent = null;
   }
+  this.feedbackMorph.render = BoxMorph.prototype.render;
   if (
     this.focus &&
     (!world.keyboardFocus || world.keyboardFocus instanceof StageMorph)
@@ -9063,6 +9041,14 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
   this.feedbackMorph.color = new Color(0, 0, 0, 0.5);
   // TODO: will add rendering;
   console.warn(target, SyntaxElementMorph.prototype.labelPadding);
+
+  let feedback = block.snapHighlight();
+  this.feedbackMorph.setExtent(block.fullBounds().extent());
+  this.feedbackMorph.render = function (ctx) {
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(feedback, 0, 0);
+  };
+
   x = target.element.left();
   y = target.point.y - target.element.corner - target.element.dentPlus;
   if (target.loc !== "bottom") {
@@ -10786,7 +10772,8 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
     h = this.height(),
     rf = isFilled ? this.rfBorder : 0,
     y = h - this.corner - edge;
-
+  ctx.save();
+  ctx.translate(0, edge);
   // top left:
   ctx.arc(
     this.corner + edge + ox,
@@ -10879,6 +10866,7 @@ RingCommandSlotMorph.prototype.outlinePath = function (ctx, offset) {
     this.corner + edge + ox - this.corner, // this needs to be adjusted
     this.corner + edge + oy,
   );
+  ctx.restore();
 };
 
 // CSlotMorph ////////////////////////////////////////////////////
@@ -11070,56 +11058,16 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     this.width() - this.corner + ox,
     oy,
     radius,
-    radians(90),
     radians(0),
-    true,
+    radians(90)
   );
-
   // jigsaw shape:
-  ctx.lineTo(this.width() - this.corner + ox, this.corner + oy - inset);
-  if (false) {
-    ctx.lineTo(
-      this.inset * 2 + this.corner * 3 + this.dent + ox,
-      this.corner + oy - inset,
-    );
-    ctx.lineTo(
-      this.inset * 2 + this.corner * 2 + this.dent + ox,
-      this.corner * 2 + oy - inset + this.dentPlus,
-    );
-    ctx.lineTo(
-      this.inset * 2 + this.corner * 2 + ox,
-      this.corner * 2 + oy - inset + this.dentPlus,
-    );
-
-    ctx.lineTo(this.inset * 2 + this.corner + ox, this.corner + oy - inset);
-    ctx.lineTo(this.inset + this.corner + ox, this.corner + oy - inset);
-  } else {
     var w = this.dent * 1.75 + this.corner / 2,
       h = this.corner + this.dentPlus,
       offset = this.inset * 1 + this.dent / 1.6 + ox,
       c = this.dentCorner;
-    ctx.save();
-    ctx.translate(1 * this.scale, this.corner + oy - inset);
-    ctx.lineTo(0 + offset, -h + h);
-    ctx.bezierCurveTo(
-      c + offset,
-      -h + h,
-      c + offset,
-      -0 + h,
-      c * 2 + offset,
-      -0 + h,
-    );
-    ctx.lineTo(w - c * 2 + offset, h);
-    ctx.bezierCurveTo(
-      w - c + offset,
-      0 + h,
-      w - c + offset,
-      -h + h,
-      w + offset,
-      -h + h,
-    );
-    ctx.restore();
-  }
+    this.drawRoundedDent(ctx, inset, inset + this.corner * 2 + ox, this.corner + oy - inset * 2, true);
+  
   ctx.arc(
     this.inset + this.corner + ox,
     this.corner * 2 + oy,
@@ -11149,30 +11097,7 @@ CSlotMorph.prototype.outlinePath = function (ctx, inset, offset) {
     if (block.bottomBlock().isStop()) flatEdge = false;
   }
   if (flatEdge) {
-    ctx.save();
-    ctx.translate(
-      1 * this.scale,
-      this.height() - this.corner + oy + inset - this.dentPlus,
-    );
-    ctx.lineTo(0 + offset, -h + h);
-    ctx.bezierCurveTo(
-      c + offset,
-      -h + h,
-      c + offset,
-      -0 + h,
-      c * 2 + offset,
-      -0 + h,
-    );
-    ctx.lineTo(w - c * 2 + offset, h);
-    ctx.bezierCurveTo(
-      w - c + offset,
-      0 + h,
-      w - c + offset,
-      -h + h,
-      w + offset,
-      -h + h,
-    );
-    ctx.restore();
+    this.drawRoundedDent(ctx, inset, inset + this.corner * 2 + ox, this.height() - this.corner + oy - this.dentPlus)
     ctx.lineTo(
       this.width() - this.corner + ox,
       this.height() - this.corner + oy + inset - this.dentPlus,
@@ -12964,13 +12889,16 @@ InputSlotMorph.prototype.render = function (ctx) {
     borderColor = this.color;
   } else if (this.parent) {
     borderColor = this.parent.color;
+    this.colors = this.parent.colors;
+    this.isZebra = this.parent.isZebra;
+    this.zebraContrast = this.parent.zebraContrast;
   } else {
     borderColor = new Color(120, 120, 120);
   }
   ctx.fillStyle = this.color.toString();
   if (this.isReadOnly && !this.cachedNormalColor) {
     // unless flashing
-    ctx.fillStyle = borderColor.darker(10).toString();
+    ctx.fillStyle = this.secondary(borderColor);
     if (this.isStatic) {
       ctx.fillStyle = borderColor.toString();
     }
@@ -12979,8 +12907,8 @@ InputSlotMorph.prototype.render = function (ctx) {
   // cache my border colors
   this.cachedClr = borderColor.toString();
   this.cachedClrBright = borderColor.lighter(this.contrast).toString();
-  this.cachedClrDark = borderColor.darker(this.contrast).toString();
-  ctx.strokeStyle = this.parent.color.darker(20).toString();
+  this.cachedClrDark = this.secondary(borderColor);
+  ctx.strokeStyle = this.dark(this.parent.color);
   ctx.lineWidth = this.flatEdge * 2;
   if (this.isSquare()) {
     ctx.beginPath();
@@ -13242,6 +13170,9 @@ function InputSlotStringMorph(
     color,
     fontName,
   );
+  this.fontName = SyntaxElementMorph.prototype.labelFontName;
+  this.fontWeight = 500;
+  this.fixLayout();
 }
 
 InputSlotStringMorph.prototype.getRenderColor = function () {
@@ -13295,6 +13226,9 @@ function InputSlotTextMorph(
     shadowOffset,
     shadowColor,
   );
+  this.fontName = SyntaxElementMorph.prototype.labelFontName;
+  this.fontWeight = 500;
+  this.fixLayout();
 }
 
 InputSlotTextMorph.prototype.getRenderColor =
@@ -13333,6 +13267,7 @@ TemplateSlotMorph.prototype.init = function (name) {
   template.isTemplate = true;
   if (modules.objects !== undefined) {
     template.color = SpriteMorph.prototype.blockColor.variables;
+    template.colors = SpriteMorph.prototype.blockColors.variables;
     template.category = "variables";
   } else {
     template.color = new Color(243, 118, 29);
@@ -13431,6 +13366,7 @@ TemplateSlotMorph.prototype.unflashScope = function () {
 TemplateSlotMorph.prototype.render = function (ctx) {
   if (this.parent instanceof Morph) {
     this.color = this.parent.color.copy();
+    this.colors = this.parent.colors;
   }
   BlockMorph.prototype.render.call(this, ctx);
 };
@@ -13807,7 +13743,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
         clr = new Color(200, 0, 0);
         break;
       default:
-        clr = this.color.darker(25);
+        clr = this.dark();
     }
   }
   if (progress == -1) {
@@ -13862,7 +13798,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
   ctx.fill();
   if (this.parentThatIsA(BlockMorph)?.alpha < 0.6 || !this.isEmptySlot() || progress > 0) {
     var e = this.flatEdge / 2;
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
     ctx.lineWidth = this.flatEdge;
     ctx.beginPath();
     ctx.moveTo(e, r);

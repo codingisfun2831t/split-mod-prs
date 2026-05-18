@@ -2469,6 +2469,9 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         ) {
           x -= this.labelPadding * 1.5;
         }
+        if (this.isPredicate && partIndex === 0 && !(part instanceof ArgMorph)) {
+          x += this.rounding / 4;
+        }
         part.setPosition(new Point(x, y));
         if (!part.isBlockLabelBreak) {
           if (part.slotSpec === "%c" || part.slotSpec === "%loop") {
@@ -2637,6 +2640,11 @@ SyntaxElementMorph.prototype.fixLayout = function () {
 
   // set my extent (silently, because we'll redraw later anyway):
   this.alwaysRound = lines.length == 1;
+  if (lines.length > 0) {
+    if (this.isPredicate && lines.length > 0 && !(lines[Math.floor(lines.length / 2)].at(-1) instanceof ArgMorph)) {
+      blockWidth += this.rounding / 4;
+    }
+  }
   this.bounds.setWidth(blockWidth);
   this.bounds.setHeight(
     blockHeight + (this instanceof CommandBlockMorph ? this.dentPlus : 0),
@@ -5952,7 +5960,7 @@ BlockMorph.prototype.highlight = function (color, blur, border) {
   return highlight;
 };
 
-BlockMorph.prototype.highlightImage = function (color, border) {
+SyntaxElementMorph.prototype.highlightImage = function (color, border) {
   var fb, img, hi, ctx, out;
   fb = this.fullBounds().extent();
   this.doWithAlpha(1, () => (img = this.fullImage()));
@@ -6008,7 +6016,7 @@ BlockMorph.prototype.snapHighlight = function () {
   return out;
 };
 
-BlockMorph.prototype.highlightImageBlurred = function (color, blur) {
+SyntaxElementMorph.prototype.highlightImageBlurred = function (color, blur) {
   var fb, img, hi, ctx;
   fb = this.fullBounds().extent();
   this.doWithAlpha(1, () => (img = this.fullImage()));

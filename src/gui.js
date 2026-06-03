@@ -1326,7 +1326,7 @@ IDE_Morph.prototype.createControlBar = function () {
   };
   // slider.alpha = MorphicPreferences.isFlat ? 0.1 : 0.3;
   slider.color = this.getControlBarColor().darker();
-  slider.alpha = 0.3;
+  slider.alpha = 1;
   slider.setExtent(new Point(50, 14));
   this.controlBar.add(slider);
   this.controlBar.steppingSlider = slider;

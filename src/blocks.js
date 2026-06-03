@@ -13586,10 +13586,10 @@ BooleanSlotMorph.prototype.mouseClickLeft = function () {
 };
 
 BooleanSlotMorph.prototype.mouseEnter = function () {
-  if (this.isWide()) {
+  /*if (this.isWide()) {
     this.progress = -1;
     return;
-  }
+  }*/
   if (this.nextValue() === null) {
     this.progress = -1; // 'fade'
   } else {
@@ -13839,7 +13839,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
     ctx.stroke();
   }
 
-  if (progress < 0 || !this.isEmptySlot() || progress == 1) {
+  if ((progress < 0 || !this.isEmptySlot() || progress == 1) && !this.isWide()) {
     if (this.value) {
       drawTick();
     } else {
@@ -13931,16 +13931,15 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
     return;
   }
 
-  if (false) {
-    //this.isWide()) {
+  if (this.isWide()) {
     // draw the full text label
-    text = this.textLabelExtent();
+    let text,
+    x,
+    y;
+
+    text = this.textLabelExtentSpecific();
     y = this.height() - (this.height() - text.y) / 2;
-    if (this.value) {
-      x = this.width() / 2 - this.width() / 5;
-    } else {
-      x = this.width() - this.height() / 2 - text.x;
-    }
+    x = this.width() / 2;
     ctx.save();
     if (!MorphicPreferences.isFlat && useBlurredShadows) {
       ctx.shadowOffsetX = -shift;
@@ -13949,7 +13948,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (ctx, progress) {
       ctx.shadowColor = this.value ? "rgb(0, 100, 0)" : "rgb(100, 0, 0)";
     }
     ctx.font = new StringMorph(null, this.fontSize, null, true).font();
-    ctx.textAlign = "left";
+    ctx.textAlign = "center";
     ctx.textBaseline = "bottom";
     ctx.fillStyle = "rgb(255, 255, 255";
     ctx.fillText(localize(this.value ? "true" : "false"), x, y);
@@ -14091,6 +14090,23 @@ BooleanSlotMorph.prototype.textLabelExtent = function () {
     true, // bold
   );
   return new Point(Math.max(t.width(), f.width()), t.height());
+};
+
+BooleanSlotMorph.prototype.textLabelExtentSpecific = function () {
+  var t, f;
+  t = new StringMorph(
+    localize("true"),
+    this.fontSize,
+    null,
+    true, // bold
+  );
+  f = new StringMorph(
+    localize("false"),
+    this.fontSize,
+    null,
+    true, // bold
+  );
+  return this.value ? new Point(t.width(), t.height()) : new Point(f.width(), f.height());
 };
 
 // ArrowMorph //////////////////////////////////////////////////////////

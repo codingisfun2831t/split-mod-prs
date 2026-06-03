@@ -1707,7 +1707,7 @@ IDE_Morph.prototype.createCategories = function () {
       row,
       col,
       i;
-
+    
     myself.categories.children[0].children.forEach((button, i) => {
       row = i < 8 ? i % 4 : i - 4;
       col = i < 4 || i > 7 ? 1 : 2;
@@ -1738,6 +1738,7 @@ IDE_Morph.prototype.createCategories = function () {
         }
         myself.categories.add(scroller);
         myself.categories.scroller = scroller;*/
+      myself.categories.contents.adjustBounds()
   }
 
   SpriteMorph.prototype.categories.forEach((cat) => {
@@ -2598,7 +2599,7 @@ IDE_Morph.prototype.fixLayout = function (situation) {
   this.logo.setLeft(this.left() + border);
   this.logo.setTop(this.top() + border);
 
-  if (situation !== "refreshPalette") {
+  if (true){//situation !== "refreshPalette") {
     // controlBar
     this.controlBar.setPosition(this.logo.topRight());
     this.controlBar.setWidth(this.right() - this.controlBar.left() - border);

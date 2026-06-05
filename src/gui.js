@@ -4677,7 +4677,7 @@ IDE_Morph.prototype.settingsMenu = function () {
     () => {
       SpriteMorph.prototype.showingExtensions =
         !SpriteMorph.prototype.showingExtensions;
-      this.flushBlocksCache("variables");
+      this.flushBlocksCache("lists");
       this.refreshPalette();
       this.categories.refreshEmpty();
     },

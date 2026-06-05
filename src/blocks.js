@@ -2281,7 +2281,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     rightCorrection = 0,
     rightMost,
     hasLoopCSlot = false,
-    hasLoopArrow = false;
+    hasLoopArrow = false,
+    anyNotRound = parts.some((part) => "alwaysRound" in part && !part.alwaysRound);
 
   if (this instanceof MultiArgMorph && this.slotSpec !== "%cs") {
     blockWidth += this.arrows().width() / 2;
@@ -2639,7 +2640,11 @@ SyntaxElementMorph.prototype.fixLayout = function () {
   }
 
   // set my extent (silently, because we'll redraw later anyway):
-  this.alwaysRound = lines.length == 1;
+  if (anyNotRound) {
+    this.alwaysRound = false
+  } else {
+    this.alwaysRound = lines.length == 1
+  };
   if (lines.length > 0) {
     if (this.isPredicate && lines.length > 0 && !(lines[Math.floor(lines.length / 2)].at(-1) instanceof ArgMorph)) {
       blockWidth += this.rounding / 4;
@@ -2661,8 +2666,9 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     ) {
       this.containsCSlot = true;
       if (this.isPredicate) {
-        adjustMultiWidth = blockHeight / 2;
-        part.bounds.corner.x = blockWidth;
+        part.setRight(this.right());
+        part.setLeft(this.left() + this.rounding);
+        part.bounds.corner.x = part.parent.right();
       } else {
         part.setRight(this.right());
         part.setLeft(this.left() + this.labelPadding);
@@ -8292,7 +8298,9 @@ ReporterBlockMorph.prototype.outlinePathDiamond = function (ctx, inset) {
   var w = this.width(),
     h = this.height(),
     h2 = Math.floor(h / 2),
-    r = h / 2,
+    r = (this.alwaysRound)
+        ? Math.min(h / 2, w / 2)
+        : Math.min(Math.round(1.5 * this.rounding), h / 2),
     corner = this.corner,
     right = w - r,
     pos = this.position(),

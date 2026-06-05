@@ -2384,6 +2384,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
         this.rounding *
           (line[0] instanceof BlockLabelMorph ||
           line[0].constructor.name == "BlockLabelFragmentPlaceHolderMorph" ||
+          line[0].constructor.name == "BlockLabelPlaceHolderMorph" ||
           line[0] instanceof BooleanSlotMorph ||
           (line[0] instanceof MultiArgMorph && line[0].slotSpec.includes("%b"))
             ? 1.1
@@ -2393,7 +2394,7 @@ SyntaxElementMorph.prototype.fixLayout = function () {
     } else if (
       isReporter &&
       (line[0] instanceof BlockLabelMorph ||
-        line[0].constructor.name == "BlockLabelFragmentPlaceHolderMorph")
+        line[0].constructor.name == "BlockLabelFragmentPlaceHolderMorph" || line[0].constructor.name == "BlockLabelPlaceHolderMorph")
     ) {
       x =
         this.left() +
@@ -2421,6 +2422,8 @@ SyntaxElementMorph.prototype.fixLayout = function () {
           part instanceof ReporterBlockMorph ||
           (!(part instanceof BlockLabelMorph) &&
             !(part.constructor.name == "BlockLabelFragmentPlaceHolderMorph") &&
+            !(part.constructor.name === "BlockLabelPlaceHolderMorph") && 
+            !(part.constructor.name === "BlockLabelFragmentMorph") && 
             !(part instanceof CSlotMorph) &&
             !(part instanceof ArrowMorph) &&
             !(part instanceof MultiArgMorph && part.slotSpec.includes("%cs")) &&

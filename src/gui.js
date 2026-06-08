@@ -12165,9 +12165,45 @@ WardrobeMorph.prototype.removeCostumeAt = function (idx) {
 };
 
 WardrobeMorph.prototype.paintNew = function () {
+  // I had to change the null extentPoint in the Costume newCanvas to instead
+  // use the stage dimensions for StageMorph. I believe this is of the in-tab
+  // costume editor d016 made.
+  //
+  // Back in the original Snap! source code, this would have somethng like this
+  // at the bottom:
+
+  //     cos.edit(
+  //         this.world(),
+  //         ide,
+  //         true,
+  //         null,
+  //         () => {
+  //             this.sprite.shadowAttribute('costumes');
+  //             this.sprite.addCostume(cos);
+  //             this.updateList();
+  //             this.sprite.wearCostume(cos);
+  //             this.sprite.recordUserEdit(
+  //                 'costume',
+  //                 'draw',
+  //                 cos.name
+  //             );
+  //         }
+  //     );
+  //
+  // The null canvas size was okay for this because the costume wouldn't get
+  // added to the sprite/stage right away, and the paint editor handled a empty
+  // canvas. However, when d016 modified the costume editor to be inside the tab
+  // itself (to be more like Scratch, of course), he had to add the costume to
+  // the object, again to be more like Scratch. Thus, the object then recived
+  // this undrawable empty canvas and, error. d016 only did a catch for the
+  // SpriteMorph's render, not the StageMorph's. Thus I made the costume the stage
+  // size if we are for the stage.
+  //
+  // - codingisfun2831t
+  
   var ide = this.parentThatIsA(IDE_Morph),
     cos = new Costume(
-      newCanvas(null, true),
+      newCanvas(this.sprite instanceof StageMorph ? this.sprite.dimensions : null, true),
       this.sprite.newCostumeName(localize("costume")),
       null, // rotation center
       null, // don't shrink-to-fit
@@ -12178,8 +12214,8 @@ WardrobeMorph.prototype.paintNew = function () {
 
   this.sprite.shadowAttribute("costumes");
   this.sprite.addCostume(cos);
-  this.sprite.wearCostume(cos);
   this.updateList();
+  this.sprite.wearCostume(cos);
   this.sprite.recordUserEdit("costume", "draw", cos.name);
 };
 
@@ -13651,6 +13687,7 @@ CorralStageMorph.prototype.buildContents = function () {
   this.add(this.backdrops);
 
   this.newBackdropFlyout = new ScratchFlyoutMorph(this, "addNewBackdrop", "newBackdrop", this.ide.accentColor);
+  this.newBackdropFlyout.addItem("paintNewBackdrop", "brush");
   this.newBackdropFlyout.build();
   this.add(this.newBackdropFlyout);
 
@@ -13660,6 +13697,17 @@ CorralStageMorph.prototype.buildContents = function () {
 
 CorralStageMorph.prototype.addNewBackdrop = function() {
   this.ide.importMedia("Backdrops");
+};
+
+CorralStageMorph.prototype.paintNewBackdrop = function () {
+  if (this.ide.cantSwitchSprites() && this.ide.currentSprite != this.state) {
+    this.ide.showMessage("can't create new backdrop if a block editor is open and not on the stage.");
+    return;
+  }
+
+  this.ide.selectSprite(this.stage);
+  this.ide.oldSpriteBar.tabBar.tabTo("costumes");
+  this.ide.spriteEditor.paintNew();
 };
 
 CorralStageMorph.prototype.fixLayout = function () {

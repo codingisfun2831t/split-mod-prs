@@ -3182,19 +3182,21 @@ IDE_Morph.prototype.stopAllScripts = function () {
   this.projectControlBar.stopButton.refresh();
 };
 
-IDE_Morph.prototype.selectSprite = function (sprite, noEmptyRefresh) {
-  // prevent switching to another sprite if a block editor or a block
-  // visibility dialog box is open
-  // so local blocks of different sprites don't mix
-  if (
-    detect(
+IDE_Morph.prototype.cantSwitchSprites = function () {
+  return detect(
       this.world().children,
       (morph) =>
         morph instanceof BlockEditorMorph ||
         morph instanceof BlockDialogMorph ||
         morph instanceof BlockVisibilityDialogMorph,
-    )
-  ) {
+    );
+}
+
+IDE_Morph.prototype.selectSprite = function (sprite, noEmptyRefresh) {
+  // prevent switching to another sprite if a block editor or a block
+  // visibility dialog box is open
+  // so local blocks of different sprites don't mix
+  if (this.cantSwitchSprites()) {
     return;
   }
   if (this.currentSprite && this.currentSprite.scripts.focus) {
@@ -3617,6 +3619,11 @@ IDE_Morph.prototype.addNewSprite = function (useTurtle) {
 };
 
 IDE_Morph.prototype.paintNewSprite = function () {
+  if (this.cantSwitchSprites()) {
+    this.showMessage("can't create new sprite if a block editor is open.");
+    return;
+  }
+
   var sprite = new SpriteMorph(this.globalVariables),
     cos = new Costume();
 
@@ -3626,16 +3633,8 @@ IDE_Morph.prototype.paintNewSprite = function () {
   this.sprites.add(sprite);
   this.corral.addSprite(sprite);
   this.selectSprite(sprite);
-  cos.edit(
-    this.world(),
-    this,
-    true,
-    () => this.removeSprite(sprite),
-    () => {
-      sprite.addCostume(cos);
-      sprite.wearCostume(cos);
-    },
-  );
+  this.oldSpriteBar.tabBar.tabTo("costumes");
+  this.spriteEditor.paintNew();
 };
 
 IDE_Morph.prototype.newCamSprite = function () {

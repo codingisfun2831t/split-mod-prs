@@ -2152,7 +2152,7 @@ IDE_Morph.prototype.createOldSpriteBar = function () {
     [
       new SymbolMorph("brush", 12),
       localize(
-        this.currentSprite instanceof SpriteMorph ? "Costumes" : "Backgrounds",
+        this.currentSprite instanceof SpriteMorph ? "Costumes" : "Backdrops",
       ),
     ],
     () => this.currentTab === "costumes", // query
@@ -2466,7 +2466,7 @@ IDE_Morph.prototype.fixLayout = function (situation) {
     );
     this.extensionButton.setTop(world.bottom() - 52);
     this.extensionButton.setHeight(52);
-    globalThis["showExtensions"] = () => {
+    this.extensionButton.mouseDownLeft = () => {
       if (location.protocol === "file:") {
         this.importLocalFile();
         return;
@@ -2476,7 +2476,6 @@ IDE_Morph.prototype.fixLayout = function (situation) {
         new LibraryImportDialogMorph(this, libraries).popUp();
       });
     };
-    this.extensionButton.mouseDownLeft = showExtensions;
     this.categories.setWidth(this.catWidth);
     this.extensionButton.setWidth(this.catWidth);
     this.categories.bounds.corner.y =
@@ -4804,7 +4803,7 @@ IDE_Morph.prototype.projectMenu = function () {
     world = this.world(),
     pos = this.controlBar.projectButton.bottomLeft(),
     graphicsName =
-      this.currentSprite instanceof SpriteMorph ? "Costumes" : "Backgrounds",
+      this.currentSprite instanceof SpriteMorph ? "Costumes" : "Backdrops",
     shiftClicked = world.currentKey === 16,
     backup = this.availableBackup(shiftClicked);
 
@@ -11962,7 +11961,7 @@ WardrobeMorph.prototype.updateList = function () {
         return;
       }
       ide.importMedia(
-        ide.currentSprite instanceof SpriteMorph ? "Costumes" : "Backgrounds",
+        ide.currentSprite instanceof SpriteMorph ? "Costumes" : "Backdrops",
       );
     },
     new SymbolMorph("cross", 15),
@@ -13598,6 +13597,7 @@ CorralStageMorph.prototype.init = function (stage, ide) {
   this.label = null;
   this.thumbnail = null;
   this.backdrops = null;
+  this.newBackdropFlyout = null;
 
   this.buildContents();
 
@@ -13651,8 +13651,16 @@ CorralStageMorph.prototype.buildContents = function () {
   this.backdrops.color = this.ide.buttonLabelColor;
   this.add(this.backdrops);
 
+  this.newBackdropFlyout = new ScratchFlyoutMorph(this, "addNewBackdrop", "newBackdrop", this.ide.accentColor);
+  this.newBackdropFlyout.build();
+  this.add(this.newBackdropFlyout);
+
   this.createThumbnail();
   this.updateBackdrops();
+};
+
+CorralStageMorph.prototype.addNewBackdrop = function() {
+  this.ide.importMedia("Backdrops");
 };
 
 CorralStageMorph.prototype.fixLayout = function () {
@@ -13666,6 +13674,9 @@ CorralStageMorph.prototype.fixLayout = function () {
 
   this.backdrops.setCenter(this.center());
   this.backdrops.setTop(this.thumbnail.bottom() + 10);
+
+  this.newBackdropFlyout.setCenter(this.center());
+  this.newBackdropFlyout.setBottom(this.bottom() - 5);
 };
 
 CorralStageMorph.prototype.refresh = function () {
@@ -13838,13 +13849,15 @@ ScratchFlyoutMorph.prototype.build = function() {
   this.bounds.setExtent(new Point(52, 52 + 36 * this.items.length));
   let y = this.bottom() - 52;
 
-  let padding = new Morph();
-  padding.color = this.accent;
-  padding.setExtent(new Point(36, 36));
-  padding.setCenter(this.center());
-  padding.setBottom(this.bottom()-26);
-  padding.hide();
-  this.add(padding);
+  if (this.items.length > 0) {
+    let padding = new Morph();
+    padding.color = this.accent;
+    padding.setExtent(new Point(36, 36));
+    padding.setCenter(this.center());
+    padding.setBottom(this.bottom()-26);
+    padding.hide();
+    this.add(padding);
+  }
 
   for (let item of this.items) {
     let button = new TriggerMorph(this.target, item[0]);
